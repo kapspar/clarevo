@@ -720,7 +720,13 @@
   <p>© 2025 Clarevo. Built for Canadian families.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // ── SUPABASE ──
+  const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   // ── STATE ──
   let currentSlide = 0;
   const totalSections = 7;
@@ -938,17 +944,55 @@
     `).join('');
   }
 
-  function saveEmail() {
+  async function saveEmail() {
     const email = document.getElementById('emailInput').value;
     if (!email || !email.includes('@')) {
       document.getElementById('emailInput').style.borderColor = 'var(--red)';
       return;
     }
-    document.getElementById('emailInput').style.borderColor = 'var(--green)';
-    document.querySelector('.email-input-wrap').style.display = 'none';
-    document.getElementById('emailSuccess').style.display = 'block';
-    // In production this would POST to your backend
-    console.log('Email captured:', email, 'Score:', document.getElementById('scoreBig').textContent);
+
+    const btn = document.querySelector('.email-btn');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    const score = parseInt(document.getElementById('scoreBig').textContent) || 0;
+    const getVal = (q) => answers[q]?.value || answers[q] || null;
+
+    // Build assessment record
+    const record = {
+      email: email,
+      score: score,
+      has_will:               getVal('q14'),
+      has_poa:                getVal('q15'),
+      has_insurance:          getVal('q11'),
+      beneficiary_confirmed:  getVal('q12'),
+      bills_documented:       getVal('q5'),
+      finances_documented:    getVal('q8'),
+      password_plan:          getVal('q19'),
+      has_executor:           getVal('q17'),
+      has_children:           answers['q2']?.value === 'yes',
+      guardian_plan:          getVal('q22'),
+      raw_answers:            answers
+    };
+
+    try {
+      const { error } = await supabase
+        .from('assessments')
+        .insert([record]);
+
+      if (error) throw error;
+
+      // Success
+      document.getElementById('emailInput').style.borderColor = 'var(--green)';
+      document.querySelector('.email-input-wrap').style.display = 'none';
+      document.getElementById('emailSuccess').style.display = 'block';
+
+    } catch (err) {
+      console.error('Save error:', err);
+      // Still show success to user — don't block them
+      document.querySelector('.email-input-wrap').style.display = 'none';
+      document.getElementById('emailSuccess').style.display = 'block';
+    }
   }
 
   function toggleMenu() {
