@@ -1,155 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarevo — Clarity Before Crisis</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — Clarity Before Crisis</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--gray-light);
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f9fb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+    .gate {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      margin: 24px;
+    }
 
-        .gate {
-            background: white;
-            border-radius: 20px;
-            padding: 48px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            text-align: center;
-        }
+    .gate-logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .gate-logo span { color: var(--blue); }
 
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: #1a1a2e;
-            margin-bottom: 8px;
-        }
+    .gate-tagline {
+      font-size: 13px;
+      color: var(--gray);
+      margin-bottom: 32px;
+    }
 
-        .logo span {
-            color: #3b82f6;
-        }
+    .private-badge {
+      display: inline-block;
+      background: #fffbeb;
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+      border: 1px solid #fde68a;
+    }
 
-        .tagline {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 40px;
-        }
+    .gate h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .gate p { font-size: 13px; color: var(--gray); margin-bottom: 24px; line-height: 1.6; }
 
-        h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 8px;
-        }
+    .gate input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 16px;
+      outline: none;
+      transition: border 0.2s;
+      margin-bottom: 14px;
+      text-align: center;
+      letter-spacing: 3px;
+      font-family: var(--font);
+    }
+    .gate input:focus { border-color: var(--blue); }
 
-        p {
-            font-size: 14px;
-            color: #888;
-            margin-bottom: 28px;
-            line-height: 1.6;
-        }
+    .gate button {
+      width: 100%;
+      padding: 14px;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: var(--font);
+    }
+    .gate button:hover { background: #2563eb; }
 
-        input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: border 0.2s;
-            margin-bottom: 16px;
-            text-align: center;
-            letter-spacing: 2px;
-        }
-
-        input:focus {
-            border-color: #3b82f6;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button:hover {
-            background: #2563eb;
-        }
-
-        .error {
-            color: #ef4444;
-            font-size: 13px;
-            margin-top: 12px;
-            display: none;
-        }
-
-        .private-badge {
-            display: inline-block;
-            background: #fffbeb;
-            color: #f59e0b;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 20px;
-            margin-bottom: 32px;
-        }
-    </style>
+    .error {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+  </style>
 </head>
-
 <body>
 
-    <div class="gate">
-        <div class="logo">Clar<span>evo</span></div>
-        <div class="tagline">Clarity before crisis.</div>
-        <div class="private-badge">🔒 Private Preview</div>
-        <h2>This site is password protected</h2>
-        <p>You've been invited to preview Clarevo before public launch. Enter your access code below.</p>
-        <input type="password" id="passwordInput" placeholder="Enter access code"
-            onkeydown="if(event.key==='Enter') checkPassword()" />
-        <button onclick="checkPassword()">Enter →</button>
-        <div class="error" id="errorMsg">Incorrect access code. Please try again.</div>
-    </div>
+<div class="gate">
+  <div class="gate-logo">Clar<span>evo</span></div>
+  <div class="gate-tagline">Clarity before crisis.</div>
+  <div class="private-badge">🔒 Private Preview</div>
+  <h2>This site is password protected</h2>
+  <p>You've been invited to preview Clarevo before public launch. Enter your access code below.</p>
+  <input type="password" id="passwordInput" placeholder="Access code" onkeydown="if(event.key==='Enter') checkPassword()"/>
+  <button onclick="checkPassword()">Enter →</button>
+  <div class="error" id="errorMsg">Incorrect access code. Please try again.</div>
+</div>
 
-    <script>
-        // Check if already authenticated
-        if (sessionStorage.getItem('clarevo_auth') === 'true') {
-            window.location.href = 'home.html';
-        }
+<script>
+  if (sessionStorage.getItem('clarevo_auth') === 'true') {
+    window.location.href = 'home.html';
+  }
 
-        function checkPassword() {
-            const input = document.getElementById('passwordInput').value;
-            const error = document.getElementById('errorMsg');
-
-            if (input === 'clarevo2025') {
-                sessionStorage.setItem('clarevo_auth', 'true');
-                window.location.href = 'home.html';
-            } else {
-                error.style.display = 'block';
-                document.getElementById('passwordInput').value = '';
-            }
-        }
-    </script>
-
+  function checkPassword() {
+    const input = document.getElementById('passwordInput').value;
+    const error = document.getElementById('errorMsg');
+    if (input === 'clarevo2025') {
+      sessionStorage.setItem('clarevo_auth', 'true');
+      window.location.href = 'home.html';
+    } else {
+      error.style.display = 'block';
+      document.getElementById('passwordInput').value = '';
+    }
+  }
+</script>
 </body>
-
 </html>

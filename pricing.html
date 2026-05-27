@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — Pricing</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .header {
+      text-align: center;
+      padding: 72px 48px 48px;
+    }
+    .header h1 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 14px;
+    }
+    .header p { font-size: 17px; color: var(--gray); max-width: 440px; margin: 0 auto; line-height: 1.6; }
+
+    /* PLANS */
+    .plans {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .plan {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow);
+      border: 2px solid transparent;
+      position: relative;
+    }
+    .plan.popular {
+      border-color: var(--blue);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--blue);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
+    .plan-name {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
+    .plan-price {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .plan-price span { font-size: 16px; font-weight: 500; color: var(--gray); }
+    .plan-desc { font-size: 13px; color: var(--gray); margin-bottom: 28px; line-height: 1.5; margin-top: 8px; }
+
+    .plan-btn {
+      display: block;
+      text-align: center;
+      padding: 13px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 28px;
+      transition: all 0.2s;
+    }
+    .plan-btn.outline { border: 2px solid var(--border); color: var(--dark); }
+    .plan-btn.outline:hover { border-color: var(--blue); color: var(--blue); }
+    .plan-btn.filled { background: var(--blue); color: var(--white); }
+    .plan-btn.filled:hover { background: #2563eb; }
+    .plan-btn.dark { background: var(--dark); color: var(--white); }
+    .plan-btn.dark:hover { background: #2d2d4e; }
+
+    .features-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #bbb;
+      margin-bottom: 14px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 11px;
+      font-size: 13px;
+      color: #444;
+      line-height: 1.4;
+    }
+    .feature .ck { color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .feature .xk { color: #d1d5db; font-weight: 700; flex-shrink: 0; }
+
+    /* FAQ */
+    .faq-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+    .faq-wrap h2 { font-size: 30px; font-weight: 800; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
+
+    .faq-item { border-bottom: 1px solid var(--border); padding: 22px 0; }
+    .faq-item h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .faq-item p { font-size: 13px; color: var(--gray); line-height: 1.7; }
+
+    /* CTA */
+    .cta {
+      background: var(--dark);
+      padding: 72px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .cta h2 { font-size: 34px; font-weight: 800; margin-bottom: 14px; letter-spacing: -0.5px; }
+    .cta p { font-size: 16px; color: #aaa; margin-bottom: 32px; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .plans {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+      }
+      .plan.popular { transform: none; }
+    }
+
+    @media (max-width: 600px) {
+      .header { padding: 48px 20px 32px; }
+      .header h1 { font-size: 32px; }
+      .plans { padding: 0 20px 48px; }
+      .faq-wrap { padding: 0 20px 48px; }
+      .cta { padding: 48px 20px; }
+      .cta h2 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html#how" onclick="toggleMenu()">How it works</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="header">
+  <div class="section-label">Pricing</div>
+  <h1>Simple, honest pricing.</h1>
+  <p>Start free. Upgrade when you're ready. No hidden fees, no surprises.</p>
+</div>
+
+<div class="plans">
+
+  <!-- FREE -->
+  <div class="plan">
+    <div class="plan-name">Free</div>
+    <div class="plan-price">$0<span>/forever</span></div>
+    <div class="plan-desc">Get your readiness score and see exactly where your gaps are.</div>
+    <a href="form.html" class="plan-btn outline">Get Started Free</a>
+    <div class="features-label">What's included</div>
+    <div class="feature"><span class="ck">✓</span> Full readiness assessment</div>
+    <div class="feature"><span class="ck">✓</span> Household readiness score</div>
+    <div class="feature"><span class="ck">✓</span> Gap detection across 6 categories</div>
+    <div class="feature"><span class="ck">✓</span> Personalized action checklist</div>
+    <div class="feature"><span class="ck">✓</span> Partner recommendations</div>
+    <div class="feature"><span class="xk">✗</span> Saved dashboard</div>
+    <div class="feature"><span class="xk">✗</span> Spouse / executor sharing</div>
+    <div class="feature"><span class="xk">✗</span> Printable emergency binder PDF</div>
+    <div class="feature"><span class="xk">✗</span> Annual update reminders</div>
+    <div class="feature"><span class="xk">✗</span> Document location tracker</div>
+  </div>
+
+  <!-- PRO -->
+  <div class="plan popular">
+    <div class="popular-badge">Most Popular</div>
+    <div class="plan-name">Pro</div>
+    <div class="plan-price">$79<span>/year</span></div>
+    <div class="plan-desc">Everything you need to stay ready and keep your family protected year-round.</div>
+    <a href="form.html" class="plan-btn filled">Start Free Trial</a>
+    <div class="features-label">Everything in Free, plus</div>
+    <div class="feature"><span class="ck">✓</span> Saved personal dashboard</div>
+    <div class="feature"><span class="ck">✓</span> Spouse and executor sharing</div>
+    <div class="feature"><span class="ck">✓</span> Printable emergency binder PDF</div>
+    <div class="feature"><span class="ck">✓</span> Annual update reminders</div>
+    <div class="feature"><span class="ck">✓</span> Document location tracker</div>
+    <div class="feature"><span class="ck">✓</span> Bill and account inventory</div>
+    <div class="feature"><span class="ck">✓</span> Kids and family logistics sheet</div>
+    <div class="feature"><span class="ck">✓</span> Priority partner discounts</div>
+  </div>
+
+  <!-- EMPLOYER -->
+  <div class="plan">
+    <div class="plan-name">Employer / Partner</div>
+    <div class="plan-price" style="font-size:34px;">Custom</div>
+    <div class="plan-desc">Offer Clarevo as a financial wellness benefit to your employees or clients.</div>
+    <a href="mailto:hello@clarevo.ca" class="plan-btn dark">Contact Us</a>
+    <div class="features-label">Everything in Pro, plus</div>
+    <div class="feature"><span class="ck">✓</span> White-label option</div>
+    <div class="feature"><span class="ck">✓</span> Bulk employee accounts</div>
+    <div class="feature"><span class="ck">✓</span> Admin dashboard</div>
+    <div class="feature"><span class="ck">✓</span> Custom partner integrations</div>
+    <div class="feature"><span class="ck">✓</span> Dedicated account manager</div>
+    <div class="feature"><span class="ck">✓</span> Custom onboarding</div>
+    <div class="feature"><span class="ck">✓</span> Usage and completion reporting</div>
+  </div>
+
+</div>
+
+<!-- FAQ -->
+<div class="faq-wrap">
+  <h2>Common questions</h2>
+
+  <div class="faq-item">
+    <h4>Is my information secure?</h4>
+    <p>Yes. Clarevo stores only what's necessary — institution names, account types, document locations, and contacts. We never store full account numbers, SINs, or passwords. Your data is encrypted and never sold.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>What happens when my family needs access after I'm gone?</h4>
+    <p>Your designated contacts can request emergency access at any time. Clarevo notifies you immediately and gives you 24 hours to block the request. If you don't respond, access is granted automatically — no death certificate, no lawyers, no waiting. You also control which sections are shared, so household bills and emergency contacts can be immediately visible while financial details have additional protection.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>What if I want maximum control over who accesses my account?</h4>
+    <p>You can create a master access code and store it with your lawyer or write it into your will. When your executor receives your will, they'll have everything they need to access your Clarevo plan immediately — no waiting, no verification process.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>Can I cancel anytime?</h4>
+    <p>Yes. Cancel anytime and your data is yours to export. No questions asked.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>What is the employer plan for?</h4>
+    <p>Companies can offer Clarevo as a financial wellness benefit — similar to an EAP or legal benefit. Employees get Pro accounts, and employers get reporting on completion rates without seeing individual data.</p>
+  </div>
+
+  <div class="faq-item">
+    <h4>Is Clarevo only for Canadians?</h4>
+    <p>For now yes — Clarevo is built specifically for Canadian households with Canadian financial products, registered accounts, and estate planning in mind.</p>
+  </div>
+</div>
+
+<div class="cta">
+  <h2>Start with a free readiness check.</h2>
+  <p>Takes 15 minutes. No credit card required.</p>
+  <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2025 Clarevo. Built for Canadian families. clarevo.ca</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

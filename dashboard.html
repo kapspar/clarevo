@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--gray-light); }
+
+    /* ── LAYOUT ── */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px;
+      background: var(--dark);
+      min-height: 100vh;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-logo span { color: var(--blue); }
+    .sidebar-logo a { text-decoration: none; }
+
+    .sidebar-user {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-user .name { font-size: 13px; font-weight: 700; color: var(--white); }
+    .sidebar-user .email { font-size: 11px; color: #777; margin-top: 2px; }
+
+    .nav-group { padding: 8px 0; flex: 1; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #777;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .nav-item:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+    .nav-item.active { color: var(--white); background: rgba(59,130,246,0.12); border-left-color: var(--blue); }
+    .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .demo-toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .toggle-track {
+      width: 34px; height: 18px;
+      background: var(--blue);
+      border-radius: 9px;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle-track.off { background: #444; }
+    .toggle-knob {
+      width: 12px; height: 12px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px; left: 19px;
+      transition: left 0.2s;
+    }
+    .toggle-knob.off { left: 3px; }
+    .toggle-label { font-size: 11px; color: #888; }
+    .toggle-label.on { color: var(--white); }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      padding: 32px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .topbar h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .demo-badge {
+      background: #fef9c3;
+      color: #854d0e;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 24px;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .tab:hover { color: var(--dark); }
+    .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* CARDS */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .card h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+
+    /* SCORE ROW */
+    .score-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .score-big-num {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--yellow);
+      letter-spacing: -2px;
+      line-height: 1;
+    }
+    .score-big-num span { font-size: 18px; color: var(--gray); font-weight: 500; }
+
+    .score-sub { font-size: 12px; color: var(--gray); margin-top: 6px; }
+
+    .score-bar-bg { background: #f0f0f0; border-radius: 6px; height: 6px; margin-top: 14px; overflow: hidden; }
+    .score-bar-fill { height: 100%; background: linear-gradient(90deg, var(--yellow), var(--red)); border-radius: 6px; }
+
+    .stat-num { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
+    .stat-num.red { color: var(--red); }
+    .stat-num.yellow { color: var(--yellow); }
+    .stat-num.green { color: var(--green); }
+    .stat-lbl { font-size: 12px; color: var(--gray); margin-top: 4px; }
+
+    /* CATEGORY BARS */
+    .cat-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .cat-name { font-size: 13px; font-weight: 500; width: 150px; flex-shrink: 0; }
+    .cat-bar-bg { flex: 1; background: #f0f0f0; border-radius: 4px; height: 6px; }
+    .cat-bar-fill { height: 100%; border-radius: 4px; }
+    .cat-bar-fill.red { background: var(--red); }
+    .cat-bar-fill.yellow { background: var(--yellow); }
+    .cat-bar-fill.green { background: var(--green); }
+    .cat-pct { font-size: 12px; font-weight: 700; width: 36px; text-align: right; }
+
+    /* GAP ROWS */
+    .gap-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .gap-row:last-child { border-bottom: none; }
+
+    .gi {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .gi.red { background: #fef2f2; }
+    .gi.yellow { background: #fffbeb; }
+    .gi.green { background: #f0fdf4; }
+
+    .gc { flex: 1; min-width: 0; }
+    .gc-title { font-size: 13px; font-weight: 600; }
+    .gc-desc { font-size: 12px; color: var(--gray); margin-top: 2px; line-height: 1.4; }
+
+    .gp {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+      flex-shrink: 0; white-space: nowrap;
+    }
+    .gp.missing { background: #fef2f2; color: var(--red); }
+    .gp.incomplete { background: #fffbeb; color: var(--yellow); }
+    .gp.complete { background: #f0fdf4; color: var(--green); }
+
+    .fix-btn {
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 11px; font-weight: 600;
+      padding: 5px 12px; border-radius: 6px;
+      border: none; cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      font-family: var(--font);
+    }
+    .fix-btn:hover { background: var(--blue-mid); }
+
+    /* PLAN GRID */
+    .plan-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .plan-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 13px;
+      gap: 8px;
+    }
+    .plan-item:last-child { border-bottom: none; }
+    .pi-label { color: var(--gray); font-weight: 500; flex-shrink: 0; }
+    .pi-value { font-weight: 600; text-align: right; }
+    .pi-value.missing { color: var(--red); font-weight: 400; font-style: italic; }
+
+    /* ACCESS */
+    .access-person {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .access-person:last-child { border-bottom: none; }
+
+    .avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+      flex-shrink: 0;
+    }
+    .avatar.blue { background: var(--blue-light); color: var(--blue); }
+    .avatar.green { background: #f0fdf4; color: var(--green); }
+
+    .ap-name { font-size: 13px; font-weight: 700; }
+    .ap-role { font-size: 11px; color: var(--gray); margin-top: 1px; }
+
+    .ap-level {
+      margin-left: auto;
+      font-size: 11px; font-weight: 600;
+      padding: 4px 10px; border-radius: 20px;
+      background: var(--blue-light); color: var(--blue);
+    }
+
+    /* EMPTY STATES */
+    .empty {
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .empty p { font-size: 13px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
+
+    /* MOBILE SIDEBAR TOGGLE */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px; height: 50px;
+      background: var(--dark);
+      border-radius: 50%;
+      align-items: center; justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .score-row { grid-template-columns: 1fr 1fr; }
+      .plan-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.open { display: block; }
+      .main { margin-left: 0; padding: 20px 16px; }
+      .score-row { grid-template-columns: 1fr 1fr; }
+      .sidebar-toggle { display: flex; }
+      .topbar h1 { font-size: 18px; }
+      .cat-name { width: 110px; font-size: 12px; }
+      .gap-row { flex-wrap: wrap; }
+      .fix-btn { margin-top: 4px; }
+    }
+
+    @media (max-width: 480px) {
+      .score-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .score-big-num { font-size: 40px; }
+      .tabs { gap: 0; }
+      .tab { padding: 10px 12px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <a href="home.html">Clar<span>evo</span></a>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="name" id="sidebarName">James Mitchell</div>
+    <div class="email">james@mitchellfamily.ca</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-item active" onclick="showTab('overview', this)">
+      <span class="nav-icon">🏠</span> Overview
+    </div>
+    <div class="nav-item" onclick="showTab('myplan', this)">
+      <span class="nav-icon">📋</span> My Plan
+    </div>
+    <div class="nav-item" onclick="showTab('gaps', this)">
+      <span class="nav-icon">⚠️</span> Gaps
+      <span class="nav-badge" id="gapsBadge">6</span>
+    </div>
+    <div class="nav-item" onclick="showTab('shared', this)">
+      <span class="nav-icon">👥</span> Shared Access
+    </div>
+    <div class="nav-item" onclick="showTab('settings', this)">
+      <span class="nav-icon">⚙️</span> Settings
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="demo-toggle-wrap" onclick="toggleDemo()">
+      <div class="toggle-track" id="toggleTrack">
+        <div class="toggle-knob" id="toggleKnob"></div>
+      </div>
+      <span class="toggle-label on" id="toggleLabel">Demo Mode On</span>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="sidebar-toggle" id="sidebarToggle" onclick="openSidebar()">☰</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="topbar">
+    <h1 id="pageTitle">Overview</h1>
+    <div class="topbar-right">
+      <span class="demo-badge" id="demoBadge">👁 Demo Mode</span>
+      <a href="form.html" class="btn-primary" style="font-size:13px; padding:10px 18px;">+ Update My Plan</a>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('overview', null, this)">Overview</div>
+    <div class="tab" onclick="showTab('myplan', null, this)">My Plan</div>
+    <div class="tab" onclick="showTab('gaps', null, this)">Gaps</div>
+    <div class="tab" onclick="showTab('shared', null, this)">Shared Access</div>
+    <div class="tab" onclick="showTab('settings', null, this)">Settings</div>
+  </div>
+
+  <!-- ── OVERVIEW ── -->
+  <div id="tab-overview">
+    <!-- Score row -->
+    <div class="score-row" id="scoreRow">
+      <div class="card">
+        <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Family Readiness Score</div>
+        <div class="score-big-num" id="scoreNum">43<span>/100</span></div>
+        <div class="score-sub" id="scoreSub">Your family has significant gaps to address.</div>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="scoreBar" style="width:43%"></div></div>
+      </div>
+      <div class="card">
+        <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Critical Gaps</div>
+        <div class="stat-num red" id="critNum">3</div>
+        <div class="stat-lbl">Need immediate attention</div>
+      </div>
+      <div class="card">
+        <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Warnings</div>
+        <div class="stat-num yellow" id="warnNum">3</div>
+        <div class="stat-lbl">Incomplete items</div>
+      </div>
+      <div class="card">
+        <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Complete</div>
+        <div class="stat-num green" id="compNum">2</div>
+        <div class="stat-lbl">Sections done</div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="card" id="catsCard" style="margin-bottom:16px;">
+      <h3>Readiness by Category</h3>
+      <div class="cat-row"><div class="cat-name">Legal Documents</div><div class="cat-bar-bg"><div class="cat-bar-fill red" style="width:0%"></div></div><div class="cat-pct" style="color:var(--red)">0%</div></div>
+      <div class="cat-row"><div class="cat-name">Insurance</div><div class="cat-bar-bg"><div class="cat-bar-fill yellow" style="width:40%"></div></div><div class="cat-pct" style="color:var(--yellow)">40%</div></div>
+      <div class="cat-row"><div class="cat-name">Finances</div><div class="cat-bar-bg"><div class="cat-bar-fill yellow" style="width:50%"></div></div><div class="cat-pct" style="color:var(--yellow)">50%</div></div>
+      <div class="cat-row"><div class="cat-name">Household Bills</div><div class="cat-bar-bg"><div class="cat-bar-fill green" style="width:100%"></div></div><div class="cat-pct" style="color:var(--green)">100%</div></div>
+      <div class="cat-row"><div class="cat-name">Access & Passwords</div><div class="cat-bar-bg"><div class="cat-bar-fill yellow" style="width:50%"></div></div><div class="cat-pct" style="color:var(--yellow)">50%</div></div>
+      <div class="cat-row" style="margin-bottom:0"><div class="cat-name">Emergency Contacts</div><div class="cat-bar-bg"><div class="cat-bar-fill green" style="width:100%"></div></div><div class="cat-pct" style="color:var(--green)">100%</div></div>
+    </div>
+
+    <!-- Top gaps -->
+    <div class="card" id="topGapsCard">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="margin:0;">Top Gaps to Fix</h3>
+        <button class="fix-btn" onclick="showTab('gaps')">View All →</button>
+      </div>
+      <div class="gap-row">
+        <div class="gi red">📄</div>
+        <div class="gc"><div class="gc-title">No Will on File</div><div class="gc-desc">Your estate has no legal instructions.</div></div>
+        <div class="gp missing">Missing</div>
+        <button class="fix-btn">Fix with Willful →</button>
+      </div>
+      <div class="gap-row">
+        <div class="gi red">⚖️</div>
+        <div class="gc"><div class="gc-title">No Power of Attorney</div><div class="gc-desc">No one can legally manage your affairs if incapacitated.</div></div>
+        <div class="gp missing">Missing</div>
+        <button class="fix-btn">Fix with Willful →</button>
+      </div>
+      <div class="gap-row">
+        <div class="gi red">👤</div>
+        <div class="gc"><div class="gc-title">Executor Not Briefed</div><div class="gc-desc">Your executor doesn't know they've been named.</div></div>
+        <div class="gp missing">Missing</div>
+        <button class="fix-btn">Learn More →</button>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="card hidden" id="emptyOverview">
+      <div class="empty">
+        <div class="empty-icon">📋</div>
+        <h3>Your dashboard is empty</h3>
+        <p>Complete your family readiness assessment to see your score, gaps, and personalized action plan.</p>
+        <a href="form.html" class="btn-primary">Start Your Assessment →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GAPS ── -->
+  <div id="tab-gaps" class="hidden">
+    <div class="card" id="allGapsCard">
+      <div style="margin-bottom:20px;"><h3 style="margin:0;">All Gaps — 6 items need attention</h3></div>
+      <div class="gap-row"><div class="gi red">📄</div><div class="gc"><div class="gc-title">No Will on File</div><div class="gc-desc">Without a will, the province decides what happens to your assets.</div></div><div class="gp missing">Missing</div><button class="fix-btn">Fix with Willful →</button></div>
+      <div class="gap-row"><div class="gi red">⚖️</div><div class="gc"><div class="gc-title">No Power of Attorney for Property</div><div class="gc-desc">No one can legally manage your finances if incapacitated.</div></div><div class="gp missing">Missing</div><button class="fix-btn">Fix with Willful →</button></div>
+      <div class="gap-row"><div class="gi red">👤</div><div class="gc"><div class="gc-title">Executor Not Briefed</div><div class="gc-desc">Your executor doesn't know they've been named or what to do.</div></div><div class="gp missing">Missing</div><button class="fix-btn">Learn More →</button></div>
+      <div class="gap-row"><div class="gi yellow">🛡️</div><div class="gc"><div class="gc-title">Life Insurance Beneficiary Not Confirmed</div><div class="gc-desc">You have life insurance but beneficiary hasn't been verified recently.</div></div><div class="gp incomplete">Incomplete</div><button class="fix-btn">Review →</button></div>
+      <div class="gap-row"><div class="gi yellow">💰</div><div class="gc"><div class="gc-title">Financial Accounts Not Fully Documented</div><div class="gc-desc">Your spouse doesn't know where all your accounts are held.</div></div><div class="gp incomplete">Incomplete</div><button class="fix-btn">Update →</button></div>
+      <div class="gap-row"><div class="gi yellow">🔐</div><div class="gc"><div class="gc-title">No Password Recovery Plan</div><div class="gc-desc">If you were unreachable, no one could access your email or banking.</div></div><div class="gp incomplete">Incomplete</div><button class="fix-btn">Learn More →</button></div>
+      <div class="gap-row"><div class="gi green">✅</div><div class="gc"><div class="gc-title">Emergency Contacts</div><div class="gc-desc">Spouse and family contacts are documented and up to date.</div></div><div class="gp complete">Complete</div></div>
+      <div class="gap-row"><div class="gi green">✅</div><div class="gc"><div class="gc-title">Household Bills</div><div class="gc-desc">Monthly bills and payment methods are documented.</div></div><div class="gp complete">Complete</div></div>
+    </div>
+    <div class="card hidden" id="emptyGaps">
+      <div class="empty"><div class="empty-icon">⚠️</div><h3>No gaps detected yet</h3><p>Complete your assessment to see where your family plan has gaps.</p><a href="form.html" class="btn-primary">Start Assessment →</a></div>
+    </div>
+  </div>
+
+  <!-- ── MY PLAN ── -->
+  <div id="tab-myplan" class="hidden">
+    <div class="plan-grid" id="planGrid">
+      <div class="card"><h3>🏠 Household Bills</h3><div class="plan-item"><span class="pi-label">Mortgage</span><span class="pi-value">TD Bank — $2,340/mo</span></div><div class="plan-item"><span class="pi-label">Hydro</span><span class="pi-value">Hydro One — Auto-pay</span></div><div class="plan-item"><span class="pi-label">Internet</span><span class="pi-value">Rogers — Auto-pay</span></div><div class="plan-item"><span class="pi-label">Insurance</span><span class="pi-value">Intact — $180/mo</span></div></div>
+      <div class="card"><h3>💰 Finances</h3><div class="plan-item"><span class="pi-label">Primary Bank</span><span class="pi-value">TD Bank</span></div><div class="plan-item"><span class="pi-label">TFSA</span><span class="pi-value">Wealthsimple</span></div><div class="plan-item"><span class="pi-label">RRSP</span><span class="pi-value missing">Not documented</span></div><div class="plan-item"><span class="pi-label">Pension</span><span class="pi-value">Employer — OMERS</span></div></div>
+      <div class="card"><h3>🛡️ Insurance</h3><div class="plan-item"><span class="pi-label">Life Insurance</span><span class="pi-value">Sun Life — $500k</span></div><div class="plan-item"><span class="pi-label">Beneficiary</span><span class="pi-value missing">Not confirmed</span></div><div class="plan-item"><span class="pi-label">Disability</span><span class="pi-value">Through employer</span></div><div class="plan-item"><span class="pi-label">Documents</span><span class="pi-value missing">Location unknown</span></div></div>
+      <div class="card"><h3>📄 Legal Documents</h3><div class="plan-item"><span class="pi-label">Will</span><span class="pi-value missing">Missing</span></div><div class="plan-item"><span class="pi-label">POA — Property</span><span class="pi-value missing">Missing</span></div><div class="plan-item"><span class="pi-label">POA — Personal Care</span><span class="pi-value missing">Missing</span></div><div class="plan-item"><span class="pi-label">Executor</span><span class="pi-value missing">Not briefed</span></div></div>
+      <div class="card"><h3>👨‍👩‍👧 Emergency Contacts</h3><div class="plan-item"><span class="pi-label">Spouse</span><span class="pi-value">Sarah Mitchell</span></div><div class="plan-item"><span class="pi-label">Parent</span><span class="pi-value">Robert Mitchell</span></div><div class="plan-item"><span class="pi-label">Lawyer</span><span class="pi-value">John Davies — Ajax</span></div><div class="plan-item"><span class="pi-label">Accountant</span><span class="pi-value missing">Not listed</span></div></div>
+      <div class="card"><h3>🔐 Access & Passwords</h3><div class="plan-item"><span class="pi-label">Password Manager</span><span class="pi-value">1Password</span></div><div class="plan-item"><span class="pi-label">Emergency Access</span><span class="pi-value missing">Not set up</span></div><div class="plan-item"><span class="pi-label">Key Documents</span><span class="pi-value">Filing cabinet — office</span></div><div class="plan-item"><span class="pi-label">Master Code</span><span class="pi-value missing">Not stored</span></div></div>
+    </div>
+    <div class="hidden" id="emptyPlan"><div class="card"><div class="empty"><div class="empty-icon">📋</div><h3>Your plan is empty</h3><p>Start your assessment to begin building your family emergency plan.</p><a href="form.html" class="btn-primary">Start Assessment →</a></div></div></div>
+  </div>
+
+  <!-- ── SHARED ACCESS ── -->
+  <div id="tab-shared" class="hidden">
+    <div class="card" id="sharedCard" style="margin-bottom:16px;">
+      <h3>People with access to your plan</h3>
+      <div class="access-person"><div class="avatar blue">SM</div><div><div class="ap-name">Sarah Mitchell</div><div class="ap-role">Spouse — Full household access</div></div><div class="ap-level">Full Access</div></div>
+      <div class="access-person"><div class="avatar green">RD</div><div><div class="ap-name">Robert Davies</div><div class="ap-role">Executor — Emergency access only</div></div><div class="ap-level">Emergency Only</div></div>
+    </div>
+    <div class="card" id="emergencyCard">
+      <h3>Emergency Access Settings</h3>
+      <div class="plan-item"><span class="pi-label">Access method</span><span class="pi-value">24-hour notification window</span></div>
+      <div class="plan-item"><span class="pi-label">Backup method</span><span class="pi-value">Master code stored with lawyer</span></div>
+      <div class="plan-item"><span class="pi-label">Last reviewed</span><span class="pi-value">January 2025</span></div>
+    </div>
+    <div class="hidden" id="emptyShared"><div class="card"><div class="empty"><div class="empty-icon">👥</div><h3>No one has access yet</h3><p>Add your spouse or executor so they can access your plan when it matters most.</p><button class="btn-primary">Add Trusted Person →</button></div></div></div>
+  </div>
+
+  <!-- ── SETTINGS ── -->
+  <div id="tab-settings" class="hidden">
+    <div class="card">
+      <h3>Account Settings</h3>
+      <div class="plan-item"><span class="pi-label">Name</span><span class="pi-value">James Mitchell</span></div>
+      <div class="plan-item"><span class="pi-label">Email</span><span class="pi-value">james@mitchellfamily.ca</span></div>
+      <div class="plan-item"><span class="pi-label">Plan</span><span class="pi-value">Clarevo Pro</span></div>
+      <div class="plan-item"><span class="pi-label">Annual reminder</span><span class="pi-value">Every January</span></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+  let demoMode = true;
+
+  function showTab(tab, navEl, tabEl) {
+    // Hide all tabs
+    ['overview','gaps','myplan','shared','settings'].forEach(t => {
+      document.getElementById('tab-' + t).classList.add('hidden');
+    });
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+
+    // Update sidebar nav
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+
+    // Update tab bar
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+    if (tabEl) tabEl.classList.add('active');
+
+    const titles = { overview:'Overview', gaps:'Gaps', myplan:'My Plan', shared:'Shared Access', settings:'Settings' };
+    document.getElementById('pageTitle').textContent = titles[tab];
+
+    closeSidebar();
+  }
+
+  function toggleDemo() {
+    demoMode = !demoMode;
+    const track = document.getElementById('toggleTrack');
+    const knob = document.getElementById('toggleKnob');
+    const label = document.getElementById('toggleLabel');
+    const badge = document.getElementById('demoBadge');
+
+    if (demoMode) {
+      track.classList.remove('off'); knob.classList.remove('off');
+      label.textContent = 'Demo Mode On'; label.className = 'toggle-label on';
+      badge.style.display = 'inline-block';
+      showDemo();
+    } else {
+      track.classList.add('off'); knob.classList.add('off');
+      label.textContent = 'Demo Mode Off'; label.className = 'toggle-label';
+      badge.style.display = 'none';
+      showEmpty();
+    }
+  }
+
+  function showDemo() {
+    document.getElementById('sidebarName').textContent = 'James Mitchell';
+    document.getElementById('scoreNum').innerHTML = '43<span>/100</span>';
+    document.getElementById('scoreBar').style.width = '43%';
+    document.getElementById('scoreSub').textContent = 'Your family has significant gaps to address.';
+    document.getElementById('critNum').textContent = '3';
+    document.getElementById('warnNum').textContent = '3';
+    document.getElementById('compNum').textContent = '2';
+    document.getElementById('gapsBadge').textContent = '6';
+
+    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => document.getElementById(id).classList.remove('hidden'));
+    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  }
+
+  function showEmpty() {
+    document.getElementById('sidebarName').textContent = 'Your Name';
+    document.getElementById('scoreNum').innerHTML = '—<span>/100</span>';
+    document.getElementById('scoreBar').style.width = '0%';
+    document.getElementById('scoreSub').textContent = 'Complete your assessment to get your score.';
+    document.getElementById('critNum').textContent = '—';
+    document.getElementById('warnNum').textContent = '—';
+    document.getElementById('compNum').textContent = '—';
+    document.getElementById('gapsBadge').textContent = '?';
+
+    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => document.getElementById(id).classList.remove('hidden'));
+  }
+
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+</script>
+</body>
+</html>

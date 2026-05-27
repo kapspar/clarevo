@@ -1,652 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clarevo — Clarity Before Crisis</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f9fb;
-            color: #1a1a2e;
-        }
-
-        /* NAV */
-        nav {
-            background: white;
-            padding: 20px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a1a2e;
-            letter-spacing: -0.5px;
-        }
-
-        .logo span {
-            color: #3b82f6;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 32px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #555;
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .nav-cta {
-            background: #3b82f6;
-            color: white !important;
-            padding: 10px 22px;
-            border-radius: 8px;
-            font-weight: 600 !important;
-        }
-
-        /* HERO */
-        .hero {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 100px 60px;
-            display: flex;
-            align-items: center;
-            gap: 80px;
-        }
-
-        .hero-text {
-            flex: 1;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            background: #eff6ff;
-            color: #3b82f6;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 20px;
-            margin-bottom: 24px;
-            letter-spacing: 0.3px;
-        }
-
-        .hero h1 {
-            font-size: 52px;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            letter-spacing: -1px;
-        }
-
-        .hero h1 span {
-            color: #3b82f6;
-        }
-
-        .hero p {
-            font-size: 18px;
-            color: #555;
-            line-height: 1.7;
-            margin-bottom: 40px;
-            max-width: 480px;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            padding: 16px 32px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-
-        .btn-secondary {
-            color: #3b82f6;
-            font-size: 15px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* HERO CARD */
-        .hero-card {
-            flex: 1;
-            background: white;
-            border-radius: 20px;
-            padding: 32px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            max-width: 420px;
-        }
-
-        .score-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .score-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .score-number {
-            font-size: 42px;
-            font-weight: 800;
-            color: #f59e0b;
-        }
-
-        .score-number span {
-            font-size: 18px;
-            color: #888;
-            font-weight: 500;
-        }
-
-        .score-bar-bg {
-            background: #f0f0f0;
-            border-radius: 8px;
-            height: 10px;
-            margin-bottom: 28px;
-        }
-
-        .score-bar-fill {
-            background: linear-gradient(90deg, #f59e0b, #ef4444);
-            width: 43%;
-            height: 100%;
-            border-radius: 8px;
-        }
-
-        .gap-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .gap-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .gap-icon.red {
-            background: #fef2f2;
-        }
-
-        .gap-icon.yellow {
-            background: #fffbeb;
-        }
-
-        .gap-icon.green {
-            background: #f0fdf4;
-        }
-
-        .gap-text {
-            flex: 1;
-        }
-
-        .gap-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1a1a2e;
-        }
-
-        .gap-sub {
-            font-size: 12px;
-            color: #888;
-            margin-top: 2px;
-        }
-
-        .gap-status {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        .gap-status.missing {
-            background: #fef2f2;
-            color: #ef4444;
-        }
-
-        .gap-status.partial {
-            background: #fffbeb;
-            color: #f59e0b;
-        }
-
-        .gap-status.done {
-            background: #f0fdf4;
-            color: #22c55e;
-        }
-
-        /* STATS */
-        .stats {
-            background: white;
-            padding: 60px;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-        }
-
-        .stats-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 42px;
-            font-weight: 800;
-            color: #3b82f6;
-        }
-
-        .stat-label {
-            font-size: 15px;
-            color: #666;
-            margin-top: 6px;
-        }
-
-        /* HOW IT WORKS */
-        .how {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 100px 60px;
-            text-align: center;
-        }
-
-        .section-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #3b82f6;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-size: 38px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            letter-spacing: -0.5px;
-        }
-
-        .section-sub {
-            font-size: 17px;
-            color: #666;
-            margin-bottom: 64px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .steps {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-        }
-
-        .step {
-            flex: 1;
-            max-width: 280px;
-            text-align: left;
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: #eff6ff;
-            color: #3b82f6;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        .step h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .step p {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* GAPS SECTION */
-        .gaps {
-            background: #1a1a2e;
-            padding: 100px 60px;
-            text-align: center;
-            color: white;
-        }
-
-        .gaps .section-label {
-            color: #60a5fa;
-        }
-
-        .gaps .section-title {
-            color: white;
-        }
-
-        .gaps .section-sub {
-            color: #aaa;
-            margin-bottom: 64px;
-        }
-
-        .gap-cards {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            gap: 24px;
-            justify-content: center;
-        }
-
-        .gap-card {
-            background: #252540;
-            border-radius: 16px;
-            padding: 28px;
-            flex: 1;
-            max-width: 220px;
-            text-align: left;
-        }
-
-        .gap-card-icon {
-            font-size: 28px;
-            margin-bottom: 16px;
-        }
-
-        .gap-card h4 {
-            font-size: 15px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 8px;
-        }
-
-        .gap-card p {
-            font-size: 13px;
-            color: #888;
-            line-height: 1.5;
-        }
-
-        .gap-card .fix-link {
-            display: inline-block;
-            margin-top: 16px;
-            font-size: 13px;
-            color: #60a5fa;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* CTA */
-        .cta {
-            padding: 100px 60px;
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .cta h2 {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
-        }
-
-        .cta p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-
-        /* FOOTER */
-        footer {
-            background: white;
-            border-top: 1px solid #eee;
-            padding: 40px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        footer .logo {
-            font-size: 20px;
-        }
-
-        footer p {
-            font-size: 13px;
-            color: #aaa;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — Clarity Before Crisis</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── HERO ── */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .hero h1 {
+      font-size: 52px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+    .hero h1 span { color: var(--blue); }
+
+    .hero p {
+      font-size: 17px;
+      color: var(--gray);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 440px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-ghost {
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── SCORE CARD ── */
+    .score-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .score-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .score-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray);
+    }
+
+    .score-num {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--yellow);
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+    .score-num span { font-size: 16px; color: var(--gray); font-weight: 500; }
+
+    .score-bar-bg {
+      background: #f0f0f0;
+      border-radius: 6px;
+      height: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      width: 43%;
+      background: linear-gradient(90deg, var(--yellow), var(--red));
+      border-radius: 6px;
+    }
+
+    .gap-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .gap-item:last-child { border-bottom: none; }
+
+    .gap-icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .gap-icon.red { background: #fef2f2; }
+    .gap-icon.yellow { background: #fffbeb; }
+    .gap-icon.green { background: #f0fdf4; }
+
+    .gap-text { flex: 1; min-width: 0; }
+    .gap-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gap-sub { font-size: 11px; color: var(--gray); margin-top: 1px; }
+
+    .gap-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .gap-pill.missing { background: #fef2f2; color: var(--red); }
+    .gap-pill.incomplete { background: #fffbeb; color: var(--yellow); }
+    .gap-pill.done { background: #f0fdf4; color: var(--green); }
+
+    /* ── STATS ── */
+    .stats {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 48px;
+    }
+    .stats-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--blue);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .stat-label { font-size: 13px; color: var(--gray); margin-top: 6px; line-height: 1.4; }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 48px;
+      text-align: center;
+    }
+    .how h2 { font-size: 36px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 12px; }
+    .how .sub { font-size: 16px; color: var(--gray); margin-bottom: 56px; max-width: 460px; margin-left: auto; margin-right: auto; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .step {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      text-align: left;
+      box-shadow: var(--shadow);
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .step h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+    .step p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+
+    /* ── GAP CARDS ── */
+    .gaps-section {
+      background: var(--dark);
+      padding: 80px 48px;
+    }
+    .gaps-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .gaps-inner h2 { font-size: 36px; font-weight: 800; color: var(--white); margin-bottom: 12px; letter-spacing: -0.5px; }
+    .gaps-inner .sub { font-size: 16px; color: #aaa; margin-bottom: 48px; }
+
+    .gap-cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    .gap-card {
+      background: var(--dark2);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: left;
+      border: 1px solid #333366;
+    }
+    .gap-card-icon { font-size: 26px; margin-bottom: 14px; }
+    .gap-card h4 { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .gap-card p { font-size: 12px; color: #888; line-height: 1.5; }
+    .fix-link {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 12px;
+      color: #60a5fa;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 80px 48px;
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .cta-section h2 { font-size: 38px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .cta-section p { font-size: 17px; color: var(--gray); margin-bottom: 36px; line-height: 1.6; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding: 48px 24px; gap: 40px; }
+      .hero h1 { font-size: 38px; }
+      .gap-cards { grid-template-columns: repeat(2, 1fr); }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 36px 20px; }
+      .hero h1 { font-size: 32px; letter-spacing: -0.5px; }
+      .hero p { font-size: 15px; }
+      .stats { padding: 36px 20px; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .stat-num { font-size: 30px; }
+      .how { padding: 48px 20px; }
+      .how h2 { font-size: 28px; }
+      .gaps-section { padding: 48px 20px; }
+      .gaps-inner h2 { font-size: 26px; }
+      .gap-cards { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .gap-card { padding: 18px; }
+      .cta-section { padding: 48px 20px; }
+      .cta-section h2 { font-size: 28px; }
+    }
+  </style>
 </head>
-
 <body>
 
-    <!-- NAV -->
-    <nav>
-        <div class="logo">Clar<span>evo</span></div>
-        <ul class="nav-links">
-            <li><a href="#">How it works</a></li>
-            <li><a href="#">Features</a></li>
-            <li><a href="#">Pricing</a></li>
-            <li><a href="https://tally.so/r/44poOA" class="nav-cta">Get Started Free</a></li>
-        </ul>
-    </nav>
+<!-- NAV -->
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
 
-    <!-- HERO -->
-    <section class="hero">
-        <div class="hero-text">
-            <div class="hero-badge">🇨🇦 Built for Canadian Families</div>
-            <h1>Clarity before <span>crisis.</span></h1>
-            <p>Clarevo helps Canadian households document their financial life, find their gaps, and protect their
-                family — before it's too late.</p>
-            <div class="hero-buttons">
-                <a href="https://tally.so/r/44poOA" class="btn-primary">Check Your Readiness Score</a>
-                <a href="#how" class="btn-secondary">See how it works →</a>
-            </div>
-        </div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#how" onclick="toggleMenu()">How it works</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
 
-        <div class="hero-card">
-            <div class="score-header">
-                <div class="score-label">Readiness Score</div>
-                <div class="score-number">43<span>/100</span></div>
-            </div>
-            <div class="score-bar-bg">
-                <div class="score-bar-fill"></div>
-            </div>
-
-            <div class="gap-item">
-                <div class="gap-icon red">⚠️</div>
-                <div class="gap-text">
-                    <div class="gap-title">No Will on File</div>
-                    <div class="gap-sub">Your estate has no legal instructions</div>
-                </div>
-                <div class="gap-status missing">Missing</div>
-            </div>
-
-            <div class="gap-item">
-                <div class="gap-icon yellow">📋</div>
-                <div class="gap-text">
-                    <div class="gap-title">Life Insurance</div>
-                    <div class="gap-sub">Beneficiary not confirmed</div>
-                </div>
-                <div class="gap-status partial">Incomplete</div>
-            </div>
-
-            <div class="gap-item">
-                <div class="gap-icon yellow">🧾</div>
-                <div class="gap-text">
-                    <div class="gap-title">Household Bills</div>
-                    <div class="gap-sub">No documented bill list found</div>
-                </div>
-                <div class="gap-status partial">Incomplete</div>
-            </div>
-
-            <div class="gap-item">
-                <div class="gap-icon yellow">💰</div>
-                <div class="gap-text">
-                    <div class="gap-title">Finances</div>
-                    <div class="gap-sub">Accounts not fully documented</div>
-                </div>
-                <div class="gap-status partial">Incomplete</div>
-            </div>
-
-            <div class="gap-item">
-                <div class="gap-icon green">✅</div>
-                <div class="gap-text">
-                    <div class="gap-title">Emergency Contacts</div>
-                    <div class="gap-sub">Spouse and family listed</div>
-                </div>
-                <div class="gap-status done">Complete</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- STATS -->
-    <div class="stats">
-        <div class="stats-inner">
-            <div>
-                <div class="stat-number">73%</div>
-                <div class="stat-label">of Canadians have no will</div>
-            </div>
-            <div>
-                <div class="stat-number">68%</div>
-                <div class="stat-label">of spouses don't know all accounts</div>
-            </div>
-            <div>
-                <div class="stat-number">1 in 2</div>
-                <div class="stat-label">families have no executor plan</div>
-            </div>
-            <div>
-                <div class="stat-number">15 min</div>
-                <div class="stat-label">to complete your family plan</div>
-            </div>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">🇨🇦 Built for Canadian Families</div>
+    <h1>Clarity before <span>crisis.</span></h1>
+    <p>Clarevo helps Canadian households document their financial life, find their gaps, and protect their family — before it's too late.</p>
+    <div class="hero-buttons">
+      <a href="form.html" class="btn-primary">Check Your Readiness Score</a>
+      <a href="#how" class="btn-ghost">See how it works →</a>
     </div>
+  </div>
 
-    <!-- HOW IT WORKS -->
-    <section class="how" id="how">
-        <div class="section-label">How it works</div>
-        <div class="section-title">Three steps to family clarity</div>
-        <div class="section-sub">No lawyers. No jargon. Just a clear picture of where your family stands.</div>
+  <div class="score-card">
+    <div class="score-header">
+      <div class="score-label">Readiness Score</div>
+      <div class="score-num">43<span>/100</span></div>
+    </div>
+    <div class="score-bar-bg"><div class="score-bar-fill"></div></div>
 
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Answer 30 questions</h3>
-                <p>Tell us about your accounts, insurance, legal documents, and who handles what at home.</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>See your gaps</h3>
-                <p>Get a readiness score and a clear list of what's missing — wills, insurance, account documentation,
-                    and more.</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Fix them with trusted partners</h3>
-                <p>We connect you to trusted Canadian services — Willful for wills, insurance brokers, financial
-                    planners — to close every gap.</p>
-            </div>
-        </div>
-    </section>
+    <div class="gap-item">
+      <div class="gap-icon red">⚠️</div>
+      <div class="gap-text">
+        <div class="gap-title">No Will on File</div>
+        <div class="gap-sub">Your estate has no legal instructions</div>
+      </div>
+      <div class="gap-pill missing">Missing</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon yellow">🛡️</div>
+      <div class="gap-text">
+        <div class="gap-title">Life Insurance</div>
+        <div class="gap-sub">Beneficiary not confirmed</div>
+      </div>
+      <div class="gap-pill incomplete">Incomplete</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon yellow">🧾</div>
+      <div class="gap-text">
+        <div class="gap-title">Household Bills</div>
+        <div class="gap-sub">No documented bill list found</div>
+      </div>
+      <div class="gap-pill incomplete">Incomplete</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon yellow">💰</div>
+      <div class="gap-text">
+        <div class="gap-title">Finances</div>
+        <div class="gap-sub">Accounts not fully documented</div>
+      </div>
+      <div class="gap-pill incomplete">Incomplete</div>
+    </div>
+    <div class="gap-item">
+      <div class="gap-icon green">✅</div>
+      <div class="gap-text">
+        <div class="gap-title">Emergency Contacts</div>
+        <div class="gap-sub">Spouse and family listed</div>
+      </div>
+      <div class="gap-pill done">Complete</div>
+    </div>
+  </div>
+</section>
 
-    <!-- GAPS -->
-    <section class="gaps">
-        <div class="section-label">Common gaps we find</div>
-        <div class="section-title">Most families are less ready than they think</div>
-        <div class="section-sub">These are the gaps Clarevo finds most often — and helps you fix.</div>
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-num">53%</div>
+      <div class="stat-label">of Canadians have no will</div>
+    </div>
+    <div>
+      <div class="stat-num">65%</div>
+      <div class="stat-label">have no Power of Attorney</div>
+    </div>
+    <div>
+      <div class="stat-num">85%</div>
+      <div class="stat-label">have no complete estate plan</div>
+    </div>
+    <div>
+      <div class="stat-num">15 min</div>
+      <div class="stat-label">to complete your family plan</div>
+    </div>
+  </div>
+</div>
 
-        <div class="gap-cards">
-            <div class="gap-card">
-                <div class="gap-card-icon">📄</div>
-                <h4>No Will or POA</h4>
-                <p>3 in 4 Canadians don't have a will. We'll help you get one.</p>
-                <a href="#" class="fix-link">Fix this →</a>
-            </div>
-            <div class="gap-card">
-                <div class="gap-card-icon">💰</div>
-                <h4>Undocumented Finances</h4>
-                <p>Your accounts and investments exist — but does your spouse know where they all are?</p>
-                <a href="#" class="fix-link">Fix this →</a>
-            </div>
-            <div class="gap-card">
-                <div class="gap-card-icon">🧾</div>
-                <h4>Household Bills</h4>
-                <p>Mortgage, utilities, subscriptions — if you were gone, would anyone know what needs to be paid?</p>
-                <a href="#" class="fix-link">Fix this →</a>
-            </div>
-            <div class="gap-card">
-                <div class="gap-card-icon">🛡️</div>
-                <h4>Insurance Gaps</h4>
-                <p>Missing life insurance or unconfirmed beneficiaries puts your family at risk.</p>
-                <a href="#" class="fix-link">Fix this →</a>
-            </div>
-            <div class="gap-card">
-                <div class="gap-card-icon">🔐</div>
-                <h4>No Password Plan</h4>
-                <p>If you're unreachable, can anyone access what they need?</p>
-                <a href="#" class="fix-link">Fix this →</a>
-            </div>
-        </div>
-    </section>
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-label">How it works</div>
+  <h2>Three steps to family clarity</h2>
+  <p class="sub">No lawyers. No jargon. Just a clear picture of where your family stands.</p>
 
-    <!-- CTA -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Answer 30 questions</h3>
+      <p>Tell us about your accounts, insurance, legal documents, and who handles what at home.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>See your gaps</h3>
+      <p>Get a readiness score and a clear list of what's missing — wills, insurance, account documentation, and more.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Fix them with trusted partners</h3>
+      <p>We connect you to trusted Canadian services — Willful for wills, insurance brokers, financial planners — to close every gap.</p>
+    </div>
+  </div>
+</section>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="logo">Clar<span>evo</span></div>
-        <p>© 2026 Clarevo. Built for Canadian families. clarevo.ca</p>
-    </footer>
+<!-- GAP CARDS -->
+<section class="gaps-section">
+  <div class="gaps-inner">
+    <div class="section-label" style="color:#60a5fa;">Common gaps we find</div>
+    <h2>Most families are less ready than they think</h2>
+    <p class="sub">These are the gaps Clarevo finds most often — and helps you fix.</p>
 
+    <div class="gap-cards">
+      <div class="gap-card">
+        <div class="gap-card-icon">📄</div>
+        <h4>No Will or POA</h4>
+        <p>Over half of Canadians don't have a will. We'll help you get one.</p>
+        <a href="form.html" class="fix-link">Fix this →</a>
+      </div>
+      <div class="gap-card">
+        <div class="gap-card-icon">💰</div>
+        <h4>Undocumented Finances</h4>
+        <p>Your accounts and investments exist — but does your spouse know where they all are?</p>
+        <a href="form.html" class="fix-link">Fix this →</a>
+      </div>
+      <div class="gap-card">
+        <div class="gap-card-icon">🧾</div>
+        <h4>Household Bills</h4>
+        <p>Mortgage, utilities, subscriptions — if you were gone, would anyone know what needs to be paid?</p>
+        <a href="form.html" class="fix-link">Fix this →</a>
+      </div>
+      <div class="gap-card">
+        <div class="gap-card-icon">🛡️</div>
+        <h4>Insurance Gaps</h4>
+        <p>Missing life insurance or unconfirmed beneficiaries puts your family at risk.</p>
+        <a href="form.html" class="fix-link">Fix this →</a>
+      </div>
+      <div class="gap-card">
+        <div class="gap-card-icon">🔐</div>
+        <h4>No Password Plan</h4>
+        <p>If you're unreachable, can anyone access what they need?</p>
+        <a href="form.html" class="fix-link">Fix this →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="cta-section">
+    <h2>Find out where your family stands.</h2>
+    <p>Takes 15 minutes. Free to start. Built for Canadian households who want to be ready before life asks them to be.</p>
+    <a href="form.html" class="btn-primary">Get Your Free Readiness Score →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2025 Clarevo. Built for Canadian families. clarevo.ca</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  // Close menu when clicking outside
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    const hamburger = document.querySelector('.hamburger');
+    if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
+</script>
 </body>
-
 </html>
