@@ -703,10 +703,10 @@
       <div id="gapsList"></div>
     </div>
 
-    <div class="cta-card">
-      <h3>Save your results & start fixing gaps</h3>
-      <p>Create your free Clarevo account to save your score, get a personalized action plan, and share it with your spouse or executor.</p>
-      <div class="email-input-wrap">
+    <div class="cta-card" id="ctaCard">
+      <h3 id="ctaTitle">Save your results & start fixing gaps</h3>
+      <p id="ctaDesc">Create your free Clarevo account to save your score, get a personalized action plan, and share it with your spouse or executor.</p>
+      <div class="email-input-wrap" id="emailWrap">
         <input type="email" class="email-input" id="emailInput" placeholder="your@email.com">
         <button class="email-btn" onclick="saveEmail()">Save My Results</button>
       </div>
@@ -727,13 +727,15 @@
   // ── SUPABASE ──
   const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
-  let db = null;
-  // Initialize after DOM ready to ensure CDN has loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    try {
-      db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch(e) {
-      console.warn('Supabase init failed:', e);
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let loggedInUser = null;
+
+  // Check if user is already logged in
+  db.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      loggedInUser = session.user;
+      // Pre-fill email and hide the input
+      document.getElementById('emailInput').value = session.user.email;
     }
   });
 
@@ -859,6 +861,14 @@
 
     document.getElementById('progressWrap').style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // If logged in, auto-save and redirect
+    if (loggedInUser) {
+      document.getElementById('ctaTitle').textContent = 'Results saved to your dashboard';
+      document.getElementById('ctaDesc').textContent = 'Your score and gaps are being saved to your account right now.';
+      document.getElementById('emailWrap').style.display = 'none';
+      autoSaveAndRedirect();
+    }
   }
 
   function buildGapsList(score) {
@@ -954,6 +964,39 @@
     `).join('');
   }
 
+  // ── AUTO SAVE FOR LOGGED IN USERS ──
+  async function autoSaveAndRedirect() {
+    const score = parseInt(document.getElementById('scoreBig').textContent) || 0;
+    const getVal = (q) => answers[q]?.value || answers[q] || null;
+
+    const record = {
+      email: loggedInUser.email,
+      score: score,
+      has_will:              getVal('q14'),
+      has_poa:               getVal('q15'),
+      has_insurance:         getVal('q11'),
+      beneficiary_confirmed: getVal('q12'),
+      bills_documented:      getVal('q5'),
+      finances_documented:   getVal('q8'),
+      password_plan:         getVal('q19'),
+      has_executor:          getVal('q17'),
+      has_children:          answers['q2']?.value === 'yes',
+      guardian_plan:         getVal('q22'),
+      raw_answers:           answers
+    };
+
+    try {
+      await db.from('assessments').insert([record]);
+    } catch(e) {
+      console.error('Auto save error:', e);
+    }
+
+    // Show success then redirect
+    document.getElementById('emailSuccess').style.display = 'block';
+    document.getElementById('emailSuccess').textContent = '✅ Saved! Taking you to your dashboard...';
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+  }
+
   async function saveEmail() {
     const email = document.getElementById('emailInput').value;
     if (!email || !email.includes('@')) {
@@ -968,39 +1011,36 @@
     const score = parseInt(document.getElementById('scoreBig').textContent) || 0;
     const getVal = (q) => answers[q]?.value || answers[q] || null;
 
-    // Build assessment record
     const record = {
       email: email,
       score: score,
-      has_will:               getVal('q14'),
-      has_poa:                getVal('q15'),
-      has_insurance:          getVal('q11'),
-      beneficiary_confirmed:  getVal('q12'),
-      bills_documented:       getVal('q5'),
-      finances_documented:    getVal('q8'),
-      password_plan:          getVal('q19'),
-      has_executor:           getVal('q17'),
-      has_children:           answers['q2']?.value === 'yes',
-      guardian_plan:          getVal('q22'),
-      raw_answers:            answers
+      has_will:              getVal('q14'),
+      has_poa:               getVal('q15'),
+      has_insurance:         getVal('q11'),
+      beneficiary_confirmed: getVal('q12'),
+      bills_documented:      getVal('q5'),
+      finances_documented:   getVal('q8'),
+      password_plan:         getVal('q19'),
+      has_executor:          getVal('q17'),
+      has_children:          answers['q2']?.value === 'yes',
+      guardian_plan:         getVal('q22'),
+      raw_answers:           answers
     };
 
     try {
-      const { error } = await db
-        .from('assessments')
-        .insert([record]);
-
+      const { error } = await db.from('assessments').insert([record]);
       if (error) throw error;
-
-      // Success
       document.getElementById('emailInput').style.borderColor = 'var(--green)';
-      document.querySelector('.email-input-wrap').style.display = 'none';
+      document.getElementById('emailWrap').style.display = 'none';
+      // Redirect to signup with email prefilled
       document.getElementById('emailSuccess').style.display = 'block';
-
+      document.getElementById('emailSuccess').textContent = '✅ Saved! Create your account to see your full dashboard.';
+      setTimeout(() => {
+        window.location.href = 'login.html?from=assessment&email=' + encodeURIComponent(email);
+      }, 2000);
     } catch (err) {
       console.error('Save error:', err);
-      // Still show success to user — don't block them
-      document.querySelector('.email-input-wrap').style.display = 'none';
+      document.getElementById('emailWrap').style.display = 'none';
       document.getElementById('emailSuccess').style.display = 'block';
     }
   }
