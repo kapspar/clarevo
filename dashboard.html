@@ -404,6 +404,9 @@
       </div>
       <span class="toggle-label on" id="toggleLabel">Demo Mode On</span>
     </div>
+    <div style="margin-top:12px;">
+      <a href="login.html" onclick="signOut(); return false;" style="font-size:12px; color:#666; text-decoration:none; display:block; padding:6px 0;">Sign Out</a>
+    </div>
   </div>
 </div>
 
@@ -565,8 +568,108 @@
 
 </div><!-- /main -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let currentUser = null;
   let demoMode = true;
+
+  // Check auth on load
+  db.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      currentUser = session.user;
+      demoMode = false;
+      loadUserData(session.user);
+    }
+    // If no session, demo mode stays on — no redirect, just show demo
+  });
+
+  async function loadUserData(user) {
+    // Update sidebar name
+    const name = user.user_metadata?.full_name || user.email;
+    document.getElementById('sidebarName').textContent = name;
+
+    // Toggle off demo mode visually
+    const track = document.getElementById('toggleTrack');
+    const knob = document.getElementById('toggleKnob');
+    const label = document.getElementById('toggleLabel');
+    const badge = document.getElementById('demoBadge');
+    track.classList.add('off'); knob.classList.add('off');
+    label.textContent = 'Demo Mode Off'; label.className = 'toggle-label';
+    badge.style.display = 'none';
+
+    // Load latest assessment
+    const { data: assessments } = await db
+      .from('assessments')
+      .select('*')
+      .eq('email', user.email)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (assessments && assessments.length > 0) {
+      showRealData(assessments[0]);
+    } else {
+      showEmpty();
+    }
+  }
+
+  function showRealData(assessment) {
+    const score = assessment.score || 0;
+    document.getElementById('scoreNum').innerHTML = score + '<span>/100</span>';
+    document.getElementById('scoreBar').style.width = score + '%';
+
+    // Score bar color
+    const bar = document.getElementById('scoreBar');
+    if (score < 40) bar.style.background = 'var(--red)';
+    else if (score < 70) bar.style.background = 'var(--yellow)';
+    else bar.style.background = 'var(--green)';
+
+    if (score < 40) document.getElementById('scoreSub').textContent = 'Your family has significant gaps to address.';
+    else if (score < 70) document.getElementById('scoreSub').textContent = "You're partway there — some gaps remain.";
+    else document.getElementById('scoreSub').textContent = 'Great — your family is better prepared than most.';
+
+    // Count gaps
+    const gapFields = ['has_will','has_poa','has_insurance','beneficiary_confirmed','bills_documented','finances_documented','password_plan','has_executor'];
+    let critical = 0, warnings = 0, complete = 0;
+    gapFields.forEach(f => {
+      const v = assessment[f];
+      if (!v || v === 'no' || v === 'no-will' || v === 'unsure') critical++;
+      else if (v === 'sort-of' || v === 'some' || v === 'think-so' || v === 'maybe' || v === 'named' || v === 'through-work') warnings++;
+      else complete++;
+    });
+
+    document.getElementById('critNum').textContent = critical;
+    document.getElementById('warnNum').textContent = warnings;
+    document.getElementById('compNum').textContent = complete;
+    document.getElementById('gapsBadge').textContent = critical + warnings;
+
+    // Show real data cards
+    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    });
+    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+
+    // Update settings tab with real user data
+    if (currentUser) {
+      const settingsName = currentUser.user_metadata?.full_name || '—';
+      document.querySelectorAll('.pi-value').forEach((el, i) => {
+        if (i === 0) el.textContent = settingsName;
+        if (i === 1) el.textContent = currentUser.email;
+      });
+    }
+  }
+
+  async function signOut() {
+    await db.auth.signOut();
+    window.location.href = 'login.html';
+  }
 
   function showTab(tab, navEl, tabEl) {
     // Hide all tabs

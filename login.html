@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — Sign In</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--gray-light);
+    }
+
+    .auth-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .auth-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-logo {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--dark);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .auth-logo span { color: var(--blue); }
+
+    .auth-tagline {
+      font-size: 13px;
+      color: var(--gray);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    /* TABS */
+    .auth-tabs {
+      display: flex;
+      background: var(--gray-light);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: none;
+      background: none;
+      font-family: var(--font);
+    }
+    .auth-tab.active {
+      background: var(--white);
+      color: var(--dark);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* FORMS */
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-family: var(--font);
+      outline: none;
+      transition: border 0.2s;
+      color: var(--dark);
+      background: var(--white);
+    }
+    .form-group input:focus { border-color: var(--blue); }
+    .form-group input.error { border-color: var(--red); }
+
+    .form-group input::placeholder { color: #bbb; }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background 0.2s;
+      margin-top: 4px;
+    }
+    .submit-btn:hover { background: #2563eb; }
+    .submit-btn:disabled { background: #93c5fd; cursor: not-allowed; }
+
+    .auth-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--red);
+      font-size: 13px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .auth-success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      font-size: 13px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 12px; color: var(--gray); }
+
+    .terms {
+      font-size: 12px;
+      color: var(--gray);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+    .terms a { color: var(--blue); text-decoration: none; }
+
+    .forgot-link {
+      font-size: 12px;
+      color: var(--blue);
+      text-decoration: none;
+      float: right;
+      margin-top: -4px;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* LOADING STATE */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* VERIFY STATE */
+    .verify-screen {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .verify-icon { font-size: 48px; margin-bottom: 16px; }
+    .verify-screen h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+    .verify-screen p { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 20px; }
+
+    .benefits {
+      background: var(--blue-light);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .benefit-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      color: var(--dark);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .benefit-item:last-child { margin-bottom: 0; }
+    .benefit-check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+    @media (max-width: 480px) {
+      .auth-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="learn.html" onclick="toggleMenu()">Learn</a>
+  <a href="pricing.html">Pricing</a>
+</div>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+
+    <div class="auth-logo">Clar<span>evo</span></div>
+    <div class="auth-tagline">Clarity before crisis.</div>
+
+    <!-- TABS -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- ERRORS / SUCCESS -->
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-success" id="authSuccess"></div>
+
+    <!-- SIGN IN FORM -->
+    <div class="auth-form active" id="form-signin">
+      <div class="form-group">
+        <label for="signin-email">Email address</label>
+        <input type="email" id="signin-email" placeholder="you@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="signin-password">
+          Password
+          <a href="#" class="forgot-link" onclick="showForgot()">Forgot password?</a>
+        </label>
+        <input type="password" id="signin-password" placeholder="Your password" autocomplete="current-password" onkeydown="if(event.key==='Enter') signIn()">
+      </div>
+      <button class="submit-btn" id="signin-btn" onclick="signIn()">Sign In →</button>
+    </div>
+
+    <!-- SIGN UP FORM -->
+    <div class="auth-form" id="form-signup">
+      <div class="benefits">
+        <div class="benefit-item"><span class="benefit-check">✓</span> Save your readiness score and gaps</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span> Come back anytime to update your plan</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span> Share with your spouse or executor</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span> Free forever — no credit card needed</div>
+      </div>
+
+      <div class="form-group">
+        <label for="signup-name">Your full name</label>
+        <input type="text" id="signup-name" placeholder="Jane Smith" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="signup-email">Email address</label>
+        <input type="email" id="signup-email" placeholder="you@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Create a password</label>
+        <input type="password" id="signup-password" placeholder="At least 8 characters" autocomplete="new-password" onkeydown="if(event.key==='Enter') signUp()">
+      </div>
+      <button class="submit-btn" id="signup-btn" onclick="signUp()">Create Free Account →</button>
+      <p class="terms">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. We never sell your data.</p>
+    </div>
+
+    <!-- VERIFY EMAIL SCREEN -->
+    <div class="verify-screen" id="verifyScreen">
+      <div class="verify-icon">📬</div>
+      <h3>Check your inbox</h3>
+      <p>We sent a confirmation link to <strong id="verifyEmail"></strong>. Click it to activate your account and you'll be taken straight to your dashboard.</p>
+      <p style="font-size:12px; color:var(--gray);">Didn't get it? Check your spam folder or <a href="#" onclick="switchTab('signup')" style="color:var(--blue);">try again</a>.</p>
+    </div>
+
+    <!-- FORGOT PASSWORD SCREEN -->
+    <div class="auth-form" id="form-forgot">
+      <p style="font-size:14px; color:var(--gray); margin-bottom:20px; line-height:1.6;">Enter your email and we'll send you a link to reset your password.</p>
+      <div class="form-group">
+        <label for="forgot-email">Email address</label>
+        <input type="email" id="forgot-email" placeholder="you@email.com">
+      </div>
+      <button class="submit-btn" onclick="resetPassword()">Send Reset Link →</button>
+      <div style="text-align:center; margin-top:16px;">
+        <a href="#" onclick="switchTab('signin')" style="font-size:13px; color:var(--blue); text-decoration:none;">← Back to sign in</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2025 Clarevo. Built for Canadian families.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Check if already logged in
+  db.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      window.location.href = 'dashboard.html';
+    }
+  });
+
+  // Check URL params — if coming from assessment with email pre-fill
+  const urlParams = new URLSearchParams(window.location.search);
+  const prefillEmail = urlParams.get('email');
+  const fromAssessment = urlParams.get('from') === 'assessment';
+
+  if (prefillEmail) {
+    document.getElementById('signup-email').value = prefillEmail;
+    switchTab('signup');
+  }
+
+  if (fromAssessment && !prefillEmail) {
+    switchTab('signup');
+  }
+
+  // ── TAB SWITCHING ──
+  function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    document.getElementById('verifyScreen').style.display = 'none';
+    clearMessages();
+
+    if (tab === 'signin') {
+      document.getElementById('tab-signin').classList.add('active');
+      document.getElementById('form-signin').classList.add('active');
+    } else if (tab === 'signup') {
+      document.getElementById('tab-signup').classList.add('active');
+      document.getElementById('form-signup').classList.add('active');
+    } else if (tab === 'forgot') {
+      document.getElementById('form-forgot').classList.add('active');
+    }
+  }
+
+  function showForgot() {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    document.getElementById('form-forgot').classList.add('active');
+    clearMessages();
+  }
+
+  // ── MESSAGES ──
+  function showError(msg) {
+    const el = document.getElementById('authError');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('authSuccess').style.display = 'none';
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('authSuccess');
+    el.textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('authError').style.display = 'none';
+  }
+
+  function clearMessages() {
+    document.getElementById('authError').style.display = 'none';
+    document.getElementById('authSuccess').style.display = 'none';
+  }
+
+  function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    if (loading) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Please wait...';
+    } else {
+      btn.disabled = false;
+    }
+  }
+
+  // ── SIGN IN ──
+  async function signIn() {
+    clearMessages();
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+
+    if (!email || !password) {
+      showError('Please enter your email and password.');
+      return;
+    }
+
+    setLoading('signin-btn', true);
+
+    const { error } = await db.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setLoading('signin-btn', false);
+      document.getElementById('signin-btn').textContent = 'Sign In →';
+      if (error.message.includes('Invalid login')) {
+        showError('Incorrect email or password. Please try again.');
+      } else if (error.message.includes('Email not confirmed')) {
+        showError('Please check your email and click the confirmation link first.');
+      } else {
+        showError(error.message);
+      }
+    } else {
+      window.location.href = 'dashboard.html';
+    }
+  }
+
+  // ── SIGN UP ──
+  async function signUp() {
+    clearMessages();
+    const name = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+
+    if (!name) { showError('Please enter your name.'); return; }
+    if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
+    if (password.length < 8) { showError('Password must be at least 8 characters.'); return; }
+
+    setLoading('signup-btn', true);
+
+    const { data, error } = await db.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name }
+      }
+    });
+
+    if (error) {
+      setLoading('signup-btn', false);
+      document.getElementById('signup-btn').textContent = 'Create Free Account →';
+      if (error.message.includes('already registered')) {
+        showError('An account with this email already exists. Try signing in instead.');
+      } else {
+        showError(error.message);
+      }
+      return;
+    }
+
+    // Save profile to profiles table
+    if (data.user) {
+      await db.from('profiles').upsert({
+        user_id: data.user.id,
+        full_name: name,
+        email: email,
+      });
+    }
+
+    // Show verify screen
+    setLoading('signup-btn', false);
+    document.getElementById('form-signup').classList.remove('active');
+    document.getElementById('verifyScreen').style.display = 'block';
+    document.getElementById('verifyEmail').textContent = email;
+  }
+
+  // ── RESET PASSWORD ──
+  async function resetPassword() {
+    clearMessages();
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) { showError('Please enter your email address.'); return; }
+
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://clarevo.ca/dashboard.html'
+    });
+
+    if (error) {
+      showError(error.message);
+    } else {
+      showSuccess('Password reset link sent! Check your inbox.');
+    }
+  }
+
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+</script>
+</body>
+</html>
