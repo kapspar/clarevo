@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is a Will? — Clarevo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero { background: var(--dark); padding: 64px 48px; text-align: center; color: var(--white); }
+    .learn-hero .category { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--blue); margin-bottom: 14px; }
+    .learn-hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; max-width: 620px; margin-left: auto; margin-right: auto; }
+    .learn-hero p { font-size: 17px; color: #aaa; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+    .learn-body { max-width: 720px; margin: 0 auto; padding: 64px 48px; }
+    .learn-body h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; margin: 48px 0 16px; color: var(--dark); }
+    .learn-body h2:first-child { margin-top: 0; }
+    .learn-body p { font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 16px; }
+
+    .callout { background: var(--blue-light); border-left: 4px solid var(--blue); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .callout p { font-size: 15px; color: var(--dark); margin: 0; line-height: 1.7; font-weight: 500; }
+    .warning-callout { background: #fffbeb; border-left: 4px solid var(--yellow); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .warning-callout p { font-size: 15px; color: #78350f; margin: 0; line-height: 1.7; }
+    .red-callout { background: #fef2f2; border-left: 4px solid var(--red); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .red-callout p { font-size: 15px; color: #7f1d1d; margin: 0; line-height: 1.7; }
+
+    .checklist { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin: 28px 0; box-shadow: var(--shadow); }
+    .checklist h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--dark); }
+    .check-item { display: flex; gap: 12px; margin-bottom: 12px; font-size: 15px; color: #444; line-height: 1.5; align-items: flex-start; }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot { width: 22px; height: 22px; background: var(--blue-light); color: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    .scenario { background: var(--gray-light); border-radius: var(--radius-lg); padding: 28px; margin: 28px 0; border: 1px solid var(--border); }
+    .scenario .scenario-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 10px; }
+    .scenario p { font-size: 15px; color: var(--dark); margin: 0; line-height: 1.7; font-style: italic; }
+
+    .myth-grid { display: flex; flex-direction: column; gap: 16px; margin: 28px 0; }
+    .myth-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; box-shadow: var(--shadow); }
+    .myth-card .myth-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--red); margin-bottom: 6px; }
+    .myth-card .fact-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-top: 12px; margin-bottom: 6px; }
+    .myth-card p { font-size: 14px; color: #444; margin: 0; line-height: 1.6; }
+
+    .cta-box { background: var(--dark); border-radius: var(--radius-lg); padding: 36px; text-align: center; color: var(--white); margin-top: 48px; }
+    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+
+    .learn-nav { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .learn-nav a { flex: 1; min-width: 200px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; text-decoration: none; box-shadow: var(--shadow); transition: all 0.2s; }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 600px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 28px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Understanding Estates</div>
+  <h1>What is a will — and what actually happens if you don't have one?</h1>
+  <p>53% of Canadians don't have a will. Here's what that really means for the people you love.</p>
+</div>
+
+<div class="learn-body">
+
+  <h2>What a will actually is</h2>
+  <p>A will is a legal document that tells the world what you want to happen to your stuff when you die. It names who gets your money, your home, your car, your savings, your belongings — and who's responsible for making all of that happen.</p>
+  <p>It also lets you name a guardian for your children if they're minors. Without it, a court decides that for you.</p>
+
+  <div class="callout">
+    <p>💡 A will isn't about being wealthy. It's about being clear. It protects your family from having to guess what you would have wanted — at the worst possible time.</p>
+  </div>
+
+  <h2>What's actually in a will?</h2>
+
+  <div class="checklist">
+    <h3>A typical will includes</h3>
+    <div class="check-item"><div class="check-dot">1</div><strong>Your executor</strong> — the person responsible for carrying out your wishes</div>
+    <div class="check-item"><div class="check-dot">2</div><strong>Your beneficiaries</strong> — who gets what. Your spouse, children, family, friends, charities</div>
+    <div class="check-item"><div class="check-dot">3</div><strong>Specific gifts</strong> — that watch, the car, the cottage — things you want specific people to have</div>
+    <div class="check-item"><div class="check-dot">4</div><strong>Guardian for minor children</strong> — who raises your kids if both parents are gone</div>
+    <div class="check-item"><div class="check-dot">5</div><strong>Residual estate</strong> — who gets everything that's left after specific gifts and debts are handled</div>
+    <div class="check-item"><div class="check-dot">6</div><strong>Your funeral wishes</strong> — burial, cremation, ceremony preferences</div>
+  </div>
+
+  <h2>What happens if you die without one?</h2>
+  <p>Dying without a will is called dying <strong>intestate</strong>. When that happens, the government steps in with a set of rules called intestacy laws that decide where your money goes. These rules don't know your situation, your relationships, or what you would have wanted.</p>
+
+  <div class="red-callout">
+    <p>🚨 Intestacy laws follow a strict formula — usually spouse first, then children, then other relatives. This sounds fine until you realize it ignores common-law partners in many provinces, step-children, close friends, charities you cared about, and any specific wishes you had.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-label">Real scenario</div>
+    <p>"My uncle lived with his partner for 12 years. He never got around to making a will. When he died, Ontario's intestacy rules didn't recognize common-law partners at the time. Everything went to his estranged brother — someone he hadn't spoken to in a decade. His partner of 12 years got nothing."</p>
+  </div>
+
+  <h2>Common myths about wills</h2>
+
+  <div class="myth-grid">
+    <div class="myth-card">
+      <div class="myth-label">❌ Myth</div>
+      <p>I'm young and healthy — I don't need a will yet.</p>
+      <div class="fact-label">✓ Reality</div>
+      <p>Accidents happen at any age. If you have a partner, children, a home, or any assets at all, you need a will. The right time to make one is before you need it.</p>
+    </div>
+    <div class="myth-card">
+      <div class="myth-label">❌ Myth</div>
+      <p>I don't have much money so it doesn't matter.</p>
+      <div class="fact-label">✓ Reality</div>
+      <p>A will isn't just about money. It's about your children's guardian, your personal belongings, your digital accounts, and protecting the people you love from unnecessary conflict and stress.</p>
+    </div>
+    <div class="myth-card">
+      <div class="myth-label">❌ Myth</div>
+      <p>My spouse will automatically get everything.</p>
+      <div class="fact-label">✓ Reality</div>
+      <p>Not necessarily. In many Canadian provinces, intestacy laws split your estate between your spouse and your children — meaning your spouse might only get a portion. A will ensures your spouse is fully protected.</p>
+    </div>
+    <div class="myth-card">
+      <div class="myth-label">❌ Myth</div>
+      <p>Making a will is expensive and complicated.</p>
+      <div class="fact-label">✓ Reality</div>
+      <p>Online services like Willful make a legally valid Canadian will for under $200 in about an hour. You don't need a lawyer for a straightforward estate — though one is worth it for complex situations.</p>
+    </div>
+  </div>
+
+  <h2>What about beneficiaries on registered accounts?</h2>
+  <p>This is one of the most overlooked things in estate planning. Your <strong>TFSA, RRSP, RRIF, and life insurance</strong> don't automatically go through your will — they pass directly to whoever you've named as beneficiary on the account.</p>
+  <p>That means if you named your ex-spouse as beneficiary on your RRSP 10 years ago and never updated it, your ex-spouse gets that money — regardless of what your will says.</p>
+
+  <div class="warning-callout">
+    <p>⚠️ Review your beneficiary designations every few years, and definitely after any major life change — marriage, divorce, new children, death of a beneficiary. This is one of the most common and costly oversights in estate planning.</p>
+  </div>
+
+  <h2>When should you update your will?</h2>
+  <p>A will isn't a one-time thing. Life changes and your will should too. Review it after:</p>
+
+  <div class="checklist">
+    <h3>Update your will when</h3>
+    <div class="check-item"><div class="check-dot">✓</div>You get married or divorced</div>
+    <div class="check-item"><div class="check-dot">✓</div>You have or adopt a child</div>
+    <div class="check-item"><div class="check-dot">✓</div>You buy a home or major asset</div>
+    <div class="check-item"><div class="check-dot">✓</div>Your executor or a beneficiary dies</div>
+    <div class="check-item"><div class="check-dot">✓</div>Your financial situation changes significantly</div>
+    <div class="check-item"><div class="check-dot">✓</div>You move to a different province</div>
+    <div class="check-item"><div class="check-dot">✓</div>It's been more than 5 years since you last reviewed it</div>
+  </div>
+
+  <h2>How do you make one?</h2>
+  <p>For most Canadians with a straightforward situation — a spouse, kids, a home, registered accounts — an online service is perfectly adequate and much cheaper than a lawyer. <strong>Willful</strong> is the most well-known Canadian option and creates province-specific wills that are legally valid.</p>
+  <p>If you have a more complex situation — a business, significant assets, blended family, dependents with special needs — a wills and estates lawyer is worth every dollar.</p>
+
+  <div class="cta-box">
+    <h3>Is a missing will your biggest gap?</h3>
+    <p>Find out where your family plan stands — including your will, POA, executor, and more.</p>
+    <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+  </div>
+
+  <div class="learn-nav">
+    <a href="learn-poa.html">
+      <div class="nav-label">← Previous</div>
+      <div class="nav-title">What is a Power of Attorney?</div>
+    </a>
+    <a href="learn-emergency.html">
+      <div class="nav-label">Next →</div>
+      <div class="nav-title">What happens in a financial emergency?</div>
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2025 Clarevo. This page is for general information only and is not legal advice.</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

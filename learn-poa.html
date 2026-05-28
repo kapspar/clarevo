@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is a Power of Attorney? — Clarevo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero {
+      background: var(--dark);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .learn-hero .category { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--blue); margin-bottom: 14px; }
+    .learn-hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; max-width: 620px; margin-left: auto; margin-right: auto; }
+    .learn-hero p { font-size: 17px; color: #aaa; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+    .learn-body { max-width: 720px; margin: 0 auto; padding: 64px 48px; }
+    .learn-body h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; margin: 48px 0 16px; color: var(--dark); }
+    .learn-body h2:first-child { margin-top: 0; }
+    .learn-body p { font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 16px; }
+
+    .callout { background: var(--blue-light); border-left: 4px solid var(--blue); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .callout p { font-size: 15px; color: var(--dark); margin: 0; line-height: 1.7; font-weight: 500; }
+
+    .warning-callout { background: #fffbeb; border-left: 4px solid var(--yellow); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .warning-callout p { font-size: 15px; color: #78350f; margin: 0; line-height: 1.7; }
+
+    .red-callout { background: #fef2f2; border-left: 4px solid var(--red); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .red-callout p { font-size: 15px; color: #7f1d1d; margin: 0; line-height: 1.7; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+    .poa-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow); }
+    .poa-card .poa-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 8px; }
+    .poa-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--dark); }
+    .poa-card p { font-size: 13px; color: var(--gray); line-height: 1.6; margin: 0; }
+
+    .checklist { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin: 28px 0; box-shadow: var(--shadow); }
+    .checklist h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--dark); }
+    .check-item { display: flex; gap: 12px; margin-bottom: 12px; font-size: 15px; color: #444; line-height: 1.5; align-items: flex-start; }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot { width: 22px; height: 22px; background: var(--blue-light); color: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    .scenario { background: var(--gray-light); border-radius: var(--radius-lg); padding: 28px; margin: 28px 0; border: 1px solid var(--border); }
+    .scenario .scenario-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 10px; }
+    .scenario p { font-size: 15px; color: var(--dark); margin: 0; line-height: 1.7; font-style: italic; }
+
+    .cta-box { background: var(--dark); border-radius: var(--radius-lg); padding: 36px; text-align: center; color: var(--white); margin-top: 48px; }
+    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+
+    .learn-nav { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .learn-nav a { flex: 1; min-width: 200px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; text-decoration: none; box-shadow: var(--shadow); transition: all 0.2s; }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 600px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 28px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Understanding Estates</div>
+  <h1>What is a Power of Attorney — and why do you need two of them?</h1>
+  <p>A Power of Attorney isn't just for elderly people. If you're an adult with a life, you need one.</p>
+</div>
+
+<div class="learn-body">
+
+  <h2>The simple version first</h2>
+  <p>A Power of Attorney is a legal document that gives someone you trust the authority to make decisions on your behalf — if you ever can't make them yourself.</p>
+  <p>Notice it says <em>if you can't</em> — not <em>after you die</em>. This is important. A Power of Attorney is for when you're still alive but temporarily or permanently unable to manage things. Think: accident, serious illness, surgery, hospitalization.</p>
+
+  <div class="callout">
+    <p>💡 A will takes effect after you die. A Power of Attorney takes effect while you're alive. You need both — they cover different situations.</p>
+  </div>
+
+  <h2>There are two kinds — and you need both</h2>
+  <p>In Canada, there are two separate Powers of Attorney and they cover very different things:</p>
+
+  <div class="two-col">
+    <div class="poa-card">
+      <div class="poa-type">POA #1</div>
+      <h3>Power of Attorney for Property</h3>
+      <p>Gives someone the authority to manage your finances — your bank accounts, paying bills, managing investments, selling property — if you become incapacitated.</p>
+    </div>
+    <div class="poa-card">
+      <div class="poa-type">POA #2</div>
+      <h3>Power of Attorney for Personal Care</h3>
+      <p>Gives someone the authority to make healthcare and personal decisions on your behalf — where you live, what medical treatment you receive, day-to-day care decisions.</p>
+    </div>
+  </div>
+
+  <p>Most people don't realize they're separate documents. You need both, and you can name different people for each if that makes sense for your situation.</p>
+
+  <h2>When would this actually come up?</h2>
+  <p>More often than you'd think. Here are some very real scenarios:</p>
+
+  <div class="scenario">
+    <div class="scenario-label">Scenario 1</div>
+    <p>You're in a serious car accident and spend three weeks in intensive care. Without a POA for property, nobody can access your bank account to pay your mortgage. Without a POA for personal care, doctors can't get proper consent for your treatment from someone who knows you.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-label">Scenario 2</div>
+    <p>You're diagnosed with early-stage dementia. While you still have capacity, you set up a POA so your daughter can gradually take over managing your finances and making care decisions as you need more support. Without it, your family would need to go through a costly court process to get this authority.</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-label">Scenario 3</div>
+    <p>You're travelling internationally for six weeks. You give your partner a limited POA so they can handle a property transaction that needs to close while you're away.</p>
+  </div>
+
+  <h2>What happens if you don't have one?</h2>
+  <p>This is where it gets serious. If you become incapacitated without a POA in place, your family can't just step in and manage things. They have to apply to the court for legal authority — a process called <strong>guardianship</strong> or <strong>capacity appointment</strong>.</p>
+
+  <div class="red-callout">
+    <p>🚨 Court-ordered guardianship is expensive, slow, and stressful. It can take months, cost thousands of dollars in legal fees, and happen at the worst possible moment — when your family is already dealing with a health crisis. A POA costs a fraction of that and takes an afternoon to set up.</p>
+  </div>
+
+  <h2>Who should you name?</h2>
+  <p>For your <strong>property POA</strong>, choose someone organized and financially responsible. Your spouse is the most common choice, but an adult child or trusted friend works too. Make sure they understand your finances and can handle the responsibility.</p>
+  <p>For your <strong>personal care POA</strong>, choose someone who knows you well, understands your values, and can advocate for your wishes even when it's hard. This person may need to make difficult medical decisions — choose someone who can handle that emotionally.</p>
+
+  <div class="warning-callout">
+    <p>⚠️ You can name the same person for both, or different people. What matters most is that they know they've been named, they understand what it means, and you've had a real conversation about your wishes.</p>
+  </div>
+
+  <h2>When does a POA come into effect?</h2>
+  <p>You can set it up two ways. A <strong>continuing POA</strong> is active immediately — your attorney can act even while you're capable, which is useful if you want help managing things. A <strong>springing POA</strong> only kicks in when you lose capacity, which many people prefer for privacy reasons.</p>
+  <p>Talk to a lawyer about which makes sense for your situation. The cost to set this up is usually a few hundred dollars — far less than the alternative.</p>
+
+  <h2>How do you get one?</h2>
+  <p>The easiest way in Canada is through an online service like <strong>Willful</strong>, which lets you create a legally valid POA for your province in under an hour. For more complex situations — large estates, business assets, specific healthcare wishes — a lawyer is worth the investment.</p>
+
+  <div class="checklist">
+    <h3>Your POA checklist</h3>
+    <div class="check-item"><div class="check-dot">✓</div>Decide who you'd name for property decisions</div>
+    <div class="check-item"><div class="check-dot">✓</div>Decide who you'd name for personal care decisions (can be the same person)</div>
+    <div class="check-item"><div class="check-dot">✓</div>Have a conversation with that person — make sure they're willing</div>
+    <div class="check-item"><div class="check-dot">✓</div>Create the documents through Willful or a lawyer</div>
+    <div class="check-item"><div class="check-dot">✓</div>Store them somewhere your family can find — and tell them where</div>
+    <div class="check-item"><div class="check-dot">✓</div>Review every few years or after major life changes</div>
+  </div>
+
+  <div class="cta-box">
+    <h3>Find out if this is a gap in your family plan</h3>
+    <p>Take the free Clarevo assessment and see exactly where your household stands — including whether your POA is in place.</p>
+    <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+  </div>
+
+  <div class="learn-nav">
+    <a href="learn-executor.html">
+      <div class="nav-label">← Previous</div>
+      <div class="nav-title">What is an executor?</div>
+    </a>
+    <a href="learn-will.html">
+      <div class="nav-label">Next →</div>
+      <div class="nav-title">What is a will — and what happens without one?</div>
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2025 Clarevo. This page is for general information only and is not legal advice.</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

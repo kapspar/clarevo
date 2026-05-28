@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Happens in a Financial Emergency — Clarevo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3e 100%);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .learn-hero .category { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #f87171; margin-bottom: 14px; }
+    .learn-hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; max-width: 640px; margin-left: auto; margin-right: auto; }
+    .learn-hero p { font-size: 17px; color: #aaa; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+    .learn-body { max-width: 720px; margin: 0 auto; padding: 64px 48px; }
+    .learn-body h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; margin: 48px 0 16px; color: var(--dark); }
+    .learn-body h2:first-child { margin-top: 0; }
+    .learn-body p { font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 16px; }
+
+    .callout { background: var(--blue-light); border-left: 4px solid var(--blue); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .callout p { font-size: 15px; color: var(--dark); margin: 0; line-height: 1.7; font-weight: 500; }
+    .warning-callout { background: #fffbeb; border-left: 4px solid var(--yellow); border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 24px; margin: 28px 0; }
+    .warning-callout p { font-size: 15px; color: #78350f; margin: 0; line-height: 1.7; }
+
+    /* Timeline */
+    .timeline { margin: 32px 0; }
+    .timeline-item {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 0;
+      position: relative;
+    }
+    .timeline-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      bottom: -16px;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .timeline-dot.urgent { background: #fef2f2; color: var(--red); border: 2px solid var(--red); }
+    .timeline-dot.soon { background: #fffbeb; color: var(--yellow); border: 2px solid var(--yellow); }
+    .timeline-dot.later { background: var(--blue-light); color: var(--blue); border: 2px solid var(--blue); }
+
+    .timeline-content { padding-bottom: 28px; flex: 1; }
+    .timeline-content h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--dark); margin-top: 8px; }
+    .timeline-content p { font-size: 14px; color: #555; line-height: 1.6; margin: 0; }
+    .timeline-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .timeline-tag.urgent { color: var(--red); }
+    .timeline-tag.soon { color: var(--yellow); }
+    .timeline-tag.later { color: var(--blue); }
+
+    /* Action cards */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+    .action-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow); }
+    .action-card .action-icon { font-size: 24px; margin-bottom: 10px; }
+    .action-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--dark); }
+    .action-card p { font-size: 13px; color: var(--gray); line-height: 1.5; margin: 0; }
+
+    .checklist { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; margin: 28px 0; box-shadow: var(--shadow); }
+    .checklist h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--dark); }
+    .check-item { display: flex; gap: 12px; margin-bottom: 12px; font-size: 15px; color: #444; line-height: 1.5; align-items: flex-start; }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot { width: 22px; height: 22px; background: var(--blue-light); color: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    .scenario { background: var(--gray-light); border-radius: var(--radius-lg); padding: 28px; margin: 28px 0; border: 1px solid var(--border); }
+    .scenario .scenario-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 10px; }
+    .scenario p { font-size: 15px; color: var(--dark); margin: 0; line-height: 1.7; font-style: italic; }
+
+    .info-block { background: var(--dark); border-radius: var(--radius-lg); padding: 28px; margin: 28px 0; color: var(--white); }
+    .info-block h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: var(--white); }
+    .info-row { display: flex; gap: 12px; margin-bottom: 12px; font-size: 14px; color: #ccc; line-height: 1.5; align-items: flex-start; }
+    .info-row:last-child { margin-bottom: 0; }
+    .info-row .info-icon { flex-shrink: 0; }
+
+    .cta-box { background: var(--dark); border-radius: var(--radius-lg); padding: 36px; text-align: center; color: var(--white); margin-top: 48px; }
+    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+
+    .learn-nav { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .learn-nav a { flex: 1; min-width: 200px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; text-decoration: none; box-shadow: var(--shadow); transition: all 0.2s; }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 600px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 28px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+      .action-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Emergency Planning</div>
+  <h1>What happens in a family financial emergency?</h1>
+  <p>Nobody wants to think about this. But knowing what to do — before it happens — is one of the most loving things you can do for your family.</p>
+</div>
+
+<div class="learn-body">
+
+  <h2>Let's be honest about why this matters</h2>
+  <p>Imagine this: the person in your household who handles the finances is suddenly in the hospital. Or they've passed away. Or they're completely unreachable for an extended period.</p>
+  <p>What happens next? Who pays the mortgage? Who knows which bills are on autopay? Who can access the bank accounts? Who knows where the insurance documents are? Who do you call first?</p>
+  <p>For most families, the honest answer is: nobody knows. And that uncertainty turns a crisis into chaos.</p>
+
+  <div class="callout">
+    <p>💡 This page isn't meant to scare you. It's meant to help you feel prepared. Knowing what to expect — and having a plan — makes everything more manageable.</p>
+  </div>
+
+  <h2>The first 72 hours</h2>
+  <p>The first three days after a financial emergency are the most disorienting. Here's a realistic picture of what needs to happen and when:</p>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-dot urgent">1</div>
+      <div class="timeline-content">
+        <div class="timeline-tag urgent">Within hours</div>
+        <h3>Notify immediate family</h3>
+        <p>Make sure the right people know what's happening. This sounds obvious but in the shock of the moment, people freeze. Have a short list of who to call first.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot urgent">2</div>
+      <div class="timeline-content">
+        <div class="timeline-tag urgent">Day 1</div>
+        <h3>Identify urgent bills</h3>
+        <p>Mortgage payments, car payments, and utilities have grace periods — but you need to know what's coming due. If bills are documented somewhere, this is easy. If not, this is where families struggle most.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot urgent">3</div>
+      <div class="timeline-content">
+        <div class="timeline-tag urgent">Day 1–2</div>
+        <h3>Access emergency funds</h3>
+        <p>You'll need money for immediate expenses. If your partner has access to a joint account or knows the banking information, this is straightforward. If not, this becomes a serious problem quickly.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot soon">4</div>
+      <div class="timeline-content">
+        <div class="timeline-tag soon">Day 2–3</div>
+        <h3>Notify the employer</h3>
+        <p>If the person is hospitalized or has passed away, their employer needs to know. This affects pay, benefits, and any life insurance through work.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot soon">5</div>
+      <div class="timeline-content">
+        <div class="timeline-tag soon">Day 3–7</div>
+        <h3>Contact the lawyer</h3>
+        <p>If someone has passed away, a lawyer needs to be involved to handle the estate. If you don't know who their lawyer is, or where the will is, this step gets significantly harder.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot later">6</div>
+      <div class="timeline-content">
+        <div class="timeline-tag later">Week 2 onward</div>
+        <h3>Notify financial institutions</h3>
+        <p>Banks, investment accounts, insurance companies, and government agencies all need to be contacted. This is where having an organized list of accounts makes an enormous difference.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <h2>What you actually need to know — and where to find it</h2>
+  <p>When a crisis hits, your family needs to find specific information quickly. Here's what matters most:</p>
+
+  <div class="action-grid">
+    <div class="action-card">
+      <div class="action-icon">🏦</div>
+      <h4>Banking information</h4>
+      <p>Which banks you use, what types of accounts exist, and how to access them. Not full account numbers — just enough to know where to call.</p>
+    </div>
+    <div class="action-card">
+      <div class="action-icon">🧾</div>
+      <h4>Monthly bills list</h4>
+      <p>What's due, when it's due, and whether it's on autopay. The mortgage, utilities, insurance premiums, subscriptions that need to be cancelled.</p>
+    </div>
+    <div class="action-card">
+      <div class="action-icon">📄</div>
+      <h4>Will and legal documents</h4>
+      <p>Where is the will? Who is the lawyer? Who is the executor? These questions need instant answers — not a search through filing cabinets.</p>
+    </div>
+    <div class="action-card">
+      <div class="action-icon">🛡️</div>
+      <h4>Insurance policies</h4>
+      <p>Life insurance company, policy number, how to make a claim. This is often worth hundreds of thousands of dollars — and families miss it because they don't know it exists.</p>
+    </div>
+    <div class="action-card">
+      <div class="action-icon">🔐</div>
+      <h4>Password access</h4>
+      <p>Email, banking apps, online accounts. If everything is locked behind a password only one person knows, your family is locked out of their own life.</p>
+    </div>
+    <div class="action-card">
+      <div class="action-icon">👶</div>
+      <h4>Kids' logistics</h4>
+      <p>School, daycare, doctor, allergies, emergency contacts, after-school routines. Who picks them up? Who do you call?</p>
+    </div>
+  </div>
+
+  <h2>The difference between prepared and unprepared</h2>
+
+  <div class="scenario">
+    <div class="scenario-label">Unprepared family</div>
+    <p>"We didn't know which bank his RRSP was at. We didn't know where the will was. We found out about a life insurance policy three months after he died — from a piece of mail. His mortgage went into arrears for 30 days while we tried to figure out the automatic payment. It was the hardest three months of my life and half of it didn't have to be that hard."</p>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-label">Prepared family</div>
+    <p>"She had everything in one place. I knew exactly who to call, where the documents were, what bills were coming due. The grief was still crushing — but I never felt lost. I could focus on the kids and on healing instead of on paperwork and panic."</p>
+  </div>
+
+  <h2>What about when someone is hospitalized but alive?</h2>
+  <p>This situation is actually more common than death — and often harder to navigate financially. If your partner is in the ICU, they can't sign cheques, they can't call the bank, they can't manage anything.</p>
+  <p>Without a <strong>Power of Attorney for Property</strong>, you may not have legal authority to access their accounts, pay their bills, or make financial decisions on their behalf — even as their spouse.</p>
+
+  <div class="warning-callout">
+    <p>⚠️ Many people are surprised to learn that being married doesn't automatically give you legal authority over your spouse's finances if they're incapacitated. A Power of Attorney is the document that does. Without it, you may need a court order — and that takes time and money you don't have during a crisis.</p>
+  </div>
+
+  <h2>Who to call — a practical contact list</h2>
+
+  <div class="info-block">
+    <h3>Key contacts to have documented</h3>
+    <div class="info-row"><span class="info-icon">🏦</span> Your bank's emergency line — most have a 24/7 number for account access issues</div>
+    <div class="info-row"><span class="info-icon">🛡️</span> Your life insurance company — policy number and claims number</div>
+    <div class="info-row"><span class="info-icon">⚖️</span> Your lawyer — especially the one who holds your will</div>
+    <div class="info-row"><span class="info-icon">💼</span> Your employer's HR department — for benefits and group insurance</div>
+    <div class="info-row"><span class="info-icon">🏛️</span> Service Canada — 1-800-277-9914 — for CPP death benefit and survivor's pension</div>
+    <div class="info-row"><span class="info-icon">📋</span> Canada Revenue Agency — final tax return and estate matters</div>
+    <div class="info-row"><span class="info-icon">🏠</span> Your mortgage lender — most have mortgage life insurance or payment deferral options</div>
+  </div>
+
+  <h2>The one thing you can do right now</h2>
+  <p>You don't need to have everything perfectly organized today. But you do need to start. The single most important thing you can do is make sure someone other than you knows where things are.</p>
+  <p>Tell your partner — or someone you trust — where your will is, what bank you use, and where your insurance documents are. That conversation takes ten minutes and it could save your family weeks of stress.</p>
+
+  <div class="checklist">
+    <h3>Your emergency readiness checklist</h3>
+    <div class="check-item"><div class="check-dot">✓</div>Someone knows where your will is stored</div>
+    <div class="check-item"><div class="check-dot">✓</div>Someone knows which banks and financial institutions you use</div>
+    <div class="check-item"><div class="check-dot">✓</div>Your monthly bills are documented somewhere findable</div>
+    <div class="check-item"><div class="check-dot">✓</div>Your life insurance company and policy number are documented</div>
+    <div class="check-item"><div class="check-dot">✓</div>Your executor knows they're your executor</div>
+    <div class="check-item"><div class="check-dot">✓</div>Someone has access to your passwords or knows how to get them</div>
+    <div class="check-item"><div class="check-dot">✓</div>Your kids' school, doctor, and emergency contacts are written down</div>
+    <div class="check-item"><div class="check-dot">✓</div>You have a Power of Attorney in place</div>
+  </div>
+
+  <div class="cta-box">
+    <h3>How ready is your family right now?</h3>
+    <p>Take the free Clarevo assessment and find out exactly which of these gaps still exist in your household — and what to do about them.</p>
+    <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+  </div>
+
+  <div class="learn-nav">
+    <a href="learn-will.html">
+      <div class="nav-label">← Previous</div>
+      <div class="nav-title">What is a will?</div>
+    </a>
+    <a href="learn-executor.html">
+      <div class="nav-label">Also read</div>
+      <div class="nav-title">What is an executor?</div>
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2025 Clarevo. This page is for general information only and is not legal advice.</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

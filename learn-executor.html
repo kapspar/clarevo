@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is an Executor? — Clarevo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero {
+      background: var(--dark);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .learn-hero .category {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--blue);
+      margin-bottom: 14px;
+    }
+    .learn-hero h1 {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .learn-hero p {
+      font-size: 17px;
+      color: #aaa;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .learn-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 48px;
+    }
+
+    .learn-body h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin: 48px 0 16px;
+      color: var(--dark);
+    }
+    .learn-body h2:first-child { margin-top: 0; }
+
+    .learn-body p {
+      font-size: 16px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      background: var(--blue-light);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .warning-callout {
+      background: #fffbeb;
+      border-left: 4px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .warning-callout p {
+      font-size: 15px;
+      color: #78350f;
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .checklist {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      box-shadow: var(--shadow);
+    }
+    .checklist h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+    .check-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.5;
+      align-items: flex-start;
+    }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot {
+      width: 22px; height: 22px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .scenario {
+      background: var(--gray-light);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      border: 1px solid var(--border);
+    }
+    .scenario .scenario-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
+    .scenario p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .cta-box {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      text-align: center;
+      color: var(--white);
+      margin-top: 48px;
+    }
+    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+
+    .learn-nav {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .learn-nav a {
+      flex: 1;
+      min-width: 200px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 600px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 28px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Understanding Estates</div>
+  <h1>What is an executor — and why does it matter?</h1>
+  <p>Most people have never thought about this. Here's everything you need to know, explained simply.</p>
+</div>
+
+<div class="learn-body">
+
+  <h2>Let's start with the simple version</h2>
+  <p>When you die, someone has to deal with everything you leave behind. Your bank accounts need to be closed. Your bills need to be paid. Your belongings need to go to the right people. Your taxes need to be filed one final time.</p>
+  <p>That person is called your <strong>executor</strong>. They're the one who wraps up your life on your behalf.</p>
+
+  <div class="callout">
+    <p>💡 Think of an executor like a project manager for your estate. They don't necessarily get anything — they just make sure everything gets handled properly and goes to the right people.</p>
+  </div>
+
+  <h2>What does an executor actually do?</h2>
+  <p>It's more work than most people realize. An executor typically needs to:</p>
+
+  <div class="checklist">
+    <h3>The executor's to-do list</h3>
+    <div class="check-item"><div class="check-dot">1</div>Locate your will and file it with the court if required (this is called probate)</div>
+    <div class="check-item"><div class="check-dot">2</div>Notify your bank, employer, insurance company, and government agencies like CRA and Service Canada</div>
+    <div class="check-item"><div class="check-dot">3</div>Pay any outstanding debts and final bills</div>
+    <div class="check-item"><div class="check-dot">4</div>File your final tax return — yes, even after death you owe taxes</div>
+    <div class="check-item"><div class="check-dot">5</div>Distribute your belongings and money according to your will</div>
+    <div class="check-item"><div class="check-dot">6</div>Cancel subscriptions, accounts, memberships, and digital services</div>
+    <div class="check-item"><div class="check-dot">7</div>Handle any real estate — selling a home or transferring ownership</div>
+  </div>
+
+  <p>This process usually takes <strong>6 to 18 months</strong>. It's not a quick job. It requires paperwork, phone calls, patience, and dealing with bureaucracy — all while grieving.</p>
+
+  <h2>Who should you choose?</h2>
+  <p>Most people name a spouse, an adult child, or a close trusted friend. There's no perfect answer — but there are some good questions to ask yourself:</p>
+
+  <div class="checklist">
+    <h3>Good qualities in an executor</h3>
+    <div class="check-item"><div class="check-dot">✓</div>Organized and detail-oriented — they'll be dealing with a lot of paperwork</div>
+    <div class="check-item"><div class="check-dot">✓</div>Calm under pressure — this is an emotionally difficult job</div>
+    <div class="check-item"><div class="check-dot">✓</div>Trustworthy — they'll have access to your finances and assets</div>
+    <div class="check-item"><div class="check-dot">✓</div>Available — they need time to actually do this properly</div>
+    <div class="check-item"><div class="check-dot">✓</div>Lives in Canada — dealing with foreign executors adds complexity</div>
+  </div>
+
+  <div class="warning-callout">
+    <p>⚠️ <strong>One important thing:</strong> You can name anyone as your executor — but you should tell them first. Finding out you're someone's executor after they've died, with no preparation, is overwhelming. Have the conversation while you can.</p>
+  </div>
+
+  <h2>What if you don't name one?</h2>
+  <p>If you die without a will — or without naming an executor — the court will appoint one for you. That person is called an <strong>administrator</strong> and it's usually a family member who applies for the role.</p>
+  <p>The problem is this process takes time, can cause family conflict, and the person who ends up in charge might not be who you would have chosen. It also costs more money and creates more stress for your family during an already difficult time.</p>
+
+  <div class="scenario">
+    <div class="scenario-label">Real scenario</div>
+    <p>"My dad died without telling anyone where his will was. We knew he had one but couldn't find it for three weeks. During that time nobody could touch his accounts, his mortgage payments almost lapsed, and my sister and I had our first real fight in 20 years. All of that could have been avoided."</p>
+  </div>
+
+  <h2>Can an executor be paid?</h2>
+  <p>Yes. In Canada, executors are entitled to reasonable compensation — typically around 2.5% to 5% of the estate's value. Most family members waive this, but it's important to know it's an option, especially if you're asking someone to take on a complex estate.</p>
+
+  <h2>What about a backup executor?</h2>
+  <p>It's smart to name an alternate executor in your will — someone who steps in if your first choice can't or won't do it. Life is unpredictable, and having a backup means your estate won't be left in limbo if something happens to your executor too.</p>
+
+  <h2>The conversation you need to have</h2>
+  <p>Once you've chosen someone, sit down with them and go through the basics. Tell them where your will is, where your key documents are, what financial accounts exist, and what you'd want them to know. It doesn't have to be a long conversation — but it needs to happen.</p>
+  <p>That's exactly what Clarevo helps you prepare: a clear, organized plan that your executor can actually use.</p>
+
+  <div class="cta-box">
+    <h3>Does your executor know they're your executor?</h3>
+    <p>Check your readiness score and find out what gaps your family still has — including whether your executor is prepared.</p>
+    <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+  </div>
+
+  <div class="learn-nav">
+    <a href="learn-poa.html">
+      <div class="nav-label">Next →</div>
+      <div class="nav-title">What is a Power of Attorney?</div>
+    </a>
+    <a href="learn-will.html">
+      <div class="nav-label">Also read</div>
+      <div class="nav-title">What is a will — and what happens without one?</div>
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2025 Clarevo. This page is for general information only and is not legal advice.</p>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+</script>
+</body>
+</html>
