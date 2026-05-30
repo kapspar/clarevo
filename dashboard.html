@@ -460,12 +460,75 @@
   <!-- ── MY PLAN ── -->
   <div id="tab-myplan" class="hidden">
     <div class="plan-grid" id="planGrid">
-      <div class="card"><h3>🏠 Household Bills</h3><div class="plan-item"><span class="pi-label">Mortgage</span><span class="pi-value">TD Bank — $2,340/mo</span></div><div class="plan-item"><span class="pi-label">Hydro</span><span class="pi-value">Hydro One — Auto-pay</span></div><div class="plan-item"><span class="pi-label">Internet</span><span class="pi-value">Rogers — Auto-pay</span></div><div class="plan-item"><span class="pi-label">Insurance</span><span class="pi-value">Intact — $180/mo</span></div></div>
-      <div class="card"><h3>💰 Finances</h3><div class="plan-item"><span class="pi-label">Primary Bank</span><span class="pi-value">TD Bank</span></div><div class="plan-item"><span class="pi-label">TFSA</span><span class="pi-value">Wealthsimple</span></div><div class="plan-item"><span class="pi-label">RRSP</span><span class="pi-value missing">Not documented</span></div><div class="plan-item"><span class="pi-label">Pension</span><span class="pi-value">Employer — OMERS</span></div></div>
-      <div class="card"><h3>🛡️ Insurance</h3><div class="plan-item"><span class="pi-label">Life Insurance</span><span class="pi-value">Sun Life — $500k</span></div><div class="plan-item"><span class="pi-label">Beneficiary</span><span class="pi-value missing">Not confirmed</span></div><div class="plan-item"><span class="pi-label">Disability</span><span class="pi-value">Through employer</span></div><div class="plan-item"><span class="pi-label">Documents</span><span class="pi-value missing">Location unknown</span></div></div>
-      <div class="card"><h3>📄 Legal Documents</h3><div class="plan-item"><span class="pi-label">Will</span><span class="pi-value missing">Missing</span></div><div class="plan-item"><span class="pi-label">POA — Property</span><span class="pi-value missing">Missing</span></div><div class="plan-item"><span class="pi-label">POA — Personal Care</span><span class="pi-value missing">Missing</span></div><div class="plan-item"><span class="pi-label">Executor</span><span class="pi-value missing">Not briefed</span></div></div>
-      <div class="card"><h3>👨‍👩‍👧 Emergency Contacts</h3><div class="plan-item"><span class="pi-label">Spouse</span><span class="pi-value">Sarah Mitchell</span></div><div class="plan-item"><span class="pi-label">Parent</span><span class="pi-value">Robert Mitchell</span></div><div class="plan-item"><span class="pi-label">Lawyer</span><span class="pi-value">John Davies — Ajax</span></div><div class="plan-item"><span class="pi-label">Accountant</span><span class="pi-value missing">Not listed</span></div></div>
-      <div class="card"><h3>🔐 Access & Passwords</h3><div class="plan-item"><span class="pi-label">Password Manager</span><span class="pi-value">1Password</span></div><div class="plan-item"><span class="pi-label">Emergency Access</span><span class="pi-value missing">Not set up</span></div><div class="plan-item"><span class="pi-label">Key Documents</span><span class="pi-value">Filing cabinet — office</span></div><div class="plan-item"><span class="pi-label">Master Code</span><span class="pi-value missing">Not stored</span></div></div>
+
+      <a href="plan-legal.html" style="text-decoration:none;">
+        <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0;">📄 Legal Documents</h3>
+            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="legalPlanBadge">Set up →</span>
+          </div>
+          <div class="plan-item"><span class="pi-label">Will</span><span class="pi-value missing" id="planWill">Not documented</span></div>
+          <div class="plan-item"><span class="pi-label">POA — Property</span><span class="pi-value missing" id="planPoaProp">Not documented</span></div>
+          <div class="plan-item"><span class="pi-label">POA — Personal Care</span><span class="pi-value missing" id="planPoaCare">Not documented</span></div>
+          <div class="plan-item"><span class="pi-label">Executor</span><span class="pi-value missing" id="planExecutor">Not documented</span></div>
+        </div>
+      </a>
+
+      <div class="card" style="opacity:0.6;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">🛡️ Insurance</h3>
+          <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fffbeb; color:var(--yellow);">Coming Soon</span>
+        </div>
+        <div class="plan-item"><span class="pi-label">Life Insurance</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Mortgage Insurance</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Disability</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Beneficiaries</span><span class="pi-value missing">Not confirmed</span></div>
+      </div>
+
+      <div class="card" style="opacity:0.6;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">💰 Finances</h3>
+          <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fffbeb; color:var(--yellow);">Coming Soon</span>
+        </div>
+        <div class="plan-item"><span class="pi-label">Primary Bank</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Investments</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Registered Accounts</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Pension</span><span class="pi-value missing">Not documented</span></div>
+      </div>
+
+      <div class="card" style="opacity:0.6;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">🧾 Household Bills</h3>
+          <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fffbeb; color:var(--yellow);">Coming Soon</span>
+        </div>
+        <div class="plan-item"><span class="pi-label">Mortgage / Rent</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Utilities</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Subscriptions</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Autopay status</span><span class="pi-value missing">Not documented</span></div>
+      </div>
+
+      <div class="card" style="opacity:0.6;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">🔐 Access & Passwords</h3>
+          <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fffbeb; color:var(--yellow);">Coming Soon</span>
+        </div>
+        <div class="plan-item"><span class="pi-label">Password Manager</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Emergency Access</span><span class="pi-value missing">Not set up</span></div>
+        <div class="plan-item"><span class="pi-label">Document Location</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Master Code</span><span class="pi-value missing">Not stored</span></div>
+      </div>
+
+      <div class="card" style="opacity:0.6;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="margin:0;">👥 Emergency Contacts</h3>
+          <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fffbeb; color:var(--yellow);">Coming Soon</span>
+        </div>
+        <div class="plan-item"><span class="pi-label">Spouse / Partner</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Lawyer</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Accountant</span><span class="pi-value missing">Not documented</span></div>
+        <div class="plan-item"><span class="pi-label">Doctor</span><span class="pi-value missing">Not documented</span></div>
+      </div>
+
     </div>
     <div class="hidden" id="emptyPlan"><div class="card"><div class="empty"><div class="empty-icon">📋</div><h3>Your plan is empty</h3><p>Start your assessment to begin building your family emergency plan.</p><a href="form.html" class="btn-primary">Start Assessment →</a></div></div></div>
   </div>
@@ -531,6 +594,46 @@
       showRealData(assessments[0], user);
     } else {
       showEmpty();
+    }
+
+    // Load legal documents preview
+    loadLegalPreview(user);
+  }
+
+  async function loadLegalPreview(user) {
+    const { data } = await db
+      .from('legal_documents')
+      .select('*')
+      .eq('user_id', user.id)
+      .limit(1);
+
+    if (!data || data.length === 0) return;
+    const d = data[0];
+
+    const setPreview = (id, val, fallback) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (val) {
+        el.textContent = val;
+        el.className = 'pi-value';
+      } else {
+        el.textContent = fallback || 'Not documented';
+        el.className = 'pi-value missing';
+      }
+    };
+
+    setPreview('planWill', d.has_will ? (d.will_location ? 'Documented — ' + d.will_location : 'Yes — location not set') : null);
+    setPreview('planPoaProp', d.has_poa_property ? (d.poa_property_person || 'Documented') : null);
+    setPreview('planPoaCare', d.has_poa_care ? (d.poa_care_person || 'Documented') : null);
+    setPreview('planExecutor', d.executor_name ? (d.executor_knows ? d.executor_name + ' — briefed' : d.executor_name + ' — not briefed') : null);
+
+    // Update badge
+    const badge = document.getElementById('legalPlanBadge');
+    if (badge && d.completion_score) {
+      const score = d.completion_score;
+      badge.textContent = score + '% complete';
+      badge.style.background = score >= 80 ? '#f0fdf4' : score >= 50 ? '#fffbeb' : '#fef2f2';
+      badge.style.color = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--yellow)' : 'var(--red)';
     }
   }
 
