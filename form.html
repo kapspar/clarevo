@@ -14,29 +14,10 @@
       padding: 48px 24px 80px;
     }
 
-    /* PROGRESS */
-    .progress-bar {
-      background: var(--border);
-      border-radius: 4px;
-      height: 4px;
-      margin-bottom: 32px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--blue);
-      border-radius: 4px;
-      transition: width 0.4s ease;
-    }
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--gray);
-      margin-bottom: 8px;
-    }
+    .progress-bar { background: var(--border); border-radius: 4px; height: 4px; margin-bottom: 32px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--blue); border-radius: 4px; transition: width 0.4s ease; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--gray); margin-bottom: 8px; }
 
-    /* SECTION CARD */
     .section-card {
       background: var(--white);
       border-radius: var(--radius-lg);
@@ -53,294 +34,100 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .section-num {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--blue);
-      margin-bottom: 6px;
-    }
+    .section-num { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--blue); margin-bottom: 6px; }
+    .section-card h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 6px; }
+    .section-card .section-sub { font-size: 14px; color: var(--gray); margin-bottom: 32px; line-height: 1.5; }
 
-    .section-card h2 {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      margin-bottom: 6px;
-    }
-
-    .section-card .section-sub {
-      font-size: 14px;
-      color: var(--gray);
-      margin-bottom: 32px;
-      line-height: 1.5;
-    }
-
-    /* QUESTIONS */
     .question { margin-bottom: 28px; }
-    .question label {
-      display: block;
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      line-height: 1.4;
-      color: var(--dark);
-    }
+    .question label { display: block; font-size: 15px; font-weight: 600; margin-bottom: 12px; line-height: 1.4; color: var(--dark); }
+    .question .q-hint { font-size: 12px; color: var(--gray); margin-bottom: 12px; margin-top: -8px; line-height: 1.5; font-style: italic; }
 
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
+    .options { display: flex; flex-direction: column; gap: 8px; }
     .option {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 13px 16px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all 0.15s;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--dark);
-      background: var(--white);
-      text-align: left;
-      width: 100%;
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px; border: 2px solid var(--border);
+      border-radius: var(--radius); cursor: pointer;
+      transition: all 0.15s; font-size: 14px; font-weight: 500;
+      color: var(--dark); background: var(--white);
+      text-align: left; width: 100%;
     }
     .option:hover { border-color: var(--blue); background: var(--blue-light); }
-    .option.selected {
-      border-color: var(--blue);
-      background: var(--blue-light);
-      color: var(--blue);
-    }
+    .option.selected { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+    .option-dot { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .option.selected .option-dot { border-color: var(--blue); background: var(--blue); }
+    .option.selected .option-dot::after { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; }
 
-    .option-dot {
-      width: 18px; height: 18px;
-      border: 2px solid var(--border);
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-    }
-    .option.selected .option-dot {
-      border-color: var(--blue);
-      background: var(--blue);
-    }
-    .option.selected .option-dot::after {
-      content: '';
-      width: 6px; height: 6px;
-      background: white;
-      border-radius: 50%;
-    }
-
-    /* NAV BUTTONS */
-    .form-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 32px;
-      gap: 12px;
-    }
-
-    .btn-back {
-      background: none;
-      border: 2px solid var(--border);
-      color: var(--gray);
-      padding: 12px 24px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: var(--font);
-    }
+    .form-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; gap: 12px; }
+    .btn-back { background: none; border: 2px solid var(--border); color: var(--gray); padding: 12px 24px; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: var(--font); }
     .btn-back:hover { border-color: var(--gray); color: var(--dark); }
-
-    .btn-next {
-      background: var(--blue);
-      color: var(--white);
-      border: none;
-      padding: 14px 32px;
-      border-radius: var(--radius);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: var(--font);
-      flex: 1;
-      max-width: 240px;
-    }
+    .btn-next { background: var(--blue); color: var(--white); border: none; padding: 14px 32px; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: var(--font); flex: 1; max-width: 240px; }
     .btn-next:hover { background: #2563eb; }
-    .btn-next:disabled { background: #ccc; cursor: not-allowed; }
 
-    /* OPENING SLIDE */
-    .opening {
-      text-align: center;
-      padding: 20px 0;
-    }
+    .opening { text-align: center; padding: 20px 0; }
     .opening .big-icon { font-size: 52px; margin-bottom: 20px; }
     .opening h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 14px; }
     .opening p { font-size: 16px; color: var(--gray); line-height: 1.7; margin-bottom: 32px; max-width: 480px; margin-left: auto; margin-right: auto; }
-
-    .time-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--blue-light);
-      color: var(--blue);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-bottom: 28px;
-    }
+    .time-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-light); color: var(--blue); font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 20px; margin-bottom: 28px; }
 
     /* RESULTS */
     .results { display: none; animation: fadeIn 0.4s ease; }
     .results.show { display: block; }
 
-    .score-reveal {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 40px;
-      box-shadow: var(--shadow-lg);
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .score-circle {
-      width: 120px; height: 120px;
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-    }
+    .score-reveal { background: var(--white); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); text-align: center; margin-bottom: 24px; }
+    .score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; }
     .score-circle.poor { background: #fef2f2; border: 4px solid var(--red); }
     .score-circle.fair { background: #fffbeb; border: 4px solid var(--yellow); }
     .score-circle.good { background: #f0fdf4; border: 4px solid var(--green); }
-
-    .score-big {
-      font-size: 40px;
-      font-weight: 800;
-      line-height: 1;
-    }
+    .score-big { font-size: 40px; font-weight: 800; line-height: 1; }
     .score-circle.poor .score-big { color: var(--red); }
     .score-circle.fair .score-big { color: var(--yellow); }
     .score-circle.good .score-big { color: var(--green); }
-
     .score-out { font-size: 13px; color: var(--gray); }
-
     .score-reveal h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
     .score-reveal p { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 24px; }
-
     .score-bar-wrap { margin: 0 auto 8px; max-width: 400px; }
     .score-bar-bg2 { background: #f0f0f0; border-radius: 6px; height: 10px; overflow: hidden; }
     .score-bar-fill2 { height: 100%; border-radius: 6px; transition: width 1s ease; }
 
-    /* GAP LIST */
-    .gaps-list {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
-    }
-    .gaps-list h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+    .category-scores { background: var(--white); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+    .category-scores h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+    .cat-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .cat-row:last-child { margin-bottom: 0; }
+    .cat-name { font-size: 13px; font-weight: 500; width: 140px; flex-shrink: 0; }
+    .cat-bar-bg { flex: 1; background: #f0f0f0; border-radius: 4px; height: 6px; }
+    .cat-bar-fill { height: 100%; border-radius: 4px; }
+    .cat-bar-fill.red { background: var(--red); }
+    .cat-bar-fill.yellow { background: var(--yellow); }
+    .cat-bar-fill.green { background: var(--green); }
+    .cat-pct { font-size: 12px; font-weight: 700; width: 36px; text-align: right; }
 
-    .result-gap {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid #f5f5f5;
-    }
+    .gaps-list { background: var(--white); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+    .gaps-list h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+    .result-gap { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #f5f5f5; }
     .result-gap:last-child { border-bottom: none; }
-
-    .rg-icon {
-      width: 36px; height: 36px;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
+    .rg-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .rg-icon.red { background: #fef2f2; }
     .rg-icon.yellow { background: #fffbeb; }
     .rg-icon.green { background: #f0fdf4; }
-
     .rg-content { flex: 1; }
     .rg-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
     .rg-desc { font-size: 12px; color: var(--gray); }
-
-    .rg-pill {
-      font-size: 11px; font-weight: 700;
-      padding: 3px 10px; border-radius: 20px;
-      flex-shrink: 0; margin-top: 4px;
-    }
+    .rg-pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; flex-shrink: 0; margin-top: 4px; }
     .rg-pill.missing { background: #fef2f2; color: var(--red); }
     .rg-pill.incomplete { background: #fffbeb; color: var(--yellow); }
     .rg-pill.complete { background: #f0fdf4; color: var(--green); }
 
-    /* CTA CARD */
-    .cta-card {
-      background: var(--dark);
-      border-radius: var(--radius-lg);
-      padding: 32px;
-      text-align: center;
-      color: var(--white);
-    }
+    .cta-card { background: var(--dark); border-radius: var(--radius-lg); padding: 32px; text-align: center; color: var(--white); }
     .cta-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
     .cta-card p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
-    .cta-card .btn-primary { margin: 0 auto; }
-
-    .email-input-wrap {
-      display: flex;
-      gap: 10px;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-    .email-input {
-      flex: 1;
-      padding: 13px 16px;
-      border: 2px solid #333;
-      border-radius: var(--radius);
-      background: #252540;
-      color: var(--white);
-      font-size: 14px;
-      font-family: var(--font);
-      outline: none;
-      transition: border 0.2s;
-    }
+    .email-input-wrap { display: flex; gap: 10px; max-width: 400px; margin: 0 auto; }
+    .email-input { flex: 1; padding: 13px 16px; border: 2px solid #333; border-radius: var(--radius); background: #252540; color: var(--white); font-size: 14px; font-family: var(--font); outline: none; transition: border 0.2s; }
     .email-input::placeholder { color: #666; }
     .email-input:focus { border-color: var(--blue); }
-
-    .email-btn {
-      background: var(--blue);
-      color: var(--white);
-      border: none;
-      padding: 13px 20px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: var(--font);
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
+    .email-btn { background: var(--blue); color: var(--white); border: none; padding: 13px 20px; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font); white-space: nowrap; transition: background 0.2s; }
     .email-btn:hover { background: #2563eb; }
+    .email-success { display: none; color: var(--green); font-size: 14px; font-weight: 600; margin-top: 12px; }
 
-    .email-success {
-      display: none;
-      color: var(--green);
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 12px;
-    }
-
-    /* RESPONSIVE */
     @media (max-width: 600px) {
       .form-wrap { padding: 24px 16px 60px; }
       .section-card { padding: 28px 20px; }
@@ -348,6 +135,7 @@
       .gaps-list { padding: 20px; }
       .cta-card { padding: 24px 20px; }
       .email-input-wrap { flex-direction: column; }
+      .cat-name { width: 110px; font-size: 12px; }
     }
   </style>
 </head>
@@ -359,23 +147,19 @@
     <li><a href="home.html#how">How it works</a></li>
     <li><a href="learn.html">Learn</a></li>
     <li><a href="pricing.html">Pricing</a></li>
-    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+    <li><a href="login.html">Sign In</a></li>
   </ul>
-  <div class="hamburger" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
-
 <div class="mobile-menu" id="mobileMenu">
   <a href="home.html" onclick="toggleMenu()">Home</a>
   <a href="learn.html" onclick="toggleMenu()">Learn</a>
   <a href="pricing.html">Pricing</a>
-  <a href="form.html" class="mob-cta">Check Your Score →</a>
+  <a href="login.html">Sign In</a>
 </div>
 
 <div class="form-wrap">
 
-  <!-- PROGRESS -->
   <div id="progressWrap" style="display:none;">
     <div class="progress-label">
       <span id="progressText">Section 1 of 7</span>
@@ -386,23 +170,31 @@
     </div>
   </div>
 
-  <!-- ── OPENING ── -->
+  <!-- OPENING -->
   <div class="section-card active" id="slide-0">
     <div class="opening">
       <div class="big-icon">🏠</div>
       <div class="time-badge">⏱ Takes about 5 minutes</div>
       <h1>How ready is your family?</h1>
-      <p>If you were suddenly unavailable for 30 days — hospitalized, travelling, or gone — would the people in your life know how to keep things running?</p>
+      <p>If you were suddenly unavailable — hospitalized, travelling, or gone — would the people in your life know how to keep things running?</p>
       <p style="font-size:13px; color:var(--gray); margin-top:-16px; margin-bottom:28px;">Answer honestly. There are no right or wrong answers — only gaps worth knowing about.</p>
       <button class="btn-next" style="max-width:100%; width:100%;" onclick="nextSlide()">Start My Assessment →</button>
     </div>
   </div>
 
-  <!-- ── SECTION 1: YOUR HOUSEHOLD ── -->
+  <!-- SECTION 1: YOUR HOUSEHOLD -->
   <div class="section-card" id="slide-1">
     <div class="section-num">Section 1 of 7</div>
     <h2>Your Household</h2>
     <p class="section-sub">A few basics to personalize your results.</p>
+
+    <div class="question">
+      <label>Are you completing this for yourself or for your household together?</label>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 'q0', 'self', 0)"><span class="option-dot"></span>For myself — my personal readiness</button>
+        <button class="option" onclick="selectOption(this, 'q0', 'household', 0)"><span class="option-dot"></span>For our household together</button>
+      </div>
+    </div>
 
     <div class="question">
       <label>What's your relationship status?</label>
@@ -422,19 +214,27 @@
     </div>
 
     <div class="question">
-      <label>Do you own a home?</label>
+      <label>Do you own or co-own a business?</label>
       <div class="options">
         <button class="option" onclick="selectOption(this, 'q3', 'yes', 0)"><span class="option-dot"></span>Yes</button>
-        <button class="option" onclick="selectOption(this, 'q3', 'no', 0)"><span class="option-dot"></span>No — I rent</button>
+        <button class="option" onclick="selectOption(this, 'q3', 'no', 0)"><span class="option-dot"></span>No</button>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Do you own a home?</label>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 'q4', 'yes', 0)"><span class="option-dot"></span>Yes</button>
+        <button class="option" onclick="selectOption(this, 'q4', 'no', 0)"><span class="option-dot"></span>No — I rent</button>
       </div>
     </div>
 
     <div class="question">
       <label>Who primarily manages the household finances?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q4', 'me', 0)"><span class="option-dot"></span>Me</button>
-        <button class="option" onclick="selectOption(this, 'q4', 'partner', 0)"><span class="option-dot"></span>My partner</button>
-        <button class="option" onclick="selectOption(this, 'q4', 'shared', 5)"><span class="option-dot"></span>We share it equally</button>
+        <button class="option" onclick="selectOption(this, 'q5', 'me', 0)"><span class="option-dot"></span>Me</button>
+        <button class="option" onclick="selectOption(this, 'q5', 'partner', 0)"><span class="option-dot"></span>My partner</button>
+        <button class="option" onclick="selectOption(this, 'q5', 'shared', 0)"><span class="option-dot"></span>We share it equally</button>
       </div>
     </div>
 
@@ -444,7 +244,7 @@
     </div>
   </div>
 
-  <!-- ── SECTION 2: BILLS ── -->
+  <!-- SECTION 2: BILLS -->
   <div class="section-card" id="slide-2">
     <div class="section-num">Section 2 of 7</div>
     <h2>Household Bills</h2>
@@ -453,27 +253,27 @@
     <div class="question">
       <label>Do you have a complete list of your monthly bills somewhere your partner or family could find?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q5', 'yes', 10)"><span class="option-dot"></span>Yes — it's documented</button>
-        <button class="option" onclick="selectOption(this, 'q5', 'sort-of', 5)"><span class="option-dot"></span>Sort of — some bills are documented</button>
-        <button class="option" onclick="selectOption(this, 'q5', 'no', 0)"><span class="option-dot"></span>No — it's all in my head</button>
+        <button class="option" onclick="selectOption(this, 'q6', 'yes', 100)"><span class="option-dot"></span>Yes — it's documented and findable</button>
+        <button class="option" onclick="selectOption(this, 'q6', 'sort-of', 50)"><span class="option-dot"></span>Sort of — some bills are documented</button>
+        <button class="option" onclick="selectOption(this, 'q6', 'no', 0)"><span class="option-dot"></span>No — it's all in my head</button>
       </div>
     </div>
 
     <div class="question">
       <label>Are most bills on autopay?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q6', 'yes', 5)"><span class="option-dot"></span>Yes — most are automatic</button>
-        <button class="option" onclick="selectOption(this, 'q6', 'some', 3)"><span class="option-dot"></span>Some are, some aren't</button>
-        <button class="option" onclick="selectOption(this, 'q6', 'no', 0)"><span class="option-dot"></span>No — most are manual</button>
+        <button class="option" onclick="selectOption(this, 'q7', 'yes', 100)"><span class="option-dot"></span>Yes — most are automatic</button>
+        <button class="option" onclick="selectOption(this, 'q7', 'some', 50)"><span class="option-dot"></span>Some are, some aren't</button>
+        <button class="option" onclick="selectOption(this, 'q7', 'no', 0)"><span class="option-dot"></span>No — most are manual</button>
       </div>
     </div>
 
     <div class="question">
       <label>If autopay stopped tomorrow, would someone else know what to pay and when?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q7', 'yes', 10)"><span class="option-dot"></span>Yes — they'd know exactly what to do</button>
-        <button class="option" onclick="selectOption(this, 'q7', 'maybe', 4)"><span class="option-dot"></span>Maybe — they'd figure it out eventually</button>
-        <button class="option" onclick="selectOption(this, 'q7', 'no', 0)"><span class="option-dot"></span>No — they'd have no idea</button>
+        <button class="option" onclick="selectOption(this, 'q8', 'yes', 100)"><span class="option-dot"></span>Yes — they'd know exactly what to do</button>
+        <button class="option" onclick="selectOption(this, 'q8', 'maybe', 40)"><span class="option-dot"></span>Maybe — they'd figure it out eventually</button>
+        <button class="option" onclick="selectOption(this, 'q8', 'no', 0)"><span class="option-dot"></span>No — they'd have no idea</button>
       </div>
     </div>
 
@@ -483,7 +283,7 @@
     </div>
   </div>
 
-  <!-- ── SECTION 3: FINANCES ── -->
+  <!-- SECTION 3: FINANCES -->
   <div class="section-card" id="slide-3">
     <div class="section-num">Section 3 of 7</div>
     <h2>Financial Accounts</h2>
@@ -492,28 +292,28 @@
     <div class="question">
       <label>Does someone other than you know what financial institutions you use?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q8', 'yes', 10)"><span class="option-dot"></span>Yes — they know where everything is held</button>
-        <button class="option" onclick="selectOption(this, 'q8', 'some', 5)"><span class="option-dot"></span>Some of it — not everything</button>
-        <button class="option" onclick="selectOption(this, 'q8', 'no', 0)"><span class="option-dot"></span>No — I'm the only one who knows</button>
+        <button class="option" onclick="selectOption(this, 'q9', 'yes', 100)"><span class="option-dot"></span>Yes — they know where everything is held</button>
+        <button class="option" onclick="selectOption(this, 'q9', 'some', 50)"><span class="option-dot"></span>Some of it — not everything</button>
+        <button class="option" onclick="selectOption(this, 'q9', 'no', 0)"><span class="option-dot"></span>No — I'm the only one who knows</button>
       </div>
     </div>
 
     <div class="question">
-      <label>Are your registered accounts (TFSA, RRSP, RESP) documented anywhere?</label>
+      <label>Are all your financial accounts documented somewhere — bank accounts, investments, credit cards, pensions?</label>
+      <p class="q-hint">This includes registered accounts like TFSA, RRSP, and RESP as well as any other accounts.</p>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q9', 'all', 10)"><span class="option-dot"></span>Yes — all documented</button>
-        <button class="option" onclick="selectOption(this, 'q9', 'some', 5)"><span class="option-dot"></span>Some are documented</button>
-        <button class="option" onclick="selectOption(this, 'q9', 'no', 0)"><span class="option-dot"></span>No — none are documented</button>
-        <button class="option" onclick="selectOption(this, 'q9', 'none', 5)"><span class="option-dot"></span>I don't have registered accounts</button>
+        <button class="option" onclick="selectOption(this, 'q10', 'all', 100)"><span class="option-dot"></span>Yes — all accounts are documented</button>
+        <button class="option" onclick="selectOption(this, 'q10', 'some', 50)"><span class="option-dot"></span>Some are documented — not all</button>
+        <button class="option" onclick="selectOption(this, 'q10', 'no', 0)"><span class="option-dot"></span>No — none are documented</button>
       </div>
     </div>
 
     <div class="question">
       <label>Would your partner or family know how to access or freeze your accounts in an emergency?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q10', 'yes', 10)"><span class="option-dot"></span>Yes — they have the information they need</button>
-        <button class="option" onclick="selectOption(this, 'q10', 'maybe', 4)"><span class="option-dot"></span>They could probably figure it out</button>
-        <button class="option" onclick="selectOption(this, 'q10', 'no', 0)"><span class="option-dot"></span>No — they wouldn't know where to start</button>
+        <button class="option" onclick="selectOption(this, 'q11', 'yes', 100)"><span class="option-dot"></span>Yes — they have the information they need</button>
+        <button class="option" onclick="selectOption(this, 'q11', 'maybe', 40)"><span class="option-dot"></span>They could probably figure it out</button>
+        <button class="option" onclick="selectOption(this, 'q11', 'no', 0)"><span class="option-dot"></span>No — they wouldn't know where to start</button>
       </div>
     </div>
 
@@ -523,36 +323,37 @@
     </div>
   </div>
 
-  <!-- ── SECTION 4: INSURANCE ── -->
+  <!-- SECTION 4: INSURANCE -->
   <div class="section-card" id="slide-4">
     <div class="section-num">Section 4 of 7</div>
     <h2>Insurance</h2>
-    <p class="section-sub">Gaps here can cost your family significantly.</p>
+    <p class="section-sub">This includes life insurance, mortgage insurance, disability, and critical illness coverage.</p>
 
     <div class="question">
-      <label>Do you have life insurance?</label>
+      <label>Do you have any insurance coverage?</label>
+      <p class="q-hint">Life, mortgage, disability, critical illness — any coverage counts.</p>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q11', 'yes', 10)"><span class="option-dot"></span>Yes</button>
-        <button class="option" onclick="selectOption(this, 'q11', 'through-work', 7)"><span class="option-dot"></span>Through work only</button>
-        <button class="option" onclick="selectOption(this, 'q11', 'no', 0)"><span class="option-dot"></span>No</button>
-        <button class="option" onclick="selectOption(this, 'q11', 'unsure', 2)"><span class="option-dot"></span>Not sure</button>
+        <button class="option" onclick="selectOption(this, 'q12', 'yes', 100)"><span class="option-dot"></span>Yes — I have coverage</button>
+        <button class="option" onclick="selectOption(this, 'q12', 'through-work', 70)"><span class="option-dot"></span>Through work only</button>
+        <button class="option" onclick="selectOption(this, 'q12', 'no', 0)"><span class="option-dot"></span>No coverage</button>
+        <button class="option" onclick="selectOption(this, 'q12', 'unsure', 20)"><span class="option-dot"></span>Not sure</button>
       </div>
     </div>
 
     <div class="question">
-      <label>Do you know who your beneficiaries are on your life insurance and registered accounts?</label>
+      <label>Do you know who your beneficiaries are on your insurance and registered accounts?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q12', 'yes', 10)"><span class="option-dot"></span>Yes — confirmed recently</button>
-        <button class="option" onclick="selectOption(this, 'q12', 'think-so', 4)"><span class="option-dot"></span>I think so but haven't checked recently</button>
-        <button class="option" onclick="selectOption(this, 'q12', 'no', 0)"><span class="option-dot"></span>No — I'm not sure</button>
+        <button class="option" onclick="selectOption(this, 'q13', 'yes', 100)"><span class="option-dot"></span>Yes — confirmed recently</button>
+        <button class="option" onclick="selectOption(this, 'q13', 'think-so', 40)"><span class="option-dot"></span>I think so but haven't checked recently</button>
+        <button class="option" onclick="selectOption(this, 'q13', 'no', 0)"><span class="option-dot"></span>No — I'm not sure</button>
       </div>
     </div>
 
     <div class="question">
       <label>Does anyone else know where your insurance documents are?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q13', 'yes', 10)"><span class="option-dot"></span>Yes — it's documented</button>
-        <button class="option" onclick="selectOption(this, 'q13', 'no', 0)"><span class="option-dot"></span>No — only I know</button>
+        <button class="option" onclick="selectOption(this, 'q14', 'yes', 100)"><span class="option-dot"></span>Yes — it's documented</button>
+        <button class="option" onclick="selectOption(this, 'q14', 'no', 0)"><span class="option-dot"></span>No — only I know</button>
       </div>
     </div>
 
@@ -562,7 +363,7 @@
     </div>
   </div>
 
-  <!-- ── SECTION 5: LEGAL ── -->
+  <!-- SECTION 5: LEGAL -->
   <div class="section-card" id="slide-5">
     <div class="section-num">Section 5 of 7</div>
     <h2>Legal Documents</h2>
@@ -571,37 +372,40 @@
     <div class="question">
       <label>Do you have a will?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q14', 'yes', 15)"><span class="option-dot"></span>Yes — it's up to date</button>
-        <button class="option" onclick="selectOption(this, 'q14', 'outdated', 5)"><span class="option-dot"></span>Yes but it's probably outdated</button>
-        <button class="option" onclick="selectOption(this, 'q14', 'list', 2)"><span class="option-dot"></span>No — it's on my to-do list</button>
-        <button class="option" onclick="selectOption(this, 'q14', 'no', 0)"><span class="option-dot"></span>No</button>
+        <button class="option" onclick="selectOption(this, 'q15', 'yes', 100)"><span class="option-dot"></span>Yes — it's up to date</button>
+        <button class="option" onclick="selectOption(this, 'q15', 'outdated', 40)"><span class="option-dot"></span>Yes but it's probably outdated</button>
+        <button class="option" onclick="selectOption(this, 'q15', 'list', 10)"><span class="option-dot"></span>No — it's on my to-do list</button>
+        <button class="option" onclick="selectOption(this, 'q15', 'no', 0)"><span class="option-dot"></span>No</button>
       </div>
     </div>
 
     <div class="question">
       <label>Do you have a Power of Attorney for property?</label>
+      <p class="q-hint">This gives someone legal authority to manage your finances if you become incapacitated — separate from your will.</p>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q15', 'yes', 10)"><span class="option-dot"></span>Yes</button>
-        <button class="option" onclick="selectOption(this, 'q15', 'no', 0)"><span class="option-dot"></span>No</button>
-        <button class="option" onclick="selectOption(this, 'q15', 'unsure', 1)"><span class="option-dot"></span>Not sure what that is</button>
+        <button class="option" onclick="selectOption(this, 'q16', 'yes', 100)"><span class="option-dot"></span>Yes</button>
+        <button class="option" onclick="selectOption(this, 'q16', 'no', 0)"><span class="option-dot"></span>No</button>
+        <button class="option" onclick="selectOption(this, 'q16', 'unsure', 10)"><span class="option-dot"></span>Not sure what that is</button>
       </div>
     </div>
 
     <div class="question">
       <label>Do you have a Power of Attorney for personal care?</label>
+      <p class="q-hint">This gives someone authority to make healthcare decisions on your behalf — again, separate from your will.</p>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q16', 'yes', 10)"><span class="option-dot"></span>Yes</button>
-        <button class="option" onclick="selectOption(this, 'q16', 'no', 0)"><span class="option-dot"></span>No</button>
-        <button class="option" onclick="selectOption(this, 'q16', 'unsure', 1)"><span class="option-dot"></span>Not sure what that is</button>
+        <button class="option" onclick="selectOption(this, 'q17', 'yes', 100)"><span class="option-dot"></span>Yes</button>
+        <button class="option" onclick="selectOption(this, 'q17', 'no', 0)"><span class="option-dot"></span>No</button>
+        <button class="option" onclick="selectOption(this, 'q17', 'unsure', 10)"><span class="option-dot"></span>Not sure what that is</button>
       </div>
     </div>
 
     <div class="question">
       <label>Does your executor know they're your executor?</label>
+      <p class="q-hint">Your executor is named in your will to handle your estate after you pass — different from your Power of Attorney.</p>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q17', 'yes', 10)"><span class="option-dot"></span>Yes — we've discussed it</button>
-        <button class="option" onclick="selectOption(this, 'q17', 'named', 3)"><span class="option-dot"></span>I named someone but haven't told them</button>
-        <button class="option" onclick="selectOption(this, 'q17', 'no-will', 0)"><span class="option-dot"></span>I don't have a will / executor</button>
+        <button class="option" onclick="selectOption(this, 'q18', 'yes', 100)"><span class="option-dot"></span>Yes — we've discussed it</button>
+        <button class="option" onclick="selectOption(this, 'q18', 'named', 30)"><span class="option-dot"></span>I named someone but haven't told them</button>
+        <button class="option" onclick="selectOption(this, 'q18', 'no-will', 0)"><span class="option-dot"></span>I don't have a will / executor</button>
       </div>
     </div>
 
@@ -611,7 +415,7 @@
     </div>
   </div>
 
-  <!-- ── SECTION 6: ACCESS ── -->
+  <!-- SECTION 6: ACCESS -->
   <div class="section-card" id="slide-6">
     <div class="section-num">Section 6 of 7</div>
     <h2>Access &amp; Passwords</h2>
@@ -620,28 +424,28 @@
     <div class="question">
       <label>Do you use a password manager?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q18', 'yes', 10)"><span class="option-dot"></span>Yes — and someone else has emergency access</button>
-        <button class="option" onclick="selectOption(this, 'q18', 'yes-only', 5)"><span class="option-dot"></span>Yes — but only I can access it</button>
-        <button class="option" onclick="selectOption(this, 'q18', 'sort-of', 3)"><span class="option-dot"></span>Sort of — I use browser saved passwords</button>
-        <button class="option" onclick="selectOption(this, 'q18', 'no', 0)"><span class="option-dot"></span>No password manager</button>
+        <button class="option" onclick="selectOption(this, 'q19', 'yes', 100)"><span class="option-dot"></span>Yes — and someone else has emergency access</button>
+        <button class="option" onclick="selectOption(this, 'q19', 'yes-only', 50)"><span class="option-dot"></span>Yes — but only I can access it</button>
+        <button class="option" onclick="selectOption(this, 'q19', 'sort-of', 30)"><span class="option-dot"></span>Sort of — I use browser saved passwords</button>
+        <button class="option" onclick="selectOption(this, 'q19', 'no', 0)"><span class="option-dot"></span>No password manager</button>
       </div>
     </div>
 
     <div class="question">
       <label>If you couldn't be reached, would someone be able to access your email, banking, or important accounts?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q19', 'yes', 10)"><span class="option-dot"></span>Yes — they have what they need</button>
-        <button class="option" onclick="selectOption(this, 'q19', 'maybe', 4)"><span class="option-dot"></span>Maybe — they'd have to figure it out</button>
-        <button class="option" onclick="selectOption(this, 'q19', 'no', 0)"><span class="option-dot"></span>No — they'd be locked out of everything</button>
+        <button class="option" onclick="selectOption(this, 'q20', 'yes', 100)"><span class="option-dot"></span>Yes — they have what they need</button>
+        <button class="option" onclick="selectOption(this, 'q20', 'maybe', 40)"><span class="option-dot"></span>Maybe — they'd have to figure it out</button>
+        <button class="option" onclick="selectOption(this, 'q20', 'no', 0)"><span class="option-dot"></span>No — they'd be locked out of everything</button>
       </div>
     </div>
 
     <div class="question">
       <label>Where are your important physical documents stored?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q20', 'documented', 10)"><span class="option-dot"></span>Documented location — spouse/family knows</button>
-        <button class="option" onclick="selectOption(this, 'q20', 'home', 5)"><span class="option-dot"></span>At home but not documented</button>
-        <button class="option" onclick="selectOption(this, 'q20', 'unsure', 0)"><span class="option-dot"></span>Honestly not sure where everything is</button>
+        <button class="option" onclick="selectOption(this, 'q21', 'documented', 100)"><span class="option-dot"></span>Documented location — spouse/family knows</button>
+        <button class="option" onclick="selectOption(this, 'q21', 'home', 50)"><span class="option-dot"></span>At home but not documented</button>
+        <button class="option" onclick="selectOption(this, 'q21', 'unsure', 0)"><span class="option-dot"></span>Honestly not sure where everything is</button>
       </div>
     </div>
 
@@ -651,27 +455,67 @@
     </div>
   </div>
 
-  <!-- ── SECTION 7: KIDS (conditional) ── -->
+  <!-- SECTION 7: KIDS (conditional) -->
   <div class="section-card" id="slide-7">
-    <div class="section-num">Section 7 of 7</div>
+    <div class="section-num">Kids</div>
     <h2>Your Kids</h2>
     <p class="section-sub">A few extra questions since you have dependent children.</p>
 
     <div class="question">
       <label>Does someone outside your immediate household know the basics — school, doctor, allergies, emergency contacts?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q21', 'yes', 10)"><span class="option-dot"></span>Yes — fully covered</button>
-        <button class="option" onclick="selectOption(this, 'q21', 'some', 5)"><span class="option-dot"></span>Some people know some of it</button>
-        <button class="option" onclick="selectOption(this, 'q21', 'no', 0)"><span class="option-dot"></span>No — this isn't documented anywhere</button>
+        <button class="option" onclick="selectOption(this, 'q22', 'yes', 100)"><span class="option-dot"></span>Yes — fully covered</button>
+        <button class="option" onclick="selectOption(this, 'q22', 'some', 50)"><span class="option-dot"></span>Some people know some of it</button>
+        <button class="option" onclick="selectOption(this, 'q22', 'no', 0)"><span class="option-dot"></span>No — this isn't documented anywhere</button>
       </div>
     </div>
 
     <div class="question">
       <label>Is there a documented guardian preference if both parents were unavailable?</label>
       <div class="options">
-        <button class="option" onclick="selectOption(this, 'q22', 'yes-will', 10)"><span class="option-dot"></span>Yes — named in our will</button>
-        <button class="option" onclick="selectOption(this, 'q22', 'yes-verbal', 4)"><span class="option-dot"></span>We've talked about it but it's not written down</button>
-        <button class="option" onclick="selectOption(this, 'q22', 'no', 0)"><span class="option-dot"></span>No — we haven't addressed this</button>
+        <button class="option" onclick="selectOption(this, 'q23', 'yes-will', 100)"><span class="option-dot"></span>Yes — named in our will</button>
+        <button class="option" onclick="selectOption(this, 'q23', 'yes-verbal', 40)"><span class="option-dot"></span>We've talked about it but it's not written down</button>
+        <button class="option" onclick="selectOption(this, 'q23', 'no', 0)"><span class="option-dot"></span>No — we haven't addressed this</button>
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="prevSlide()">← Back</button>
+      <button class="btn-next" onclick="nextSlide()">Next →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 8: BUSINESS (conditional) -->
+  <div class="section-card" id="slide-8">
+    <div class="section-num">Business</div>
+    <h2>Your Business</h2>
+    <p class="section-sub">Business owners have unique risks if they're suddenly unavailable.</p>
+
+    <div class="question">
+      <label>Does your business have a documented succession or continuity plan?</label>
+      <p class="q-hint">A plan for what happens to the business if you're suddenly unable to run it.</p>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 'q24', 'yes', 100)"><span class="option-dot"></span>Yes — it's documented</button>
+        <button class="option" onclick="selectOption(this, 'q24', 'discussed', 40)"><span class="option-dot"></span>We've discussed it but nothing written down</button>
+        <button class="option" onclick="selectOption(this, 'q24', 'no', 0)"><span class="option-dot"></span>No plan exists</button>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Do your business partners or key employees know what to do if you're suddenly unavailable?</label>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 'q25', 'yes', 100)"><span class="option-dot"></span>Yes — fully briefed</button>
+        <button class="option" onclick="selectOption(this, 'q25', 'somewhat', 40)"><span class="option-dot"></span>Somewhat — they'd manage but it'd be hard</button>
+        <button class="option" onclick="selectOption(this, 'q25', 'no', 0)"><span class="option-dot"></span>No — the business would be in trouble</button>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Are your business finances and key contacts documented separately from your personal finances?</label>
+      <div class="options">
+        <button class="option" onclick="selectOption(this, 'q26', 'yes', 100)"><span class="option-dot"></span>Yes — clearly separated and documented</button>
+        <button class="option" onclick="selectOption(this, 'q26', 'partial', 50)"><span class="option-dot"></span>Partially — some separation</button>
+        <button class="option" onclick="selectOption(this, 'q26', 'no', 0)"><span class="option-dot"></span>No — it's all mixed together</button>
       </div>
     </div>
 
@@ -681,7 +525,7 @@
     </div>
   </div>
 
-  <!-- ── RESULTS ── -->
+  <!-- RESULTS -->
   <div class="results" id="results">
 
     <div class="score-reveal">
@@ -698,6 +542,11 @@
       </div>
     </div>
 
+    <div class="category-scores">
+      <h3>Readiness by category</h3>
+      <div id="categoryBars"></div>
+    </div>
+
     <div class="gaps-list">
       <h3>Your gaps at a glance</h3>
       <div id="gapsList"></div>
@@ -710,12 +559,12 @@
         <input type="email" class="email-input" id="emailInput" placeholder="your@email.com">
         <button class="email-btn" onclick="saveEmail()">Save My Results</button>
       </div>
-      <div class="email-success" id="emailSuccess">✅ Got it! We'll be in touch with your personalized plan.</div>
+      <div class="email-success" id="emailSuccess">✅ Saved! Redirecting...</div>
     </div>
 
   </div>
 
-</div><!-- /form-wrap -->
+</div>
 
 <footer>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
@@ -724,45 +573,46 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ── SUPABASE ──
   const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let loggedInUser = null;
 
-  // Check session immediately and store it
   async function initAuth() {
     const { data: { session } } = await db.auth.getSession();
-    if (session) {
-      loggedInUser = session.user;
-    }
+    if (session) loggedInUser = session.user;
   }
-  // Run immediately — don't wait
   initAuth();
 
   // ── STATE ──
   let currentSlide = 0;
-  const totalSections = 7;
   const answers = {};
+
+  // ── SCORING WEIGHTS (category percentages) ──
+  const WEIGHTS = {
+    legal:     0.30,
+    insurance: 0.20,
+    finances:  0.15,
+    bills:     0.10,
+    access:    0.15,
+    kids:      0.05,
+    business:  0.05
+  };
 
   // ── NAVIGATION ──
   function nextSlide() {
-    const slide = document.getElementById('slide-' + currentSlide);
-    slide.classList.remove('active');
-
+    document.getElementById('slide-' + currentSlide).classList.remove('active');
     let next = currentSlide + 1;
 
-    // Skip kids section if no children
-    if (next === 7 && answers['q2'] !== 'yes') {
+    // Skip kids if no children
+    if (next === 7 && answers['q2']?.value !== 'yes') next = 8;
+    // Skip business if no business
+    if (next === 8 && answers['q3']?.value !== 'yes') {
       calculateAndShow();
       return;
     }
-
-    // If on last section before results
-    if (next > 7) {
-      calculateAndShow();
-      return;
-    }
+    // Past last slide
+    if (next > 8) { calculateAndShow(); return; }
 
     currentSlide = next;
     document.getElementById('slide-' + currentSlide).classList.add('active');
@@ -771,17 +621,12 @@
   }
 
   function prevSlide() {
-    const slide = document.getElementById('slide-' + currentSlide);
-    slide.classList.remove('active');
-
+    document.getElementById('slide-' + currentSlide).classList.remove('active');
     let prev = currentSlide - 1;
 
-    // Skip back over kids if no children
-    if (prev === 7 && answers['q2'] !== 'yes') {
-      prev = 6;
-    }
-
+    if (prev === 7 && answers['q2']?.value !== 'yes') prev = 6;
     if (prev < 0) prev = 0;
+
     currentSlide = prev;
     document.getElementById('slide-' + currentSlide).classList.add('active');
     updateProgress();
@@ -790,48 +635,81 @@
 
   function updateProgress() {
     const wrap = document.getElementById('progressWrap');
-    if (currentSlide === 0) {
-      wrap.style.display = 'none';
-      return;
-    }
+    if (currentSlide === 0) { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
-    const pct = Math.round((currentSlide / totalSections) * 100);
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressPct').textContent = pct + '%';
-    document.getElementById('progressText').textContent = 'Section ' + currentSlide + ' of ' + totalSections;
+    const totalSlides = 6; // main sections
+    const pct = Math.round((currentSlide / totalSlides) * 100);
+    document.getElementById('progressFill').style.width = Math.min(pct, 100) + '%';
+    document.getElementById('progressPct').textContent = Math.min(pct, 100) + '%';
+    document.getElementById('progressText').textContent = 'Section ' + currentSlide + ' of ' + totalSlides;
   }
 
-  // ── OPTION SELECTION ──
   function selectOption(btn, questionId, value, points) {
-    // Deselect siblings
     btn.closest('.options').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
     btn.classList.add('selected');
     answers[questionId] = { value, points };
   }
 
-  // ── SCORE CALCULATION ──
+  // ── CATEGORY-BASED SCORING ──
+  function calcCategoryScore(questions) {
+    // questions is array of {points} objects
+    const answered = questions.filter(q => q !== undefined && q !== null);
+    if (answered.length === 0) return null; // not applicable
+    const total = answered.reduce((sum, q) => sum + (q?.points || 0), 0);
+    const max = answered.length * 100;
+    return Math.round((total / max) * 100);
+  }
+
   async function calculateAndShow() {
-    // Wait for auth to resolve before showing results
     const { data: { session } } = await db.auth.getSession();
     if (session) loggedInUser = session.user;
+
     // Hide all slides
     document.querySelectorAll('.section-card').forEach(s => s.classList.remove('active'));
 
-    // Calculate score
-    const maxPoints = 160; // total possible
-    let earned = 0;
-    Object.values(answers).forEach(a => {
-      if (a && typeof a === 'object') earned += (a.points || 0);
-      else if (typeof a === 'number') earned += a;
-    });
+    const hasKids = answers['q2']?.value === 'yes';
+    const hasBusiness = answers['q3']?.value === 'yes';
 
-    const score = Math.min(100, Math.round((earned / maxPoints) * 100));
+    // Calculate category scores (0-100 each)
+    const cats = {
+      legal:     calcCategoryScore([answers['q15'], answers['q16'], answers['q17'], answers['q18']]),
+      insurance: calcCategoryScore([answers['q12'], answers['q13'], answers['q14']]),
+      finances:  calcCategoryScore([answers['q9'], answers['q10'], answers['q11']]),
+      bills:     calcCategoryScore([answers['q6'], answers['q7'], answers['q8']]),
+      access:    calcCategoryScore([answers['q19'], answers['q20'], answers['q21']]),
+      kids:      hasKids ? calcCategoryScore([answers['q22'], answers['q23']]) : null,
+      business:  hasBusiness ? calcCategoryScore([answers['q24'], answers['q25'], answers['q26']]) : null,
+    };
+
+    // Redistribute weights if kids/business not applicable
+    let weights = { ...WEIGHTS };
+    if (!hasKids && !hasBusiness) {
+      const extra = weights.kids + weights.business;
+      weights.legal += extra * 0.5;
+      weights.insurance += extra * 0.3;
+      weights.finances += extra * 0.2;
+      delete weights.kids;
+      delete weights.business;
+    } else if (!hasKids) {
+      weights.business += weights.kids;
+      delete weights.kids;
+    } else if (!hasBusiness) {
+      weights.kids += weights.business;
+      delete weights.business;
+    }
+
+    // Calculate weighted final score
+    let finalScore = 0;
+    Object.keys(weights).forEach(cat => {
+      if (cats[cat] !== null && cats[cat] !== undefined) {
+        finalScore += cats[cat] * weights[cat];
+      }
+    });
+    finalScore = Math.round(finalScore);
 
     // Show results
-    const results = document.getElementById('results');
-    results.classList.add('show');
+    document.getElementById('results').classList.add('show');
 
-    // Animate score
     setTimeout(() => {
       const circle = document.getElementById('scoreCircle');
       const big = document.getElementById('scoreBig');
@@ -839,122 +717,132 @@
       const headline = document.getElementById('scoreHeadline');
       const desc = document.getElementById('scoreDesc');
 
-      big.textContent = score;
-      bar.style.width = score + '%';
+      big.textContent = finalScore;
+      bar.style.width = finalScore + '%';
 
-      if (score < 40) {
+      if (finalScore < 40) {
         circle.className = 'score-circle poor';
         bar.style.background = 'var(--red)';
         headline.textContent = 'Your family has significant gaps to address.';
         desc.textContent = 'Based on your answers, your household has several critical areas that need attention. The good news — most can be fixed in a few weeks.';
-      } else if (score < 70) {
+      } else if (finalScore < 70) {
         circle.className = 'score-circle fair';
         bar.style.background = 'var(--yellow)';
-        headline.textContent = 'You\'re partway there — but gaps remain.';
-        desc.textContent = 'You\'ve done some of the work, but there are still important areas your family couldn\'t handle without you. Let\'s close those gaps.';
+        headline.textContent = "You're partway there — but gaps remain.";
+        desc.textContent = "You've done some of the work, but there are still important areas your family couldn't handle without you.";
       } else {
         circle.className = 'score-circle good';
         bar.style.background = 'var(--green)';
-        headline.textContent = 'Great — your family is better prepared than most.';
-        desc.textContent = 'You\'re ahead of most Canadian households. A few remaining gaps are worth addressing to get to full readiness.';
+        headline.textContent = "Great — your family is better prepared than most.";
+        desc.textContent = "You're ahead of most Canadian households. A few remaining gaps are worth addressing to reach full readiness.";
       }
 
-      // Build gaps list
-      buildGapsList(score);
+      buildCategoryBars(cats, weights);
+      buildGapsList();
+
     }, 100);
 
-    document.getElementById('progressWrap').style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // If logged in, auto-save and redirect
+    // Handle logged in users
     if (loggedInUser) {
       document.getElementById('ctaTitle').textContent = 'Results saved to your dashboard';
       document.getElementById('ctaDesc').textContent = 'Your score and gaps are being saved to your account right now.';
       document.getElementById('emailWrap').style.display = 'none';
-      autoSaveAndRedirect();
+      autoSaveAndRedirect(finalScore);
     }
+
+    document.getElementById('progressWrap').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function buildGapsList(score) {
-    const gaps = [];
+  function buildCategoryBars(cats, weights) {
+    const labels = {
+      legal: 'Legal Documents',
+      insurance: 'Insurance',
+      finances: 'Finances',
+      bills: 'Household Bills',
+      access: 'Access & Passwords',
+      kids: 'Kids & Family',
+      business: 'Business'
+    };
 
-    const getVal = (q) => answers[q]?.value || answers[q] || null;
-    const getPts = (q) => answers[q]?.points ?? 0;
+    const container = document.getElementById('categoryBars');
+    container.innerHTML = Object.keys(weights).map(cat => {
+      const score = cats[cat] ?? 0;
+      const color = score === 0 ? 'red' : score < 60 ? 'yellow' : 'green';
+      return `
+        <div class="cat-row">
+          <div class="cat-name">${labels[cat]}</div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill ${color}" style="width:${score}%"></div></div>
+          <div class="cat-pct" style="color:var(--${color === 'red' ? 'red' : color === 'yellow' ? 'yellow' : 'green'})">${score}%</div>
+        </div>`;
+    }).join('');
+  }
+
+  function buildGapsList() {
+    const gaps = [];
+    const getVal = (q) => answers[q]?.value || null;
 
     // Will
-    const will = getVal('q14');
-    if (!will || will === 'no') {
-      gaps.push({ icon: '📄', color: 'red', title: 'No Will on File', desc: 'Your estate has no legal instructions. Most critical gap.', status: 'missing' });
-    } else if (will === 'outdated' || will === 'list') {
-      gaps.push({ icon: '📄', color: 'yellow', title: 'Will Needs Updating', desc: 'An outdated will may not reflect your current wishes.', status: 'incomplete' });
-    } else {
-      gaps.push({ icon: '📄', color: 'green', title: 'Will', desc: 'Up to date and documented.', status: 'complete' });
-    }
+    const will = getVal('q15');
+    if (!will || will === 'no') gaps.push({ icon: '📄', color: 'red', title: 'No Will on File', desc: 'Your estate has no legal instructions.', status: 'missing' });
+    else if (will === 'outdated' || will === 'list') gaps.push({ icon: '📄', color: 'yellow', title: 'Will Needs Updating', desc: 'An outdated will may not reflect your current wishes.', status: 'incomplete' });
+    else gaps.push({ icon: '📄', color: 'green', title: 'Will', desc: 'Up to date and documented.', status: 'complete' });
 
     // POA
-    const poa = getVal('q15');
-    if (!poa || poa === 'no' || poa === 'unsure') {
-      gaps.push({ icon: '⚖️', color: 'red', title: 'No Power of Attorney', desc: 'No one can legally manage your affairs if you\'re incapacitated.', status: 'missing' });
-    } else {
-      gaps.push({ icon: '⚖️', color: 'green', title: 'Power of Attorney', desc: 'Documented and in place.', status: 'complete' });
-    }
+    const poa = getVal('q16');
+    if (!poa || poa === 'no' || poa === 'unsure') gaps.push({ icon: '⚖️', color: 'red', title: 'No Power of Attorney', desc: "No one can legally manage your affairs if you're incapacitated.", status: 'missing' });
+    else gaps.push({ icon: '⚖️', color: 'green', title: 'Power of Attorney', desc: 'Documented and in place.', status: 'complete' });
 
     // Executor
-    const exec = getVal('q17');
-    if (!exec || exec === 'no-will') {
-      gaps.push({ icon: '👤', color: 'red', title: 'No Executor Plan', desc: 'No one is prepared to manage your estate.', status: 'missing' });
-    } else if (exec === 'named') {
-      gaps.push({ icon: '👤', color: 'yellow', title: 'Executor Not Briefed', desc: 'You\'ve named someone but they don\'t know yet.', status: 'incomplete' });
-    } else {
-      gaps.push({ icon: '👤', color: 'green', title: 'Executor', desc: 'Named and briefed.', status: 'complete' });
-    }
+    const exec = getVal('q18');
+    if (!exec || exec === 'no-will') gaps.push({ icon: '👤', color: 'red', title: 'No Executor Plan', desc: "No one is prepared to manage your estate.", status: 'missing' });
+    else if (exec === 'named') gaps.push({ icon: '👤', color: 'yellow', title: 'Executor Not Briefed', desc: "You've named someone but they don't know yet.", status: 'incomplete' });
+    else gaps.push({ icon: '👤', color: 'green', title: 'Executor', desc: 'Named and briefed.', status: 'complete' });
 
-    // Life insurance
-    const ins = getVal('q11');
-    if (!ins || ins === 'no') {
-      gaps.push({ icon: '🛡️', color: 'red', title: 'No Life Insurance', desc: 'Your family has no financial protection if something happens to you.', status: 'missing' });
-    } else if (ins === 'unsure') {
-      gaps.push({ icon: '🛡️', color: 'yellow', title: 'Insurance Status Unclear', desc: 'You\'re not sure if you have coverage — worth checking.', status: 'incomplete' });
-    } else {
-      const bene = getVal('q12');
-      if (bene === 'think-so' || bene === 'no') {
-        gaps.push({ icon: '🛡️', color: 'yellow', title: 'Beneficiary Not Confirmed', desc: 'Life insurance exists but beneficiary hasn\'t been verified recently.', status: 'incomplete' });
-      } else {
-        gaps.push({ icon: '🛡️', color: 'green', title: 'Life Insurance', desc: 'In place with confirmed beneficiary.', status: 'complete' });
-      }
+    // Insurance
+    const ins = getVal('q12');
+    if (!ins || ins === 'no') gaps.push({ icon: '🛡️', color: 'red', title: 'No Insurance Coverage', desc: 'Your family has no financial protection.', status: 'missing' });
+    else if (ins === 'unsure') gaps.push({ icon: '🛡️', color: 'yellow', title: 'Insurance Status Unclear', desc: "Worth checking what coverage you actually have.", status: 'incomplete' });
+    else {
+      const bene = getVal('q13');
+      if (bene !== 'yes') gaps.push({ icon: '🛡️', color: 'yellow', title: 'Beneficiary Not Confirmed', desc: 'Insurance exists but beneficiary needs verification.', status: 'incomplete' });
+      else gaps.push({ icon: '🛡️', color: 'green', title: 'Insurance', desc: 'In place with confirmed beneficiary.', status: 'complete' });
     }
 
     // Finances
-    const fin = getVal('q8');
-    if (!fin || fin === 'no') {
-      gaps.push({ icon: '💰', color: 'red', title: 'Finances Not Documented', desc: 'No one else knows where your accounts are held.', status: 'missing' });
-    } else if (fin === 'some') {
-      gaps.push({ icon: '💰', color: 'yellow', title: 'Finances Partially Documented', desc: 'Some accounts are known — but not all.', status: 'incomplete' });
-    } else {
-      gaps.push({ icon: '💰', color: 'green', title: 'Financial Accounts', desc: 'Documented and accessible.', status: 'complete' });
-    }
+    const fin = getVal('q9');
+    if (!fin || fin === 'no') gaps.push({ icon: '💰', color: 'red', title: 'Finances Not Documented', desc: 'No one else knows where your accounts are held.', status: 'missing' });
+    else if (fin === 'some') gaps.push({ icon: '💰', color: 'yellow', title: 'Finances Partially Documented', desc: 'Some accounts are known — but not all.', status: 'incomplete' });
+    else gaps.push({ icon: '💰', color: 'green', title: 'Financial Accounts', desc: 'Documented and accessible.', status: 'complete' });
 
     // Bills
-    const bills = getVal('q5');
-    if (!bills || bills === 'no') {
-      gaps.push({ icon: '🧾', color: 'red', title: 'No Bill List', desc: 'No one knows what needs to be paid if you\'re unavailable.', status: 'missing' });
-    } else if (bills === 'sort-of') {
-      gaps.push({ icon: '🧾', color: 'yellow', title: 'Bills Partially Documented', desc: 'Some bills are known — a complete list would help.', status: 'incomplete' });
-    } else {
-      gaps.push({ icon: '🧾', color: 'green', title: 'Household Bills', desc: 'Documented and findable.', status: 'complete' });
-    }
+    const bills = getVal('q6');
+    if (!bills || bills === 'no') gaps.push({ icon: '🧾', color: 'red', title: 'No Bill List', desc: "No one knows what needs to be paid if you're unavailable.", status: 'missing' });
+    else if (bills === 'sort-of') gaps.push({ icon: '🧾', color: 'yellow', title: 'Bills Partially Documented', desc: 'A complete list would help.', status: 'incomplete' });
+    else gaps.push({ icon: '🧾', color: 'green', title: 'Household Bills', desc: 'Documented and findable.', status: 'complete' });
 
     // Passwords
-    const pw = getVal('q19');
-    if (!pw || pw === 'no') {
-      gaps.push({ icon: '🔐', color: 'red', title: 'No Password Access Plan', desc: 'Your family would be locked out of critical accounts.', status: 'missing' });
-    } else if (pw === 'maybe') {
-      gaps.push({ icon: '🔐', color: 'yellow', title: 'Password Plan Incomplete', desc: 'Access is uncertain — a clear plan would help.', status: 'incomplete' });
-    } else {
-      gaps.push({ icon: '🔐', color: 'green', title: 'Password & Access', desc: 'Someone can access what they need.', status: 'complete' });
+    const pw = getVal('q20');
+    if (!pw || pw === 'no') gaps.push({ icon: '🔐', color: 'red', title: 'No Password Access Plan', desc: 'Your family would be locked out of critical accounts.', status: 'missing' });
+    else if (pw === 'maybe') gaps.push({ icon: '🔐', color: 'yellow', title: 'Password Plan Incomplete', desc: 'Access is uncertain — a clear plan would help.', status: 'incomplete' });
+    else gaps.push({ icon: '🔐', color: 'green', title: 'Password & Access', desc: 'Someone can access what they need.', status: 'complete' });
+
+    // Kids
+    if (answers['q2']?.value === 'yes') {
+      const guardian = getVal('q23');
+      if (!guardian || guardian === 'no') gaps.push({ icon: '👶', color: 'red', title: 'No Guardian Plan', desc: "No documented plan for who cares for your children.", status: 'missing' });
+      else if (guardian === 'yes-verbal') gaps.push({ icon: '👶', color: 'yellow', title: 'Guardian Plan Not Documented', desc: "You've discussed it but it's not in writing.", status: 'incomplete' });
+      else gaps.push({ icon: '👶', color: 'green', title: 'Guardian Plan', desc: 'Named in your will.', status: 'complete' });
     }
 
-    // Build HTML
+    // Business
+    if (answers['q3']?.value === 'yes') {
+      const biz = getVal('q24');
+      if (!biz || biz === 'no') gaps.push({ icon: '🏢', color: 'red', title: 'No Business Continuity Plan', desc: 'Your business has no plan if you become unavailable.', status: 'missing' });
+      else if (biz === 'discussed') gaps.push({ icon: '🏢', color: 'yellow', title: 'Business Plan Not Documented', desc: "You've discussed it but nothing is written down.", status: 'incomplete' });
+      else gaps.push({ icon: '🏢', color: 'green', title: 'Business Continuity', desc: 'Documented and in place.', status: 'complete' });
+    }
+
     const container = document.getElementById('gapsList');
     container.innerHTML = gaps.map(g => `
       <div class="result-gap">
@@ -964,38 +852,28 @@
           <div class="rg-desc">${g.desc}</div>
         </div>
         <div class="rg-pill ${g.status}">${g.status === 'missing' ? 'Missing' : g.status === 'incomplete' ? 'Incomplete' : 'Complete'}</div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  // ── AUTO SAVE FOR LOGGED IN USERS ──
   async function autoSaveAndRedirect() {
     const score = parseInt(document.getElementById('scoreBig').textContent) || 0;
-    const getVal = (q) => answers[q]?.value || answers[q] || null;
-
+    const getVal = (q) => answers[q]?.value || null;
     const record = {
       email: loggedInUser.email,
-      score: score,
-      has_will:              getVal('q14'),
-      has_poa:               getVal('q15'),
-      has_insurance:         getVal('q11'),
-      beneficiary_confirmed: getVal('q12'),
-      bills_documented:      getVal('q5'),
-      finances_documented:   getVal('q8'),
-      password_plan:         getVal('q19'),
-      has_executor:          getVal('q17'),
+      score,
+      has_will:              getVal('q15'),
+      has_poa:               getVal('q16'),
+      has_insurance:         getVal('q12'),
+      beneficiary_confirmed: getVal('q13'),
+      bills_documented:      getVal('q6'),
+      finances_documented:   getVal('q9'),
+      password_plan:         getVal('q20'),
+      has_executor:          getVal('q18'),
       has_children:          answers['q2']?.value === 'yes',
-      guardian_plan:         getVal('q22'),
+      guardian_plan:         getVal('q23'),
       raw_answers:           answers
     };
-
-    try {
-      await db.from('assessments').insert([record]);
-    } catch(e) {
-      console.error('Auto save error:', e);
-    }
-
-    // Show success then redirect
+    try { await db.from('assessments').insert([record]); } catch(e) { console.error(e); }
     document.getElementById('emailSuccess').style.display = 'block';
     document.getElementById('emailSuccess').textContent = '✅ Saved! Taking you to your dashboard...';
     setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
@@ -1007,46 +885,31 @@
       document.getElementById('emailInput').style.borderColor = 'var(--red)';
       return;
     }
-
     const btn = document.querySelector('.email-btn');
-    btn.textContent = 'Saving...';
-    btn.disabled = true;
-
+    btn.textContent = 'Saving...'; btn.disabled = true;
     const score = parseInt(document.getElementById('scoreBig').textContent) || 0;
-    const getVal = (q) => answers[q]?.value || answers[q] || null;
-
+    const getVal = (q) => answers[q]?.value || null;
     const record = {
-      email: email,
-      score: score,
-      has_will:              getVal('q14'),
-      has_poa:               getVal('q15'),
-      has_insurance:         getVal('q11'),
-      beneficiary_confirmed: getVal('q12'),
-      bills_documented:      getVal('q5'),
-      finances_documented:   getVal('q8'),
-      password_plan:         getVal('q19'),
-      has_executor:          getVal('q17'),
+      email, score,
+      has_will:              getVal('q15'),
+      has_poa:               getVal('q16'),
+      has_insurance:         getVal('q12'),
+      beneficiary_confirmed: getVal('q13'),
+      bills_documented:      getVal('q6'),
+      finances_documented:   getVal('q9'),
+      password_plan:         getVal('q20'),
+      has_executor:          getVal('q18'),
       has_children:          answers['q2']?.value === 'yes',
-      guardian_plan:         getVal('q22'),
+      guardian_plan:         getVal('q23'),
       raw_answers:           answers
     };
-
-    try {
-      const { error } = await db.from('assessments').insert([record]);
-      if (error) throw error;
-      document.getElementById('emailInput').style.borderColor = 'var(--green)';
-      document.getElementById('emailWrap').style.display = 'none';
-      // Redirect to signup with email prefilled
-      document.getElementById('emailSuccess').style.display = 'block';
-      document.getElementById('emailSuccess').textContent = '✅ Saved! Create your account to see your full dashboard.';
-      setTimeout(() => {
-        window.location.href = 'login.html?from=assessment&email=' + encodeURIComponent(email);
-      }, 2000);
-    } catch (err) {
-      console.error('Save error:', err);
-      document.getElementById('emailWrap').style.display = 'none';
-      document.getElementById('emailSuccess').style.display = 'block';
-    }
+    try { await db.from('assessments').insert([record]); } catch(e) { console.error(e); }
+    document.getElementById('emailWrap').style.display = 'none';
+    document.getElementById('emailSuccess').style.display = 'block';
+    document.getElementById('emailSuccess').textContent = '✅ Saved! Create your account to see your full dashboard.';
+    setTimeout(() => {
+      window.location.href = 'login.html?from=assessment&email=' + encodeURIComponent(email);
+    }, 2000);
   }
 
   function toggleMenu() {
