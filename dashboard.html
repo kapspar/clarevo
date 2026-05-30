@@ -77,33 +77,28 @@
       padding: 16px 20px;
       border-top: 1px solid rgba(255,255,255,0.08);
     }
-
-    .demo-toggle-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-    .toggle-track {
-      width: 34px; height: 18px;
-      background: var(--blue);
-      border-radius: 9px;
-      position: relative;
-      transition: background 0.2s;
-      flex-shrink: 0;
-    }
-    .toggle-track.off { background: #444; }
-    .toggle-knob {
-      width: 12px; height: 12px;
-      background: white;
-      border-radius: 50%;
-      position: absolute;
       top: 3px; left: 19px;
       transition: left 0.2s;
     }
     .toggle-knob.off { left: 3px; }
     .toggle-label { font-size: 11px; color: #888; }
     .toggle-label.on { color: var(--white); }
+
+    /* Mobile top header */
+    .mobile-header {
+      display: none;
+      background: var(--dark);
+      padding: 14px 20px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 150;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mobile-header .mob-logo { font-size: 18px; font-weight: 800; color: white; text-decoration: none; }
+    .mobile-header .mob-logo span { color: var(--blue); }
+    .mob-hamburger { background: none; border: none; cursor: pointer; padding: 4px; display: flex; flex-direction: column; gap: 5px; }
+    .mob-hamburger span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; }
 
     /* ── MAIN ── */
     .main {
@@ -123,37 +118,6 @@
     }
     .topbar h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; }
     .topbar-right { display: flex; align-items: center; gap: 12px; }
-
-    .demo-badge {
-      background: #fef9c3;
-      color: #854d0e;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 5px 12px;
-      border-radius: 20px;
-    }
-
-    /* TABS */
-    .tabs {
-      display: flex;
-      border-bottom: 2px solid var(--border);
-      margin-bottom: 24px;
-      gap: 0;
-      overflow-x: auto;
-    }
-    .tab {
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--gray);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
-    .tab:hover { color: var(--dark); }
-    .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 
     /* CARDS */
     .card {
@@ -309,20 +273,7 @@
     .empty p { font-size: 13px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
 
     /* MOBILE SIDEBAR TOGGLE */
-    .sidebar-toggle {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 50px; height: 50px;
-      background: var(--dark);
-      border-radius: 50%;
-      align-items: center; justify-content: center;
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 200;
-      box-shadow: var(--shadow-lg);
-    }
+    .sidebar-toggle { display: none; }
 
     .sidebar-overlay {
       display: none;
@@ -341,16 +292,12 @@
     }
 
     @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .sidebar.open {
-        transform: translateX(0);
-      }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); z-index: 200; }
       .sidebar-overlay.open { display: block; }
-      .main { margin-left: 0; padding: 20px 16px; }
+      .mobile-header { display: flex; }
+      .main { margin-left: 0; padding: 80px 16px 20px; }
       .score-row { grid-template-columns: 1fr 1fr; }
-      .sidebar-toggle { display: flex; }
       .topbar h1 { font-size: 18px; }
       .cat-name { width: 110px; font-size: 12px; }
       .gap-row { flex-wrap: wrap; }
@@ -360,12 +307,18 @@
     @media (max-width: 480px) {
       .score-row { grid-template-columns: 1fr 1fr; gap: 10px; }
       .score-big-num { font-size: 40px; }
-      .tabs { gap: 0; }
-      .tab { padding: 10px 12px; font-size: 12px; }
     }
   </style>
 </head>
 <body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <a href="home.html" class="mob-logo">Clar<span>evo</span></a>
+  <button class="mob-hamburger" onclick="openSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+</div>
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
@@ -405,7 +358,6 @@
 </div>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-<div class="sidebar-toggle" id="sidebarToggle" onclick="openSidebar()">☰</div>
 
 <!-- MAIN -->
 <div class="main">
@@ -415,15 +367,6 @@
     <div class="topbar-right">
       <a href="form.html" class="btn-primary" style="font-size:13px; padding:10px 18px;">+ Update My Plan</a>
     </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('overview', null, this)">Overview</div>
-    <div class="tab" onclick="showTab('myplan', null, this)">My Plan</div>
-    <div class="tab" onclick="showTab('gaps', null, this)">Gaps</div>
-    <div class="tab" onclick="showTab('shared', null, this)">Shared Access</div>
-    <div class="tab" onclick="showTab('settings', null, this)">Settings</div>
   </div>
 
   <!-- ── OVERVIEW ── -->
@@ -456,12 +399,7 @@
     <!-- Categories -->
     <div class="card" id="catsCard" style="margin-bottom:16px;">
       <h3>Readiness by Category</h3>
-      <div class="cat-row"><div class="cat-name">Legal Documents</div><div class="cat-bar-bg"><div class="cat-bar-fill red" style="width:0%"></div></div><div class="cat-pct" style="color:var(--red)">0%</div></div>
-      <div class="cat-row"><div class="cat-name">Insurance</div><div class="cat-bar-bg"><div class="cat-bar-fill yellow" style="width:40%"></div></div><div class="cat-pct" style="color:var(--yellow)">40%</div></div>
-      <div class="cat-row"><div class="cat-name">Finances</div><div class="cat-bar-bg"><div class="cat-bar-fill yellow" style="width:50%"></div></div><div class="cat-pct" style="color:var(--yellow)">50%</div></div>
-      <div class="cat-row"><div class="cat-name">Household Bills</div><div class="cat-bar-bg"><div class="cat-bar-fill green" style="width:100%"></div></div><div class="cat-pct" style="color:var(--green)">100%</div></div>
-      <div class="cat-row"><div class="cat-name">Access & Passwords</div><div class="cat-bar-bg"><div class="cat-bar-fill yellow" style="width:50%"></div></div><div class="cat-pct" style="color:var(--yellow)">50%</div></div>
-      <div class="cat-row" style="margin-bottom:0"><div class="cat-name">Emergency Contacts</div><div class="cat-bar-bg"><div class="cat-bar-fill green" style="width:100%"></div></div><div class="cat-pct" style="color:var(--green)">100%</div></div>
+      <div id="categoryBarsContainer"></div>
     </div>
 
     <!-- Top gaps -->
@@ -568,7 +506,6 @@
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let currentUser = null;
 
-  // Check auth — redirect to login if not signed in
   db.auth.getSession().then(({ data: { session } }) => {
     if (session) {
       currentUser = session.user;
@@ -579,12 +516,10 @@
   });
 
   async function loadUserData(user) {
-    // Update sidebar
     const name = user.user_metadata?.full_name || user.email;
     document.getElementById('sidebarName').textContent = name;
     document.getElementById('sidebarEmail').textContent = user.email;
 
-    // Load latest assessment
     const { data: assessments } = await db
       .from('assessments')
       .select('*')
@@ -613,7 +548,51 @@
     else if (score < 70) document.getElementById('scoreSub').textContent = "You're partway there — some gaps remain.";
     else document.getElementById('scoreSub').textContent = 'Great — your family is better prepared than most.';
 
-    // Count gaps from assessment fields
+    // Parse raw answers
+    let raw = {};
+    try { raw = typeof a.raw_answers === 'string' ? JSON.parse(a.raw_answers) : (a.raw_answers || {}); } catch(e) {}
+
+    // Detect new vs old form (new form has q0)
+    const isNewForm = raw['q0'] !== undefined;
+
+    let cats;
+    if (isNewForm) {
+      const pct = (qs, max) => Math.min(100, Math.round(qs.filter(Boolean).reduce((s,q) => s+(q?.points||0),0)/max*100));
+      cats = {
+        'Legal Documents':    pct([raw.q15,raw.q16,raw.q17,raw.q18], 400),
+        'Insurance':          pct([raw.q12,raw.q13,raw.q14], 300),
+        'Finances':           pct([raw.q9,raw.q10,raw.q11], 300),
+        'Household Bills':    pct([raw.q6,raw.q7,raw.q8], 300),
+        'Access & Passwords': pct([raw.q19,raw.q20,raw.q21], 300),
+      };
+      if (raw.q2?.value === 'yes') cats['Kids & Family'] = pct([raw.q22,raw.q23], 200);
+      if (raw.q3?.value === 'yes') cats['Business'] = pct([raw.q24,raw.q25,raw.q26], 300);
+    } else {
+      const pct = (qs, max) => Math.min(100, Math.round(qs.filter(Boolean).reduce((s,q) => s+(q?.points||0),0)/max*100));
+      cats = {
+        'Legal Documents':    pct([raw.q14,raw.q15,raw.q16,raw.q17], 45),
+        'Insurance':          pct([raw.q11,raw.q12,raw.q13], 30),
+        'Finances':           pct([raw.q8,raw.q9,raw.q10], 30),
+        'Household Bills':    pct([raw.q5,raw.q6,raw.q7], 25),
+        'Access & Passwords': pct([raw.q18,raw.q19,raw.q20], 30),
+      };
+    }
+
+    // Render category bars
+    const container = document.getElementById('categoryBarsContainer');
+    const entries = Object.entries(cats);
+    container.innerHTML = entries.map(([name, pct], i) => {
+      const color = pct === 0 ? 'red' : pct < 60 ? 'yellow' : 'green';
+      const colorVar = color === 'red' ? 'var(--red)' : color === 'yellow' ? 'var(--yellow)' : 'var(--green)';
+      const mb = i === entries.length - 1 ? 'margin-bottom:0' : '';
+      return `<div class="cat-row" style="${mb}">
+        <div class="cat-name">${name}</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fill ${color}" style="width:${pct}%"></div></div>
+        <div class="cat-pct" style="color:${colorVar}">${pct}%</div>
+      </div>`;
+    }).join('');
+
+    // Count gaps
     const gapFields = ['has_will','has_poa','has_insurance','beneficiary_confirmed','bills_documented','finances_documented','password_plan','has_executor'];
     let critical = 0, warnings = 0, complete = 0;
     gapFields.forEach(f => {
@@ -622,13 +601,11 @@
       else if (['sort-of','some','think-so','maybe','named','through-work','outdated','list','discussed','partial','yes-verbal'].includes(v)) warnings++;
       else complete++;
     });
-
     document.getElementById('critNum').textContent = critical;
     document.getElementById('warnNum').textContent = warnings;
     document.getElementById('compNum').textContent = complete;
     document.getElementById('gapsBadge').textContent = critical + warnings;
 
-    // Show real data sections
     ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.remove('hidden');
@@ -638,12 +615,11 @@
       if (el) el.classList.add('hidden');
     });
 
-    // Update settings with real data
     if (user) {
       const name = user.user_metadata?.full_name || '—';
-      const settingsEls = document.querySelectorAll('.pi-value');
-      if (settingsEls[0]) settingsEls[0].textContent = name;
-      if (settingsEls[1]) settingsEls[1].textContent = user.email;
+      const els = document.querySelectorAll('.pi-value');
+      if (els[0]) els[0].textContent = name;
+      if (els[1]) els[1].textContent = user.email;
     }
   }
 
@@ -655,7 +631,7 @@
     document.getElementById('warnNum').textContent = '—';
     document.getElementById('compNum').textContent = '—';
     document.getElementById('gapsBadge').textContent = '0';
-
+    document.getElementById('categoryBarsContainer').innerHTML = '<p style="font-size:13px;color:var(--gray);">Complete your assessment to see category scores.</p>';
     ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.add('hidden');
@@ -671,187 +647,16 @@
     window.location.href = 'login.html';
   }
 
-  function showTab(tab, navEl, tabEl) {
+  function showTab(tab, navEl) {
     ['overview','gaps','myplan','shared','settings'].forEach(t => {
       document.getElementById('tab-' + t).classList.add('hidden');
     });
     document.getElementById('tab-' + tab).classList.remove('hidden');
-
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     if (navEl) navEl.classList.add('active');
-
-    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-    if (tabEl) tabEl.classList.add('active');
-
     const titles = { overview:'Overview', gaps:'Gaps', myplan:'My Plan', shared:'Shared Access', settings:'Settings' };
     document.getElementById('pageTitle').textContent = titles[tab];
     closeSidebar();
-  }
-
-  function openSidebar() {
-    document.getElementById('sidebar').classList.add('open');
-    document.getElementById('sidebarOverlay').classList.add('open');
-  }
-
-  function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-  }
-</script>
-</body>
-</html>
-
-  async function loadUserData(user) {
-    // Update sidebar name
-    const name = user.user_metadata?.full_name || user.email;
-    document.getElementById('sidebarName').textContent = name;
-
-    // Toggle off demo mode visually
-    const track = document.getElementById('toggleTrack');
-    const knob = document.getElementById('toggleKnob');
-    const label = document.getElementById('toggleLabel');
-    const badge = document.getElementById('demoBadge');
-    track.classList.add('off'); knob.classList.add('off');
-    label.textContent = 'Demo Mode Off'; label.className = 'toggle-label';
-    badge.style.display = 'none';
-
-    // Load latest assessment
-    const { data: assessments } = await db
-      .from('assessments')
-      .select('*')
-      .eq('email', user.email)
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (assessments && assessments.length > 0) {
-      showRealData(assessments[0]);
-    } else {
-      showEmpty();
-    }
-  }
-
-  function showRealData(assessment) {
-    const score = assessment.score || 0;
-    document.getElementById('scoreNum').innerHTML = score + '<span>/100</span>';
-    document.getElementById('scoreBar').style.width = score + '%';
-
-    // Score bar color
-    const bar = document.getElementById('scoreBar');
-    if (score < 40) bar.style.background = 'var(--red)';
-    else if (score < 70) bar.style.background = 'var(--yellow)';
-    else bar.style.background = 'var(--green)';
-
-    if (score < 40) document.getElementById('scoreSub').textContent = 'Your family has significant gaps to address.';
-    else if (score < 70) document.getElementById('scoreSub').textContent = "You're partway there — some gaps remain.";
-    else document.getElementById('scoreSub').textContent = 'Great — your family is better prepared than most.';
-
-    // Count gaps
-    const gapFields = ['has_will','has_poa','has_insurance','beneficiary_confirmed','bills_documented','finances_documented','password_plan','has_executor'];
-    let critical = 0, warnings = 0, complete = 0;
-    gapFields.forEach(f => {
-      const v = assessment[f];
-      if (!v || v === 'no' || v === 'no-will' || v === 'unsure') critical++;
-      else if (v === 'sort-of' || v === 'some' || v === 'think-so' || v === 'maybe' || v === 'named' || v === 'through-work') warnings++;
-      else complete++;
-    });
-
-    document.getElementById('critNum').textContent = critical;
-    document.getElementById('warnNum').textContent = warnings;
-    document.getElementById('compNum').textContent = complete;
-    document.getElementById('gapsBadge').textContent = critical + warnings;
-
-    // Show real data cards
-    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('hidden');
-    });
-    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
-    });
-
-    // Update settings tab with real user data
-    if (currentUser) {
-      const settingsName = currentUser.user_metadata?.full_name || '—';
-      document.querySelectorAll('.pi-value').forEach((el, i) => {
-        if (i === 0) el.textContent = settingsName;
-        if (i === 1) el.textContent = currentUser.email;
-      });
-    }
-  }
-
-  async function signOut() {
-    await db.auth.signOut();
-    window.location.href = 'login.html';
-  }
-
-  function showTab(tab, navEl, tabEl) {
-    // Hide all tabs
-    ['overview','gaps','myplan','shared','settings'].forEach(t => {
-      document.getElementById('tab-' + t).classList.add('hidden');
-    });
-    document.getElementById('tab-' + tab).classList.remove('hidden');
-
-    // Update sidebar nav
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    if (navEl) navEl.classList.add('active');
-
-    // Update tab bar
-    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-    if (tabEl) tabEl.classList.add('active');
-
-    const titles = { overview:'Overview', gaps:'Gaps', myplan:'My Plan', shared:'Shared Access', settings:'Settings' };
-    document.getElementById('pageTitle').textContent = titles[tab];
-
-    closeSidebar();
-  }
-
-  function toggleDemo() {
-    demoMode = !demoMode;
-    const track = document.getElementById('toggleTrack');
-    const knob = document.getElementById('toggleKnob');
-    const label = document.getElementById('toggleLabel');
-    const badge = document.getElementById('demoBadge');
-
-    if (demoMode) {
-      track.classList.remove('off'); knob.classList.remove('off');
-      label.textContent = 'Demo Mode On'; label.className = 'toggle-label on';
-      badge.style.display = 'inline-block';
-      showDemo();
-    } else {
-      track.classList.add('off'); knob.classList.add('off');
-      label.textContent = 'Demo Mode Off'; label.className = 'toggle-label';
-      badge.style.display = 'none';
-      showEmpty();
-    }
-  }
-
-  function showDemo() {
-    document.getElementById('sidebarName').textContent = 'James Mitchell';
-    document.getElementById('scoreNum').innerHTML = '43<span>/100</span>';
-    document.getElementById('scoreBar').style.width = '43%';
-    document.getElementById('scoreSub').textContent = 'Your family has significant gaps to address.';
-    document.getElementById('critNum').textContent = '3';
-    document.getElementById('warnNum').textContent = '3';
-    document.getElementById('compNum').textContent = '2';
-    document.getElementById('gapsBadge').textContent = '6';
-
-    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => document.getElementById(id).classList.remove('hidden'));
-    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  }
-
-  function showEmpty() {
-    document.getElementById('sidebarName').textContent = 'Your Name';
-    document.getElementById('scoreNum').innerHTML = '—<span>/100</span>';
-    document.getElementById('scoreBar').style.width = '0%';
-    document.getElementById('scoreSub').textContent = 'Complete your assessment to get your score.';
-    document.getElementById('critNum').textContent = '—';
-    document.getElementById('warnNum').textContent = '—';
-    document.getElementById('compNum').textContent = '—';
-    document.getElementById('gapsBadge').textContent = '?';
-
-    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => document.getElementById(id).classList.add('hidden'));
-    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => document.getElementById(id).classList.remove('hidden'));
   }
 
   function openSidebar() {
