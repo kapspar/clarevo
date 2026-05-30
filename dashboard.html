@@ -374,8 +374,8 @@
   </div>
 
   <div class="sidebar-user">
-    <div class="name" id="sidebarName">James Mitchell</div>
-    <div class="email">james@mitchellfamily.ca</div>
+    <div class="name" id="sidebarName">Loading...</div>
+    <div class="email" id="sidebarEmail"></div>
   </div>
 
   <div class="nav-group">
@@ -398,13 +398,7 @@
   </div>
 
   <div class="sidebar-footer">
-    <div class="demo-toggle-wrap" onclick="toggleDemo()">
-      <div class="toggle-track" id="toggleTrack">
-        <div class="toggle-knob" id="toggleKnob"></div>
-      </div>
-      <span class="toggle-label on" id="toggleLabel">Demo Mode On</span>
-    </div>
-    <div style="margin-top:12px;">
+    <div style="margin-top:4px;">
       <a href="login.html" onclick="signOut(); return false;" style="font-size:12px; color:#666; text-decoration:none; display:block; padding:6px 0;">Sign Out</a>
     </div>
   </div>
@@ -419,7 +413,6 @@
   <div class="topbar">
     <h1 id="pageTitle">Overview</h1>
     <div class="topbar-right">
-      <span class="demo-badge" id="demoBadge">👁 Demo Mode</span>
       <a href="form.html" class="btn-primary" style="font-size:13px; padding:10px 18px;">+ Update My Plan</a>
     </div>
   </div>
@@ -573,19 +566,140 @@
   const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
   let currentUser = null;
-  let demoMode = true;
 
-  // Check auth on load
+  // Check auth — redirect to login if not signed in
   db.auth.getSession().then(({ data: { session } }) => {
     if (session) {
       currentUser = session.user;
-      demoMode = false;
       loadUserData(session.user);
+    } else {
+      window.location.href = 'login.html';
     }
-    // If no session, demo mode stays on — no redirect, just show demo
   });
+
+  async function loadUserData(user) {
+    // Update sidebar
+    const name = user.user_metadata?.full_name || user.email;
+    document.getElementById('sidebarName').textContent = name;
+    document.getElementById('sidebarEmail').textContent = user.email;
+
+    // Load latest assessment
+    const { data: assessments } = await db
+      .from('assessments')
+      .select('*')
+      .eq('email', user.email)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (assessments && assessments.length > 0) {
+      showRealData(assessments[0], user);
+    } else {
+      showEmpty();
+    }
+  }
+
+  function showRealData(a, user) {
+    const score = a.score || 0;
+    document.getElementById('scoreNum').innerHTML = score + '<span>/100</span>';
+    document.getElementById('scoreBar').style.width = score + '%';
+
+    const bar = document.getElementById('scoreBar');
+    if (score < 40) bar.style.background = 'var(--red)';
+    else if (score < 70) bar.style.background = 'var(--yellow)';
+    else bar.style.background = 'var(--green)';
+
+    if (score < 40) document.getElementById('scoreSub').textContent = 'Your family has significant gaps to address.';
+    else if (score < 70) document.getElementById('scoreSub').textContent = "You're partway there — some gaps remain.";
+    else document.getElementById('scoreSub').textContent = 'Great — your family is better prepared than most.';
+
+    // Count gaps from assessment fields
+    const gapFields = ['has_will','has_poa','has_insurance','beneficiary_confirmed','bills_documented','finances_documented','password_plan','has_executor'];
+    let critical = 0, warnings = 0, complete = 0;
+    gapFields.forEach(f => {
+      const v = a[f];
+      if (!v || v === 'no' || v === 'no-will' || v === 'unsure') critical++;
+      else if (['sort-of','some','think-so','maybe','named','through-work','outdated','list','discussed','partial','yes-verbal'].includes(v)) warnings++;
+      else complete++;
+    });
+
+    document.getElementById('critNum').textContent = critical;
+    document.getElementById('warnNum').textContent = warnings;
+    document.getElementById('compNum').textContent = complete;
+    document.getElementById('gapsBadge').textContent = critical + warnings;
+
+    // Show real data sections
+    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    });
+    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+
+    // Update settings with real data
+    if (user) {
+      const name = user.user_metadata?.full_name || '—';
+      const settingsEls = document.querySelectorAll('.pi-value');
+      if (settingsEls[0]) settingsEls[0].textContent = name;
+      if (settingsEls[1]) settingsEls[1].textContent = user.email;
+    }
+  }
+
+  function showEmpty() {
+    document.getElementById('scoreNum').innerHTML = '—<span>/100</span>';
+    document.getElementById('scoreBar').style.width = '0%';
+    document.getElementById('scoreSub').textContent = 'Complete your assessment to get your score.';
+    document.getElementById('critNum').textContent = '—';
+    document.getElementById('warnNum').textContent = '—';
+    document.getElementById('compNum').textContent = '—';
+    document.getElementById('gapsBadge').textContent = '0';
+
+    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    });
+  }
+
+  async function signOut() {
+    await db.auth.signOut();
+    window.location.href = 'login.html';
+  }
+
+  function showTab(tab, navEl, tabEl) {
+    ['overview','gaps','myplan','shared','settings'].forEach(t => {
+      document.getElementById('tab-' + t).classList.add('hidden');
+    });
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+    if (tabEl) tabEl.classList.add('active');
+
+    const titles = { overview:'Overview', gaps:'Gaps', myplan:'My Plan', shared:'Shared Access', settings:'Settings' };
+    document.getElementById('pageTitle').textContent = titles[tab];
+    closeSidebar();
+  }
+
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+</script>
+</body>
+</html>
 
   async function loadUserData(user) {
     // Update sidebar name
