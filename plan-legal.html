@@ -8,263 +8,138 @@
   <style>
     body { background: var(--gray-light); }
 
-    .plan-wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 40px 24px 80px;
-    }
+    .plan-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 100px; }
 
-    /* BREADCRUMB */
-    .breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--gray);
-      margin-bottom: 28px;
-    }
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray); margin-bottom: 28px; }
     .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 500; }
-    .breadcrumb a:hover { text-decoration: underline; }
     .breadcrumb-sep { color: var(--border); }
 
-    /* PAGE HEADER */
-    .plan-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 32px;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .plan-header-left h1 {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
-    }
-    .plan-header-left p {
-      font-size: 14px;
-      color: var(--gray);
-      line-height: 1.5;
-    }
+    .plan-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; gap: 16px; flex-wrap: wrap; }
+    .plan-header-left h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+    .plan-header-left p { font-size: 14px; color: var(--gray); line-height: 1.5; }
 
-    /* SCORE BADGE */
-    .score-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 16px 24px;
-      box-shadow: var(--shadow);
-      min-width: 100px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .score-badge-num {
-      font-size: 32px;
-      font-weight: 800;
-      line-height: 1;
-      color: var(--red);
-    }
+    .score-badge { display: flex; flex-direction: column; align-items: center; background: var(--white); border-radius: var(--radius-lg); padding: 16px 24px; box-shadow: var(--shadow); min-width: 100px; text-align: center; flex-shrink: 0; }
+    .score-badge-num { font-size: 32px; font-weight: 800; line-height: 1; color: var(--red); }
     .score-badge-num.fair { color: var(--yellow); }
     .score-badge-num.good { color: var(--green); }
-    .score-badge-label {
-      font-size: 11px;
-      color: var(--gray);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 4px;
-    }
+    .score-badge-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
 
-    /* SECTION CARDS */
-    .plan-section {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-    }
+    .plan-section { background: var(--white); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px; }
 
-    .plan-section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .plan-section-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
+    .plan-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .plan-section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
     .plan-section-icon.blue { background: var(--blue-light); }
     .plan-section-icon.green { background: #f0fdf4; }
     .plan-section-icon.yellow { background: #fffbeb; }
-    .plan-section-icon.red { background: #fef2f2; }
-
     .plan-section-title { font-size: 16px; font-weight: 700; color: var(--dark); }
     .plan-section-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
 
-    .section-complete-badge {
-      margin-left: auto;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      flex-shrink: 0;
-    }
-    .section-complete-badge.complete { background: #f0fdf4; color: var(--green); }
-    .section-complete-badge.incomplete { background: #fef2f2; color: var(--red); }
-    .section-complete-badge.partial { background: #fffbeb; color: var(--yellow); }
+    .section-badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; flex-shrink: 0; }
+    .section-badge.complete { background: #f0fdf4; color: var(--green); }
+    .section-badge.incomplete { background: #fef2f2; color: var(--red); }
+    .section-badge.partial { background: #fffbeb; color: var(--yellow); }
 
-    /* FORM FIELDS */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
     .form-row.single { grid-template-columns: 1fr; }
-    .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+    .form-row:last-child { margin-bottom: 0; }
 
     .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--dark);
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--dark); }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 11px 14px; border: 2px solid var(--border); border-radius: var(--radius);
+      font-size: 14px; font-family: var(--font); color: var(--dark);
+      outline: none; transition: border 0.2s; background: var(--white);
     }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      padding: 11px 14px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-family: var(--font);
-      color: var(--dark);
-      outline: none;
-      transition: border 0.2s;
-      background: var(--white);
-    }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus { border-color: var(--blue); }
-    .form-group textarea { resize: vertical; min-height: 80px; }
-    .form-group .hint {
-      font-size: 11px;
-      color: var(--gray);
-      line-height: 1.4;
-    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue); }
+    .form-group .hint { font-size: 11px; color: var(--gray); line-height: 1.4; }
 
-    /* TOGGLE SWITCH */
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid #f5f5f5;
-      margin-bottom: 16px;
-    }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f5f5f5; margin-bottom: 16px; }
     .toggle-row:last-of-type { border-bottom: none; margin-bottom: 0; }
     .toggle-row-label { font-size: 14px; font-weight: 600; color: var(--dark); }
     .toggle-row-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
 
-    .toggle-switch {
-      position: relative;
-      width: 44px; height: 24px;
-      flex-shrink: 0;
-    }
+    .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider {
-      position: absolute;
-      inset: 0;
-      background: var(--border);
-      border-radius: 24px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .toggle-slider:before {
-      content: '';
-      position: absolute;
-      width: 18px; height: 18px;
-      left: 3px; top: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.2s;
-    }
+    .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 24px; cursor: pointer; transition: background 0.2s; }
+    .toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; }
     .toggle-switch input:checked + .toggle-slider { background: var(--blue); }
     .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
 
-    /* CONDITIONAL FIELDS */
-    .conditional-fields {
-      background: var(--gray-light);
+    .conditional-fields { background: var(--gray-light); border-radius: var(--radius); padding: 20px; margin-top: 4px; display: none; }
+    .conditional-fields.show { display: block; }
+
+    /* UPLOAD ZONE */
+    .upload-zone {
+      border: 2px dashed var(--border);
       border-radius: var(--radius);
       padding: 20px;
-      margin-top: 16px;
-      display: none;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--gray-light);
+      margin-top: 12px;
     }
-    .conditional-fields.show { display: block; }
-    .conditional-fields .form-row:last-child { margin-bottom: 0; }
+    .upload-zone:hover { border-color: var(--blue); background: var(--blue-light); }
+    .upload-zone.dragover { border-color: var(--blue); background: var(--blue-light); }
+    .upload-zone input { display: none; }
+    .upload-icon { font-size: 24px; margin-bottom: 6px; }
+    .upload-label { font-size: 13px; font-weight: 600; color: var(--dark); }
+    .upload-hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+    /* UPLOADED FILE */
+    .uploaded-file {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-top: 10px;
+    }
+    .uploaded-file-icon { font-size: 20px; flex-shrink: 0; }
+    .uploaded-file-name { font-size: 13px; font-weight: 600; color: var(--dark); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .uploaded-file-size { font-size: 11px; color: var(--gray); }
+    .uploaded-file-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .file-btn { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer; font-family: var(--font); }
+    .file-btn.view { background: var(--blue-light); color: var(--blue); }
+    .file-btn.delete { background: #fef2f2; color: var(--red); }
+
+    .uploading-indicator { font-size: 12px; color: var(--blue); margin-top: 8px; display: none; }
+
+    /* WILLFUL CALLOUT */
+    .willful-callout {
+      background: var(--blue-light);
+      border: 1px solid var(--blue-mid);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .willful-callout-icon { font-size: 18px; flex-shrink: 0; }
+    .willful-callout-text { font-size: 13px; color: var(--dark); line-height: 1.5; }
+    .willful-callout-text a { color: var(--blue); font-weight: 600; text-decoration: none; }
+    .willful-callout-text a:hover { text-decoration: underline; }
 
     /* SAVE BAR */
-    .save-bar {
-      position: sticky;
-      bottom: 0;
-      background: var(--white);
-      border-top: 1px solid var(--border);
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 0 -24px -80px;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
-      z-index: 50;
-    }
+    .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 50; }
     .save-status { font-size: 13px; color: var(--gray); }
     .save-status.saved { color: var(--green); font-weight: 600; }
     .save-status.saving { color: var(--blue); }
     .save-status.error { color: var(--red); }
-
-    .save-btn {
-      background: var(--blue);
-      color: white;
-      border: none;
-      padding: 12px 28px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: var(--font);
-      transition: background 0.2s;
-    }
+    .save-btn { background: var(--blue); color: white; border: none; padding: 12px 28px; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.2s; }
     .save-btn:hover { background: #2563eb; }
     .save-btn:disabled { background: #93c5fd; cursor: not-allowed; }
 
-    /* LEARN LINK */
-    .learn-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--blue);
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 4px;
-    }
-    .learn-link:hover { text-decoration: underline; }
+    .learn-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--blue); text-decoration: none; font-weight: 600; margin-top: 4px; }
 
-    /* RESPONSIVE */
     @media (max-width: 600px) {
       .plan-wrap { padding: 24px 16px 100px; }
       .form-row { grid-template-columns: 1fr; }
-      .form-row.triple { grid-template-columns: 1fr; }
       .plan-header { flex-direction: column; }
-      .save-bar { margin: 0 -16px -100px; padding: 14px 16px; }
+      .save-bar { padding: 12px 16px; }
     }
   </style>
 </head>
@@ -275,7 +150,7 @@
   <ul class="nav-links">
     <li><a href="dashboard.html">Dashboard</a></li>
     <li><a href="form.html">Retake Assessment</a></li>
-    <li><a href="login.html" id="signOutLink">Sign Out</a></li>
+    <li><a href="#" onclick="signOut()">Sign Out</a></li>
   </ul>
   <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
@@ -287,7 +162,6 @@
 
 <div class="plan-wrap">
 
-  <!-- BREADCRUMB -->
   <div class="breadcrumb">
     <a href="dashboard.html">Dashboard</a>
     <span class="breadcrumb-sep">›</span>
@@ -296,11 +170,10 @@
     <span>Legal Documents</span>
   </div>
 
-  <!-- HEADER -->
   <div class="plan-header">
     <div class="plan-header-left">
       <h1>📄 Legal Documents</h1>
-      <p>Document your will, powers of attorney, and executor details so your family has everything they need.</p>
+      <p>Document your will, powers of attorney, and executor details — and upload the actual documents so your family can find everything in one place.</p>
       <a href="learn-executor.html" class="learn-link">📖 Learn about executors and wills →</a>
     </div>
     <div class="score-badge">
@@ -309,21 +182,21 @@
     </div>
   </div>
 
-  <!-- WILL SECTION -->
+  <!-- WILL -->
   <div class="plan-section">
     <div class="plan-section-header">
       <div class="plan-section-icon blue">📄</div>
       <div>
         <div class="plan-section-title">Your Will</div>
-        <div class="plan-section-desc">A will tells your family what to do with your estate after you pass.</div>
+        <div class="plan-section-desc">Tells your family what to do with your estate after you pass.</div>
       </div>
-      <div class="section-complete-badge incomplete" id="willBadge">Incomplete</div>
+      <div class="section-badge incomplete" id="willBadge">Incomplete</div>
     </div>
 
     <div class="toggle-row">
       <div>
         <div class="toggle-row-label">Do you have a will?</div>
-        <div class="toggle-row-desc">If you don't have one, <a href="https://www.willful.co" target="_blank" style="color:var(--blue); font-weight:600;">Willful</a> can help you create one online for under $200.</div>
+        <div class="toggle-row-desc">Even a basic will is better than none.</div>
       </div>
       <label class="toggle-switch">
         <input type="checkbox" id="hasWill" onchange="toggleFields('willFields', this.checked); updateScore()">
@@ -335,7 +208,7 @@
       <div class="form-row">
         <div class="form-group">
           <label>Where is your will stored?</label>
-          <select id="willLocation">
+          <select id="willLocation" onchange="updateScore()">
             <option value="">Select location...</option>
             <option value="lawyer">At my lawyer's office</option>
             <option value="home-safe">Home safe</option>
@@ -347,8 +220,8 @@
         </div>
         <div class="form-group">
           <label>Year last updated</label>
-          <input type="number" id="willLastUpdated" placeholder="e.g. 2023" min="1990" max="2030">
-          <span class="hint">A will should be reviewed every 3-5 years or after major life changes.</span>
+          <input type="number" id="willLastUpdated" placeholder="e.g. 2024" min="1990" max="2030" oninput="updateScore()">
+          <span class="hint">Review every 3-5 years or after major life changes.</span>
         </div>
       </div>
       <div class="form-row">
@@ -361,6 +234,51 @@
           <input type="tel" id="willLawyerPhone" placeholder="e.g. 905-555-0100">
         </div>
       </div>
+
+      <!-- Created with Willful -->
+      <div class="toggle-row" style="margin-top:8px;">
+        <div>
+          <div class="toggle-row-label">Created with Willful?</div>
+          <div class="toggle-row-desc">If you used Willful's online service, we can note your account email for reference.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="createdWithWillful" onchange="toggleFields('willfulFields', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="conditional-fields" id="willfulFields" style="margin-top:0;">
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Willful account email</label>
+            <input type="email" id="willfulEmail" placeholder="The email you used to sign up at willful.co">
+            <span class="hint">This is stored privately and only visible to you and anyone you share access with.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Will upload -->
+      <div style="margin-top:16px;">
+        <div style="font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Upload your will document</div>
+        <div style="font-size:11px; color:var(--gray); margin-bottom:8px;">PDF, JPG, or PNG. Stored privately and securely — only you and people you share access with can view it.</div>
+        <div id="willUploadZone" class="upload-zone" onclick="document.getElementById('willFileInput').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'will')">
+          <input type="file" id="willFileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event, 'will')">
+          <div class="upload-icon">📎</div>
+          <div class="upload-label">Click to upload or drag and drop</div>
+          <div class="upload-hint">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <div class="uploading-indicator" id="willUploading">⏳ Uploading...</div>
+        <div id="willFileDisplay"></div>
+      </div>
+
+      <!-- No will callout -->
+    </div>
+
+    <!-- If no will, show Willful suggestion -->
+    <div id="noWillCallout" class="willful-callout" style="margin-top:8px;">
+      <div class="willful-callout-icon">💡</div>
+      <div class="willful-callout-text">
+        Don't have a will yet? <a href="https://www.willful.co" target="_blank">Willful</a> makes it easy to create a legally valid Canadian will online for under $200 — in about an hour. It's one of the most important things you can do for your family.
+      </div>
     </div>
   </div>
 
@@ -372,7 +290,7 @@
         <div class="plan-section-title">Power of Attorney — Property</div>
         <div class="plan-section-desc">Gives someone authority to manage your finances if you're incapacitated.</div>
       </div>
-      <div class="section-complete-badge incomplete" id="poaPropBadge">Incomplete</div>
+      <div class="section-badge incomplete" id="poaPropBadge">Incomplete</div>
     </div>
 
     <div class="toggle-row">
@@ -381,7 +299,7 @@
         <div class="toggle-row-desc">Different from your will — this is for while you're still alive but unable to manage things.</div>
       </div>
       <label class="toggle-switch">
-        <input type="checkbox" id="hasPoaProperty" onchange="toggleFields('poaPropertyFields', this.checked); updateScore()">
+        <input type="checkbox" id="hasPoaProperty" onchange="toggleFields('poaPropertyFields', this.checked); toggleEl('noPoaPropCallout', !this.checked); updateScore()">
         <span class="toggle-slider"></span>
       </label>
     </div>
@@ -390,11 +308,11 @@
       <div class="form-row">
         <div class="form-group">
           <label>Who is named as your attorney?</label>
-          <input type="text" id="poaPropertyPerson" placeholder="e.g. Sarah Mitchell">
+          <input type="text" id="poaPropertyPerson" placeholder="e.g. Sarah Mitchell" oninput="updateScore()">
         </div>
         <div class="form-group">
           <label>Where is the document stored?</label>
-          <select id="poaPropertyLocation">
+          <select id="poaPropertyLocation" onchange="updateScore()">
             <option value="">Select location...</option>
             <option value="lawyer">At my lawyer's office</option>
             <option value="home-safe">Home safe</option>
@@ -404,6 +322,22 @@
           </select>
         </div>
       </div>
+      <div style="margin-top:8px;">
+        <div style="font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Upload POA document</div>
+        <div id="poaPropUploadZone" class="upload-zone" onclick="document.getElementById('poaPropFileInput').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'poa-property')">
+          <input type="file" id="poaPropFileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event, 'poa-property')">
+          <div class="upload-icon">📎</div>
+          <div class="upload-label">Click to upload or drag and drop</div>
+          <div class="upload-hint">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <div class="uploading-indicator" id="poaPropUploading">⏳ Uploading...</div>
+        <div id="poaPropFileDisplay"></div>
+      </div>
+    </div>
+
+    <div id="noPoaPropCallout" class="willful-callout" style="margin-top:8px;">
+      <div class="willful-callout-icon">💡</div>
+      <div class="willful-callout-text">Don't have a POA for property? <a href="https://www.willful.co" target="_blank">Willful</a> can help you create one alongside your will.</div>
     </div>
   </div>
 
@@ -415,7 +349,7 @@
         <div class="plan-section-title">Power of Attorney — Personal Care</div>
         <div class="plan-section-desc">Gives someone authority to make healthcare decisions on your behalf.</div>
       </div>
-      <div class="section-complete-badge incomplete" id="poaCareBadge">Incomplete</div>
+      <div class="section-badge incomplete" id="poaCareBadge">Incomplete</div>
     </div>
 
     <div class="toggle-row">
@@ -424,18 +358,45 @@
         <div class="toggle-row-desc">This person makes medical and care decisions if you can't make them yourself.</div>
       </div>
       <label class="toggle-switch">
-        <input type="checkbox" id="hasPoaCare" onchange="toggleFields('poaCareFields', this.checked); updateScore()">
+        <input type="checkbox" id="hasPoaCare" onchange="toggleFields('poaCareFields', this.checked); toggleEl('noPoaCareCallout', !this.checked); updateScore()">
         <span class="toggle-slider"></span>
       </label>
     </div>
 
     <div class="conditional-fields" id="poaCareFields">
-      <div class="form-row single">
+      <div class="form-row">
         <div class="form-group">
           <label>Who is named for personal care decisions?</label>
-          <input type="text" id="poaCarePerson" placeholder="e.g. Sarah Mitchell">
+          <input type="text" id="poaCarePerson" placeholder="e.g. Sarah Mitchell" oninput="updateScore()">
+        </div>
+        <div class="form-group">
+          <label>Where is the document stored?</label>
+          <select id="poaCareLocation" onchange="updateScore()">
+            <option value="">Select location...</option>
+            <option value="lawyer">At my lawyer's office</option>
+            <option value="home-safe">Home safe</option>
+            <option value="safety-deposit">Safety deposit box</option>
+            <option value="filing-cabinet">Filing cabinet at home</option>
+            <option value="other">Other</option>
+          </select>
         </div>
       </div>
+      <div style="margin-top:8px;">
+        <div style="font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Upload POA document</div>
+        <div id="poaCareUploadZone" class="upload-zone" onclick="document.getElementById('poaCareFileInput').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'poa-care')">
+          <input type="file" id="poaCareFileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event, 'poa-care')">
+          <div class="upload-icon">📎</div>
+          <div class="upload-label">Click to upload or drag and drop</div>
+          <div class="upload-hint">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <div class="uploading-indicator" id="poaCareUploading">⏳ Uploading...</div>
+        <div id="poaCareFileDisplay"></div>
+      </div>
+    </div>
+
+    <div id="noPoaCareCallout" class="willful-callout" style="margin-top:8px;">
+      <div class="willful-callout-icon">💡</div>
+      <div class="willful-callout-text">Don't have a POA for personal care? <a href="https://www.willful.co" target="_blank">Willful</a> can help you create one as part of your estate plan.</div>
     </div>
   </div>
 
@@ -447,7 +408,7 @@
         <div class="plan-section-title">Your Executor</div>
         <div class="plan-section-desc">The person responsible for carrying out your will after you pass.</div>
       </div>
-      <div class="section-complete-badge incomplete" id="executorBadge">Incomplete</div>
+      <div class="section-badge incomplete" id="executorBadge">Incomplete</div>
     </div>
 
     <div class="form-row">
@@ -456,7 +417,7 @@
         <input type="text" id="executorName" placeholder="e.g. Robert Mitchell" oninput="updateScore()">
       </div>
       <div class="form-group">
-        <label>Executor's phone number</label>
+        <label>Executor's phone</label>
         <input type="tel" id="executorPhone" placeholder="e.g. 416-555-0100" oninput="updateScore()">
       </div>
     </div>
@@ -465,18 +426,21 @@
         <label>Executor's email (optional)</label>
         <input type="email" id="executorEmail" placeholder="e.g. robert@email.com">
       </div>
-      <div class="form-group" style="justify-content:flex-end; padding-top:24px;">
-        <div class="toggle-row" style="padding:0; border:none; margin:0;">
-          <div>
-            <div class="toggle-row-label">Does your executor know?</div>
-            <div class="toggle-row-desc">Have you told them they're named?</div>
-          </div>
-          <label class="toggle-switch" style="margin-left:16px;">
-            <input type="checkbox" id="executorKnows" onchange="updateScore()">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
+      <div class="form-group">
+        <label>Alternate executor (optional)</label>
+        <input type="text" id="executorAlt" placeholder="Backup if primary is unavailable">
+        <span class="hint">Recommended in case your primary executor can't serve.</span>
       </div>
+    </div>
+    <div class="toggle-row" style="margin-top:8px;">
+      <div>
+        <div class="toggle-row-label">Does your executor know they've been named?</div>
+        <div class="toggle-row-desc">Have you had the conversation with them?</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="executorKnows" onchange="updateScore()">
+        <span class="toggle-slider"></span>
+      </label>
     </div>
   </div>
 
@@ -486,9 +450,9 @@
       <div class="plan-section-icon green">📦</div>
       <div>
         <div class="plan-section-title">Document Storage</div>
-        <div class="plan-section-desc">Where your family can find all your important documents.</div>
+        <div class="plan-section-desc">Where your family can find all your important legal documents.</div>
       </div>
-      <div class="section-complete-badge incomplete" id="storageBadge">Incomplete</div>
+      <div class="section-badge incomplete" id="storageBadge">Incomplete</div>
     </div>
 
     <div class="form-row">
@@ -500,20 +464,20 @@
           <option value="home-safe">Home safe</option>
           <option value="safety-deposit">Safety deposit box</option>
           <option value="filing-cabinet">Filing cabinet</option>
-          <option value="digital">Digital (cloud storage)</option>
+          <option value="digital">Digital — cloud storage</option>
           <option value="multiple">Multiple locations</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Additional notes for your family</label>
-        <input type="text" id="docStorageNotes" placeholder="e.g. Safe code is in 1Password, key is in kitchen drawer">
+        <label>Notes for your family</label>
+        <input type="text" id="docStorageNotes" placeholder="e.g. Safe code in 1Password, key in kitchen drawer">
       </div>
     </div>
   </div>
 
   <!-- SAVE BAR -->
   <div class="save-bar">
-    <div class="save-status" id="saveStatus">All changes will be saved securely.</div>
+    <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
     <button class="save-btn" id="saveBtn" onclick="saveData()">Save Legal Documents</button>
   </div>
 
@@ -527,6 +491,9 @@
   let currentUser = null;
   let existingRecordId = null;
 
+  // Uploaded file paths stored per category
+  const uploadedFiles = { will: null, 'poa-property': null, 'poa-care': null };
+
   // Auth check
   db.auth.getSession().then(({ data: { session } }) => {
     if (!session) { window.location.href = 'login.html'; return; }
@@ -534,72 +501,182 @@
     loadExistingData();
   });
 
-  // ── LOAD EXISTING DATA ──
+  // ── LOAD ──
   async function loadExistingData() {
-    const { data } = await db
-      .from('legal_documents')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .limit(1);
+    const { data } = await db.from('legal_documents').select('*').eq('user_id', currentUser.id).limit(1);
+    if (!data || data.length === 0) return;
+    const d = data[0];
+    existingRecordId = d.id;
 
-    if (data && data.length > 0) {
-      const d = data[0];
-      existingRecordId = d.id;
+    setToggle('hasWill', d.has_will);
+    setVal('willLocation', d.will_location);
+    setVal('willLastUpdated', d.will_last_updated);
+    setVal('willLawyerName', d.will_lawyer_name);
+    setVal('willLawyerPhone', d.will_lawyer_phone);
+    setToggle('createdWithWillful', d.created_with_willful);
+    setVal('willfulEmail', d.willful_email);
 
-      // Populate fields
-      setToggle('hasWill', d.has_will);
-      setVal('willLocation', d.will_location);
-      setVal('willLastUpdated', d.will_last_updated);
-      setVal('willLawyerName', d.will_lawyer_name);
-      setVal('willLawyerPhone', d.will_lawyer_phone);
+    setToggle('hasPoaProperty', d.has_poa_property);
+    setVal('poaPropertyPerson', d.poa_property_person);
+    setVal('poaPropertyLocation', d.poa_property_location);
 
-      setToggle('hasPoaProperty', d.has_poa_property);
-      setVal('poaPropertyPerson', d.poa_property_person);
-      setVal('poaPropertyLocation', d.poa_property_location);
+    setToggle('hasPoaCare', d.has_poa_care);
+    setVal('poaCarePerson', d.poa_care_person);
+    setVal('poaCareLocation', d.poa_care_location);
 
-      setToggle('hasPoaCare', d.has_poa_care);
-      setVal('poaCarePerson', d.poa_care_person);
+    setVal('executorName', d.executor_name);
+    setVal('executorPhone', d.executor_phone);
+    setVal('executorEmail', d.executor_email);
+    setVal('executorAlt', d.executor_alt);
+    setToggle('executorKnows', d.executor_knows);
 
-      setVal('executorName', d.executor_name);
-      setVal('executorPhone', d.executor_phone);
-      setVal('executorEmail', d.executor_email);
-      setToggle('executorKnows', d.executor_knows);
+    setVal('docStorageLocation', d.doc_storage_location);
+    setVal('docStorageNotes', d.doc_storage_notes);
 
-      setVal('docStorageLocation', d.doc_storage_location);
-      setVal('docStorageNotes', d.doc_storage_notes);
+    // Show conditional fields
+    if (d.has_will) { toggleFields('willFields', true); toggleEl('noWillCallout', false); }
+    if (d.created_with_willful) toggleFields('willfulFields', true);
+    if (d.has_poa_property) { toggleFields('poaPropertyFields', true); toggleEl('noPoaPropCallout', false); }
+    if (d.has_poa_care) { toggleFields('poaCareFields', true); toggleEl('noPoaCareCallout', false); }
 
-      // Show conditional fields
-      if (d.has_will) toggleFields('willFields', true);
-      if (d.has_poa_property) toggleFields('poaPropertyFields', true);
-      if (d.has_poa_care) toggleFields('poaCareFields', true);
+    // Load existing uploaded files
+    if (d.will_file_path) { uploadedFiles.will = d.will_file_path; showUploadedFile('will', d.will_file_path); }
+    if (d.poa_property_file_path) { uploadedFiles['poa-property'] = d.poa_property_file_path; showUploadedFile('poa-property', d.poa_property_file_path); }
+    if (d.poa_care_file_path) { uploadedFiles['poa-care'] = d.poa_care_file_path; showUploadedFile('poa-care', d.poa_care_file_path); }
 
-      updateScore();
-      document.getElementById('saveStatus').textContent = 'Last saved — loading your data.';
-    }
+    updateScore();
   }
 
-  function setVal(id, val) {
-    const el = document.getElementById(id);
-    if (el && val) el.value = val;
-  }
+  function setVal(id, val) { const el = document.getElementById(id); if (el && val) el.value = val; }
+  function setToggle(id, val) { const el = document.getElementById(id); if (el) el.checked = !!val; }
 
-  function setToggle(id, val) {
-    const el = document.getElementById(id);
-    if (el) el.checked = !!val;
-  }
-
-  // ── TOGGLE CONDITIONAL FIELDS ──
   function toggleFields(id, show) {
     const el = document.getElementById(id);
     if (el) el.classList.toggle('show', show);
   }
 
-  // ── SCORE CALCULATION ──
-  function updateScore() {
-    let points = 0;
-    let max = 0;
+  function toggleEl(id, show) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? '' : 'none';
+  }
 
-    // Will — 25 points
+  // Show/hide no-will callout when toggle changes
+  document.getElementById('hasWill').addEventListener('change', function() {
+    toggleEl('noWillCallout', !this.checked);
+  });
+
+  // ── FILE UPLOADS ──
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('dragover');
+  }
+
+  function handleDrop(e, category) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) uploadFile(file, category);
+  }
+
+  function handleFileSelect(e, category) {
+    const file = e.target.files[0];
+    if (file) uploadFile(file, category);
+  }
+
+  async function uploadFile(file, category) {
+    if (!currentUser) return;
+
+    // Validate
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+    if (!allowed.includes(file.type)) {
+      alert('Please upload a PDF, JPG, or PNG file.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File must be under 10MB.');
+      return;
+    }
+
+    // Show uploading state
+    const indicator = document.getElementById(category === 'will' ? 'willUploading' : category === 'poa-property' ? 'poaPropUploading' : 'poaCareUploading');
+    indicator.style.display = 'block';
+
+    const ext = file.name.split('.').pop();
+    const path = `${currentUser.id}/legal/${category}-${Date.now()}.${ext}`;
+
+    try {
+      // Delete old file if exists
+      if (uploadedFiles[category]) {
+        await db.storage.from('documents').remove([uploadedFiles[category]]);
+      }
+
+      const { error } = await db.storage.from('documents').upload(path, file, { upsert: true });
+      if (error) throw error;
+
+      uploadedFiles[category] = path;
+      indicator.style.display = 'none';
+      showUploadedFile(category, path, file.name, file.size);
+
+      // Auto-save file path
+      await saveFilePath(category, path);
+
+    } catch (err) {
+      console.error('Upload error:', err);
+      indicator.style.display = 'none';
+      alert('Upload failed. Please try again.');
+    }
+  }
+
+  function showUploadedFile(category, path, fileName, fileSize) {
+    const displayId = category === 'will' ? 'willFileDisplay' : category === 'poa-property' ? 'poaPropFileDisplay' : 'poaCareFileDisplay';
+    const displayName = fileName || path.split('/').pop();
+    const sizeText = fileSize ? formatFileSize(fileSize) : '';
+
+    document.getElementById(displayId).innerHTML = `
+      <div class="uploaded-file">
+        <div class="uploaded-file-icon">📄</div>
+        <div>
+          <div class="uploaded-file-name">${displayName}</div>
+          ${sizeText ? `<div class="uploaded-file-size">${sizeText}</div>` : ''}
+        </div>
+        <div class="uploaded-file-actions">
+          <button class="file-btn view" onclick="viewFile('${path}')">View</button>
+          <button class="file-btn delete" onclick="deleteFile('${category}', '${path}')">Remove</button>
+        </div>
+      </div>`;
+  }
+
+  async function viewFile(path) {
+    const { data } = await db.storage.from('documents').createSignedUrl(path, 60);
+    if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+  }
+
+  async function deleteFile(category, path) {
+    if (!confirm('Remove this document?')) return;
+    await db.storage.from('documents').remove([path]);
+    uploadedFiles[category] = null;
+    const displayId = category === 'will' ? 'willFileDisplay' : category === 'poa-property' ? 'poaPropFileDisplay' : 'poaCareFileDisplay';
+    document.getElementById(displayId).innerHTML = '';
+    await saveFilePath(category, null);
+  }
+
+  async function saveFilePath(category, path) {
+    if (!existingRecordId) return;
+    const field = category === 'will' ? 'will_file_path' : category === 'poa-property' ? 'poa_property_file_path' : 'poa_care_file_path';
+    await db.from('legal_documents').update({ [field]: path }).eq('id', existingRecordId);
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+
+  // ── SCORE ──
+  function updateScore() {
+    let points = 0, max = 0;
+
+    // Will — 25pts
     max += 25;
     const hasWill = document.getElementById('hasWill').checked;
     if (hasWill) {
@@ -609,7 +686,7 @@
     }
     updateBadge('willBadge', hasWill && document.getElementById('willLocation').value ? 'complete' : hasWill ? 'partial' : 'incomplete');
 
-    // POA Property — 20 points
+    // POA Property — 20pts
     max += 20;
     const hasPOAProp = document.getElementById('hasPoaProperty').checked;
     if (hasPOAProp) {
@@ -618,7 +695,7 @@
     }
     updateBadge('poaPropBadge', hasPOAProp && document.getElementById('poaPropertyPerson').value ? 'complete' : hasPOAProp ? 'partial' : 'incomplete');
 
-    // POA Care — 20 points
+    // POA Care — 20pts
     max += 20;
     const hasPOACare = document.getElementById('hasPoaCare').checked;
     if (hasPOACare) {
@@ -627,7 +704,7 @@
     }
     updateBadge('poaCareBadge', hasPOACare && document.getElementById('poaCarePerson').value ? 'complete' : hasPOACare ? 'partial' : 'incomplete');
 
-    // Executor — 25 points
+    // Executor — 25pts
     max += 25;
     const execName = document.getElementById('executorName').value;
     const execPhone = document.getElementById('executorPhone').value;
@@ -637,32 +714,29 @@
     if (execKnows) points += 10;
     updateBadge('executorBadge', execName && execKnows ? 'complete' : execName ? 'partial' : 'incomplete');
 
-    // Storage — 10 points
+    // Storage — 10pts
     max += 10;
     const storageLocation = document.getElementById('docStorageLocation').value;
     if (storageLocation) points += 10;
     updateBadge('storageBadge', storageLocation ? 'complete' : 'incomplete');
 
-    // Calculate percentage
     const score = Math.round((points / max) * 100);
     const scoreEl = document.getElementById('categoryScore');
     scoreEl.textContent = score + '%';
     scoreEl.className = 'score-badge-num' + (score >= 80 ? ' good' : score >= 50 ? ' fair' : '');
-
     return score;
   }
 
   function updateBadge(id, status) {
     const el = document.getElementById(id);
     if (!el) return;
-    el.className = 'section-complete-badge ' + (status === 'complete' ? 'complete' : status === 'partial' ? 'partial' : 'incomplete');
+    el.className = 'section-badge ' + status;
     el.textContent = status === 'complete' ? 'Complete ✓' : status === 'partial' ? 'Partial' : 'Incomplete';
   }
 
-  // ── SAVE DATA ──
+  // ── SAVE ──
   async function saveData() {
     if (!currentUser) return;
-
     const btn = document.getElementById('saveBtn');
     const status = document.getElementById('saveStatus');
     btn.disabled = true;
@@ -679,17 +753,24 @@
       will_last_updated: document.getElementById('willLastUpdated').value || null,
       will_lawyer_name: document.getElementById('willLawyerName').value || null,
       will_lawyer_phone: document.getElementById('willLawyerPhone').value || null,
+      created_with_willful: document.getElementById('createdWithWillful').checked,
+      willful_email: document.getElementById('willfulEmail').value || null,
+      will_file_path: uploadedFiles.will || null,
 
       has_poa_property: document.getElementById('hasPoaProperty').checked,
       poa_property_person: document.getElementById('poaPropertyPerson').value || null,
       poa_property_location: document.getElementById('poaPropertyLocation').value || null,
+      poa_property_file_path: uploadedFiles['poa-property'] || null,
 
       has_poa_care: document.getElementById('hasPoaCare').checked,
       poa_care_person: document.getElementById('poaCarePerson').value || null,
+      poa_care_location: document.getElementById('poaCareLocation').value || null,
+      poa_care_file_path: uploadedFiles['poa-care'] || null,
 
       executor_name: document.getElementById('executorName').value || null,
       executor_phone: document.getElementById('executorPhone').value || null,
       executor_email: document.getElementById('executorEmail').value || null,
+      executor_alt: document.getElementById('executorAlt').value || null,
       executor_knows: document.getElementById('executorKnows').checked,
 
       doc_storage_location: document.getElementById('docStorageLocation').value || null,
@@ -702,26 +783,17 @@
     try {
       let error;
       if (existingRecordId) {
-        // Update existing
-        ({ error } = await db
-          .from('legal_documents')
-          .update(record)
-          .eq('id', existingRecordId));
+        ({ error } = await db.from('legal_documents').update(record).eq('id', existingRecordId));
       } else {
-        // Insert new
-        const { data, error: insertError } = await db
-          .from('legal_documents')
-          .insert([record])
-          .select();
+        const { data, error: insertError } = await db.from('legal_documents').insert([record]).select();
         error = insertError;
         if (data && data[0]) existingRecordId = data[0].id;
       }
-
       if (error) throw error;
 
       btn.disabled = false;
       btn.textContent = 'Save Legal Documents';
-      status.textContent = '✅ Saved successfully — ' + new Date().toLocaleTimeString();
+      status.textContent = '✅ Saved — ' + new Date().toLocaleTimeString();
       status.className = 'save-status saved';
 
     } catch (err) {
