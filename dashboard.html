@@ -522,6 +522,26 @@
         </div>
       </a>
 
+      <a href="plan-property.html" style="text-decoration:none;">
+        <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0;">🏠 Property</h3>
+            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="propertyPlanBadge">Set up →</span>
+          </div>
+          <div class="plan-item"><span class="pi-label">Properties documented</span><span class="pi-value missing" id="planProperty">None yet</span></div>
+        </div>
+      </a>
+
+      <a href="plan-business.html" style="text-decoration:none;">
+        <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0;">💼 Business</h3>
+            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="businessPlanBadge">Set up →</span>
+          </div>
+          <div class="plan-item"><span class="pi-label">Businesses documented</span><span class="pi-value missing" id="planBusiness">None yet</span></div>
+        </div>
+      </a>
+
     </div>
     <div class="hidden" id="emptyPlan"><div class="card"><div class="empty"><div class="empty-icon">📋</div><h3>Your plan is empty</h3><p>Start your assessment to begin building your family emergency plan.</p><a href="form.html" class="btn-primary">Start Assessment →</a></div></div></div>
   </div>
@@ -593,8 +613,23 @@
     loadLegalPreview(user);
     loadFinancesPreview(user);
     loadInsurancePreview(user);
+    loadPropertyPreview(user);
+    loadBusinessPreview(user);
     loadBillsPreview(user);
     loadEmergencyPreview(user);
+  }
+
+  // completeness 0..1 of one row across given field keys (+ file_path)
+  function rowDone(r, keys) {
+    let got = 0, max = keys.length + 1;
+    keys.forEach(k => { if (r[k] && ('' + r[k]).trim()) got++; });
+    if (r.file_path) got++;
+    return got / max;
+  }
+  function listScore(rows, keys) {
+    if (!rows || rows.length === 0) return 0;
+    const sum = rows.reduce((a, r) => a + rowDone(r, keys), 0);
+    return Math.round((sum / rows.length) * 100);
   }
 
   // Shared helpers for plan previews
@@ -620,63 +655,77 @@
   function pct(done, total) { return Math.round((done / total) * 100); }
 
   async function loadFinancesPreview(user) {
-    const { data } = await db.from('financial_accounts').select('*').eq('user_id', user.id).limit(1);
-    if (!data || data.length === 0) return;
-    const d = data[0];
-    setPlanItem('planBank', d.has_bank ? (d.bank_primary || 'Documented') : null);
-    setPlanItem('planInv', d.has_investments ? (d.inv_providers || 'Documented') : null);
-    setPlanItem('planDebt', d.has_debts ? (d.debt_mortgage_lender || d.debt_loans || 'Documented') : null);
-    let done = 0;
-    if (d.has_bank && d.bank_primary) done++;
-    if (d.has_investments && d.inv_providers) done++;
-    if (d.has_debts && (d.debt_mortgage || d.debt_loans || d.debt_cards)) done++;
-    setPlanBadge('financesPlanBadge', pct(done, 3));
+    const { data } = await db.from('account_items').select('*').eq('user_id', user.id);
+    const rows = data || [];
+    const banks = rows.filter(r => r.kind === 'bank');
+    const invs  = rows.filter(r => r.kind === 'investment');
+    const debts = rows.filter(r => r.kind === 'debt');
+    setPlanItem('planBank', banks.length ? banks.length + ' documented' : null, 'None yet');
+    setPlanItem('planInv',  invs.length  ? invs.length  + ' documented' : null, 'None yet');
+    setPlanItem('planDebt', debts.length ? debts.length + ' documented' : null, 'None yet');
+    setPlanBadge('financesPlanBadge', listScore(rows, ['institution','account_type','owner','location']));
   }
 
   async function loadInsurancePreview(user) {
-    const { data } = await db.from('insurance_policies').select('*').eq('user_id', user.id).limit(1);
-    if (!data || data.length === 0) return;
-    const d = data[0];
-    setPlanItem('planLife', d.has_life ? (d.life_insurer || 'Documented') : null);
-    setPlanItem('planHome', d.has_home ? (d.home_insurer || 'Documented') : null);
-    setPlanItem('planAuto', d.has_auto ? (d.auto_insurer || 'Documented') : null);
-    let done = 0;
-    if (d.has_life && d.life_insurer) done++;
-    if (d.has_home && d.home_insurer) done++;
-    if (d.has_auto && d.auto_insurer) done++;
-    setPlanBadge('insurancePlanBadge', pct(done, 3));
+    const { data } = await db.from('insurance_items').select('*').eq('user_id', user.id);
+    const rows = data || [];
+    const life = rows.find(r => r.kind === 'Life');
+    const home = rows.find(r => r.kind === 'Home / Tenant');
+    const auto = rows.find(r => r.kind === 'Auto');
+    setPlanItem('planLife', life ? (life.insurer || 'Documented') : null);
+    setPlanItem('planHome', home ? (home.insurer || 'Documented') : null);
+    setPlanItem('planAuto', auto ? (auto.insurer || 'Documented') : null);
+    setPlanBadge('insurancePlanBadge', listScore(rows, ['kind','insurer','coverage','beneficiary']));
+  }
+
+  async function loadPropertyPreview(user) {
+    const { data } = await db.from('property_items').select('*').eq('user_id', user.id);
+    const rows = data || [];
+    setPlanItem('planProperty', rows.length ? rows.length + ' documented' : null, 'None yet');
+    setPlanBadge('propertyPlanBadge', listScore(rows, ['address','kind','ownership','owner']));
+  }
+
+  async function loadBusinessPreview(user) {
+    const { data } = await db.from('business_items').select('*').eq('user_id', user.id);
+    const rows = data || [];
+    setPlanItem('planBusiness', rows.length ? rows.length + ' documented' : null, 'None yet');
+    setPlanBadge('businessPlanBadge', listScore(rows, ['name','role','succession_plan','key_contact']));
   }
 
   async function loadBillsPreview(user) {
-    const { data } = await db.from('bills_access').select('*').eq('user_id', user.id).limit(1);
-    if (!data || data.length === 0) return;
-    const d = data[0];
-    setPlanItem('planBills', d.has_bills ? (d.bill_utilities || d.bill_telecom || 'Documented') : null);
-    setPlanItem('planAutopay', d.has_autopay ? (d.autopay_list ? 'Documented' : 'Yes') : null);
-    setPlanItem('planAccess', (d.access_manager || d.access_master_location) ? (d.access_manager || 'Documented') : null);
-    let done = 0;
-    if (d.has_bills && (d.bill_utilities || d.bill_telecom)) done++;
-    if (d.has_autopay && d.autopay_list) done++;
-    if (d.access_manager || d.access_master_location) done++;
-    setPlanBadge('billsPlanBadge', pct(done, 3));
+    const { data: bills } = await db.from('bill_items').select('*').eq('user_id', user.id);
+    const billRows = bills || [];
+    const autopay = billRows.filter(r => r.autopay === 'Yes').length;
+    setPlanItem('planBills', billRows.length ? billRows.length + ' documented' : null, 'None yet');
+    setPlanItem('planAutopay', billRows.length ? autopay + ' on autopay' : null, 'None yet');
+    const { data: settings } = await db.from('emergency_settings').select('*').eq('user_id', user.id).limit(1);
+    const s = settings && settings.length ? settings[0] : null;
+    setPlanItem('planAccess', (s && (s.access_manager || s.access_master_location)) ? (s.access_manager || 'Documented') : null);
+    let done = 0, total = 3;
+    if (billRows.length) done++;
+    if (billRows.length && billRows.every(r => r.autopay)) done++;
+    if (s && (s.access_manager || s.access_master_location)) done++;
+    setPlanBadge('billsPlanBadge', pct(done, total));
   }
 
   async function loadEmergencyPreview(user) {
-    const { data } = await db.from('emergency_access').select('*').eq('user_id', user.id).limit(1);
-    if (!data || data.length === 0) return;
-    const d = data[0];
-    setPlanItem('planContacts', d.c1_name ? (d.c1_name + (d.c1_rel ? ' (' + d.c1_rel + ')' : '')) : null);
-    setPlanItem('planMaster', (d.master_holder || d.master_location) ? (d.master_holder || 'Documented') : null);
+    const { data: contacts } = await db.from('contact_items').select('*').eq('user_id', user.id);
+    const c = contacts || [];
+    const first = c[0];
+    setPlanItem('planContacts', first ? (first.name + (first.relationship ? ' (' + first.relationship + ')' : '')) : null);
+    const { data: settings } = await db.from('emergency_settings').select('*').eq('user_id', user.id).limit(1);
+    const s = settings && settings.length ? settings[0] : null;
+    setPlanItem('planMaster', (s && (s.master_holder || s.master_location)) ? (s.master_holder || 'Documented') : null);
     const switchEl = document.getElementById('planSwitch');
     if (switchEl) {
-      if (d.switch_on) { switchEl.textContent = 'On — ' + (d.switch_window || 'set'); switchEl.className = 'pi-value'; }
+      if (s && s.switch_on) { switchEl.textContent = 'On — ' + (s.switch_window || 'set'); switchEl.className = 'pi-value'; }
       else { switchEl.textContent = 'Off'; switchEl.className = 'pi-value missing'; }
     }
-    let done = 0;
-    if (d.c1_name && d.c1_phone) done++;
-    if (d.master_holder || d.master_location) done++;
-    if (d.switch_on) done++;
-    setPlanBadge('emergencyPlanBadge', pct(done, 3));
+    let done = 0, total = 3;
+    if (c.length) done++;
+    if (s && (s.master_holder || s.master_location)) done++;
+    if (s && s.switch_on) done++;
+    setPlanBadge('emergencyPlanBadge', pct(done, total));
   }
 
   async function loadLegalPreview(user) {

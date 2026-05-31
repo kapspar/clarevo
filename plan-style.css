@@ -158,3 +158,37 @@ body {
   .save-btn { padding: 11px 18px; font-size: 13px; }
   .nav-link.hide-mobile { display: none; }
 }
+
+/* ── LIST ENTRY CARDS ── */
+.list-empty { font-size: 14px; color: var(--gray); padding: 18px 0; }
+.entry-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.entry-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.entry-title { font-size: 15px; font-weight: 700; }
+.entry-del {
+  background: none; border: none; color: var(--red); font-family: inherit;
+  font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px 6px;
+}
+.entry-del:hover { text-decoration: underline; }
+.entry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.entry-grid .field.full { grid-column: 1 / -1; }
+.entry-upload { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border); }
+
+.add-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--light-blue); color: var(--blue);
+  border: 1px dashed var(--blue); border-radius: 10px;
+  padding: 12px 18px; font-family: inherit; font-size: 14px; font-weight: 700;
+  cursor: pointer; margin-top: 4px;
+}
+.add-btn:hover { background: #dbeafe; }
+
+@media (max-width: 600px) {
+  .entry-grid { grid-template-columns: 1fr; }
+  .entry-card { padding: 16px; }
+}

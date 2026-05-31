@@ -21,67 +21,32 @@
 <div class="wrap">
   <a href="dashboard.html" class="back-link">← Back to dashboard</a>
 
-  <!-- EMERGENCY CONTACTS -->
   <div class="card">
     <div class="card-head">
       <div class="card-icon">📞</div>
-      <div class="card-head-text">
-        <h2>Emergency Contacts</h2>
-        <p>The people your family should call first — all in one place.</p>
-      </div>
+      <div class="card-head-text"><h2>Emergency Contacts</h2>
+        <p>Everyone your family should call — spouse, lawyer, doctor, accountant.</p></div>
       <span class="card-badge badge-missing" id="contactsBadge">Set up</span>
     </div>
-
-    <div class="field-block" style="margin-top:0;">
-      <div class="subhead first">Primary contact</div>
-      <div class="field-grid">
-        <div class="field"><label>Name</label><input id="c1Name" placeholder="e.g. Sarah Kapoor"></div>
-        <div class="field"><label>Relationship</label><input id="c1Rel" placeholder="e.g. Spouse"></div>
-        <div class="field"><label>Phone</label><input id="c1Phone" placeholder="e.g. 905-555-0100"></div>
-        <div class="field"><label>Email</label><input id="c1Email" placeholder="e.g. sarah@email.com"></div>
-      </div>
-
-      <div class="subhead">Secondary contact</div>
-      <div class="field-grid">
-        <div class="field"><label>Name</label><input id="c2Name" placeholder="e.g. David Kapoor"></div>
-        <div class="field"><label>Relationship</label><input id="c2Rel" placeholder="e.g. Brother"></div>
-        <div class="field"><label>Phone</label><input id="c2Phone" placeholder="e.g. 416-555-0145"></div>
-        <div class="field"><label>Email</label><input id="c2Email" placeholder="e.g. david@email.com"></div>
-      </div>
-
-      <div class="subhead">Key professionals</div>
-      <div class="field-grid">
-        <div class="field"><label>Lawyer</label><input id="proLawyer" placeholder="Name &amp; phone"></div>
-        <div class="field"><label>Financial advisor</label><input id="proAdvisor" placeholder="Name &amp; phone"></div>
-        <div class="field"><label>Accountant</label><input id="proAccountant" placeholder="Name &amp; phone"></div>
-        <div class="field"><label>Family doctor</label><input id="proDoctor" placeholder="Name &amp; phone"></div>
-      </div>
-    </div>
+    <div id="contactList"></div>
+    <button class="add-btn" type="button" onclick="contacts.addBlank()">+ Add a contact</button>
   </div>
 
-  <!-- MASTER ACCESS -->
   <div class="card">
     <div class="card-head">
       <div class="card-icon">🗝️</div>
-      <div class="card-head-text">
-        <h2>Master Access Backup</h2>
-        <p>One trusted backup so your family can get in if everything else fails.</p>
-      </div>
+      <div class="card-head-text"><h2>Master Access Backup</h2>
+        <p>One trusted backup so your family can get in if everything else fails.</p></div>
       <span class="card-badge badge-missing" id="masterBadge">Set up</span>
     </div>
-
     <div class="field-block" style="margin-top:0;">
       <div class="field-grid">
         <div class="field">
           <label>Who holds your master access backup?</label>
           <select id="masterHolder">
             <option value="">Select…</option>
-            <option>Lawyer</option>
-            <option>Spouse / partner</option>
-            <option>Adult child</option>
-            <option>Sibling</option>
-            <option>Trusted friend</option>
-            <option>Safety deposit box</option>
+            <option>Lawyer</option><option>Spouse / partner</option><option>Adult child</option>
+            <option>Sibling</option><option>Trusted friend</option><option>Safety deposit box</option>
           </select>
         </div>
         <div class="field">
@@ -90,71 +55,49 @@
         </div>
         <div class="field full">
           <label>Instructions for your family <span class="hint">— how to reach it, not the code itself</span></label>
-          <textarea id="masterNotes" placeholder="e.g. Contact our lawyer John Davies; he holds a sealed envelope with the master access code. Do not store the actual code here."></textarea>
+          <textarea id="masterNotes" placeholder="e.g. Contact our lawyer John Davies; he holds a sealed envelope with the master access code."></textarea>
         </div>
       </div>
-
       <div class="callout" style="background:#fffbeb;">
-        ⚠️ Never type the actual master code into Clarevo. Record only <strong>who holds it</strong> and <strong>how to reach them</strong>. This keeps the backup secure even if your account is compromised.
+        ⚠️ Never type the actual master code into Clarevo. Record only <strong>who holds it</strong> and <strong>how to reach them</strong>.
       </div>
     </div>
   </div>
 
-  <!-- DEAD MAN'S SWITCH -->
   <div class="card">
     <div class="card-head">
       <div class="card-icon">⏱️</div>
-      <div class="card-head-text">
-        <h2>Emergency Access Switch</h2>
-        <p>If something happens to you, trusted people get access automatically.</p>
-      </div>
+      <div class="card-head-text"><h2>Emergency Access Switch</h2>
+        <p>If something happens to you, trusted people get access automatically.</p></div>
       <span class="card-badge badge-missing" id="switchBadge">Off</span>
     </div>
-
     <div class="toggle-row">
-      <div class="tr-text">
-        <h3>Enable emergency access switch</h3>
-        <p>If you don't check in within the set time, your chosen people are granted access.</p>
-      </div>
-      <div class="toggle" id="switchOn" data-onchange="onSwitchToggle"></div>
+      <div class="tr-text"><h3>Enable emergency access switch</h3>
+        <p>If you don't check in within the set time, your chosen people are granted access.</p></div>
+      <div class="toggle" id="switchOn"></div>
     </div>
-
     <div id="switchFields" class="hidden">
       <div class="field-block">
         <div class="field-grid">
           <div class="field">
             <label>Check-in window</label>
             <select id="switchWindow">
-              <option value="24h">24 hours</option>
-              <option value="48h">48 hours</option>
-              <option value="7d">7 days</option>
-              <option value="30d">30 days</option>
+              <option value="24h">24 hours</option><option value="48h">48 hours</option>
+              <option value="7d">7 days</option><option value="30d">30 days</option>
             </select>
             <span class="hint">How long without a check-in before access is granted.</span>
           </div>
-          <div class="field">
-            <label>Who gets access?</label>
-            <input id="switchGrantee" placeholder="e.g. Sarah (spouse)">
-          </div>
+          <div class="field"><label>Who gets access?</label><input id="switchGrantee" placeholder="e.g. Sarah (spouse)"></div>
           <div class="field full">
             <label>What can they access?</label>
             <select id="switchScope">
-              <option value="">Select…</option>
-              <option>Everything</option>
-              <option>Legal &amp; emergency only</option>
-              <option>Finances &amp; bills only</option>
-              <option>Custom — set per section</option>
+              <option value="">Select…</option><option>Everything</option>
+              <option>Legal &amp; emergency only</option><option>Finances &amp; bills only</option><option>Custom</option>
             </select>
           </div>
-          <div class="field full">
-            <label>How will you check in?</label>
-            <input id="switchCheckin" placeholder="e.g. Email reminder I click monthly">
-          </div>
+          <div class="field full"><label>How will you check in?</label><input id="switchCheckin" placeholder="e.g. Email reminder I click monthly"></div>
         </div>
-
-        <div class="callout">
-          💡 The switch is a safety net, not a trap. You'll get reminders before access is ever granted, and you can pause or reset it anytime.
-        </div>
+        <div class="callout">💡 The switch is a safety net, not a trap. You'll get reminders before access is ever granted, and you can pause or reset it anytime.</div>
       </div>
     </div>
   </div>
@@ -168,79 +111,85 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="plan-shared.js"></script>
 <script>
-  function onSwitchToggle() {
-    const on = toggleVal('switchOn');
+  let contacts, settingsId = null;
+
+  function setContactsBadge(score){
+    const el=$('contactsBadge');
+    if(score>=80){ el.textContent='Complete ✓'; el.className='card-badge badge-complete'; }
+    else if(score>0){ el.textContent=score+'%'; el.className='card-badge badge-partial'; }
+    else { el.textContent='Set up'; el.className='card-badge badge-missing'; }
+  }
+  function setMasterBadge(){
+    const el=$('masterBadge');
+    const done = $('masterHolder').value || $('masterLocation').value;
+    el.textContent = done ? 'Complete ✓' : 'Set up';
+    el.className = 'card-badge ' + (done ? 'badge-complete' : 'badge-missing');
+  }
+  function toggleVal(id){ const el=$(id); return el ? el.dataset.on==='true' : false; }
+  function bindToggle(id, cb){
+    const el=$(id);
+    el.addEventListener('click', ()=>{ const on=el.dataset.on!=='true'; el.dataset.on=on?'true':'false'; el.classList.toggle('on',on); if(cb) cb(); });
+  }
+  function onSwitch(){
+    const on=toggleVal('switchOn');
     $('switchFields').classList.toggle('hidden', !on);
-    const b = $('switchBadge');
+    const b=$('switchBadge');
     b.textContent = on ? 'On' : 'Off';
     b.className = 'card-badge ' + (on ? 'badge-complete' : 'badge-missing');
   }
-  bindToggle('switchOn');
 
-  requireAuth(loadData);
+  requireAuth(() => {
+    contacts = new ListManager({
+      table:'contact_items', container:'contactList', hasUpload:false,
+      emptyText:'No contacts added yet.',
+      onChange:()=>setContactsBadge(contacts.score()),
+      fields:[
+        {key:'name', label:'Name', placeholder:'e.g. Sarah Kapoor'},
+        {key:'relationship', label:'Relationship / role', placeholder:'e.g. Spouse, Lawyer, Doctor'},
+        {key:'phone', label:'Phone', placeholder:'e.g. 905-555-0100'},
+        {key:'email', label:'Email', placeholder:'e.g. sarah@email.com'},
+        {key:'notes', label:'Notes', full:true, placeholder:'e.g. Best reached evenings'}
+      ]
+    });
+    contacts.load().then(()=>setContactsBadge(contacts.score()));
+    bindToggle('switchOn', onSwitch);
+    ['masterHolder','masterLocation'].forEach(id=>{ const el=$(id); el.oninput=el.onchange=setMasterBadge; });
+    loadSettings();
+  });
 
-  async function loadData() {
-    const { data } = await db.from('emergency_access').select('*').eq('user_id', currentUser.id).limit(1);
-    if (!data || data.length === 0) return;
-    const d = data[0];
-    existingRecordId = d.id;
-
-    setVal('c1Name', d.c1_name); setVal('c1Rel', d.c1_rel); setVal('c1Phone', d.c1_phone); setVal('c1Email', d.c1_email);
-    setVal('c2Name', d.c2_name); setVal('c2Rel', d.c2_rel); setVal('c2Phone', d.c2_phone); setVal('c2Email', d.c2_email);
-    setVal('proLawyer', d.pro_lawyer); setVal('proAdvisor', d.pro_advisor);
-    setVal('proAccountant', d.pro_accountant); setVal('proDoctor', d.pro_doctor);
-
-    setVal('masterHolder', d.master_holder); setVal('masterLocation', d.master_location);
-    setVal('masterNotes', d.master_notes);
-
-    setToggle('switchOn', d.switch_on);
-    setVal('switchWindow', d.switch_window); setVal('switchGrantee', d.switch_grantee);
-    setVal('switchScope', d.switch_scope); setVal('switchCheckin', d.switch_checkin);
-    onSwitchToggle();
-
-    updateBadges();
+  async function loadSettings(){
+    const { data } = await db.from('emergency_settings').select('*').eq('user_id', currentUser.id).limit(1);
+    if(data && data.length){
+      const d=data[0]; settingsId=d.id;
+      $('masterHolder').value=d.master_holder||''; $('masterLocation').value=d.master_location||''; $('masterNotes').value=d.master_notes||'';
+      if(d.switch_on){ const el=$('switchOn'); el.dataset.on='true'; el.classList.add('on'); }
+      $('switchWindow').value=d.switch_window||'24h'; $('switchGrantee').value=d.switch_grantee||'';
+      $('switchScope').value=d.switch_scope||''; $('switchCheckin').value=d.switch_checkin||'';
+    }
+    onSwitch(); setMasterBadge();
   }
 
-  function updateBadges() {
-    setBadge('contactsBadge', getVal('c1Name') && getVal('c1Phone'));
-    setBadge('masterBadge', getVal('masterHolder') || getVal('masterLocation'));
-  }
-  function setBadge(id, complete) {
-    const el = $(id);
-    el.textContent = complete ? 'Complete ✓' : 'Set up';
-    el.className = 'card-badge ' + (complete ? 'badge-complete' : 'badge-missing');
-  }
-
-  async function saveData() {
-    const s = saving('saveBtn', 'saveStatus', 'Save Emergency Access');
-    const record = {
-      user_id: currentUser.id,
-      c1_name: getVal('c1Name'), c1_rel: getVal('c1Rel'), c1_phone: getVal('c1Phone'), c1_email: getVal('c1Email'),
-      c2_name: getVal('c2Name'), c2_rel: getVal('c2Rel'), c2_phone: getVal('c2Phone'), c2_email: getVal('c2Email'),
-      pro_lawyer: getVal('proLawyer'), pro_advisor: getVal('proAdvisor'),
-      pro_accountant: getVal('proAccountant'), pro_doctor: getVal('proDoctor'),
-
-      master_holder: getVal('masterHolder'), master_location: getVal('masterLocation'),
-      master_notes: getVal('masterNotes'),
-
-      switch_on: toggleVal('switchOn'),
-      switch_window: getVal('switchWindow'), switch_grantee: getVal('switchGrantee'),
-      switch_scope: getVal('switchScope'), switch_checkin: getVal('switchCheckin'),
-
-      updated_at: new Date().toISOString()
-    };
+  async function saveData(){
+    const s=saving('saveBtn','saveStatus','Save Emergency Access');
     try {
-      let error;
-      if (existingRecordId) {
-        ({ error } = await db.from('emergency_access').update(record).eq('id', existingRecordId));
-      } else {
-        const { data, error: insErr } = await db.from('emergency_access').insert([record]).select();
-        error = insErr; if (data && data[0]) existingRecordId = data[0].id;
-      }
-      if (error) throw error;
-      updateBadges();
+      await contacts.saveAll();
+      const rec = {
+        user_id: currentUser.id,
+        master_holder: $('masterHolder').value||null,
+        master_location: $('masterLocation').value||null,
+        master_notes: $('masterNotes').value||null,
+        switch_on: toggleVal('switchOn'),
+        switch_window: $('switchWindow').value||null,
+        switch_grantee: $('switchGrantee').value||null,
+        switch_scope: $('switchScope').value||null,
+        switch_checkin: $('switchCheckin').value||null,
+        updated_at: new Date().toISOString()
+      };
+      if(settingsId){ const {error}=await db.from('emergency_settings').update(rec).eq('id',settingsId); if(error) throw error; }
+      else { const {data,error}=await db.from('emergency_settings').insert([rec]).select(); if(error) throw error; if(data&&data[0]) settingsId=data[0].id; }
+      setContactsBadge(contacts.score()); setMasterBadge();
       s.done();
-    } catch (err) { s.fail(err); }
+    } catch(err){ s.fail(err); }
   }
 </script>
 </body>

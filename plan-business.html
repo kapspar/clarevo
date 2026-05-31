@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">💼</div>
+      <div class="card-head-text"><h2>Business Interests</h2>
+        <p>Any business you own or co-own — and what happens to it if you're unavailable.</p></div>
+      <span class="card-badge badge-missing" id="bizBadge">Set up</span>
+    </div>
+    <div id="bizList"></div>
+    <button class="add-btn" type="button" onclick="biz.addBlank()">+ Add a business</button>
+    <div class="callout" style="margin-top:16px;">
+      💡 A business with no succession plan can stall completely if the owner is suddenly unavailable. Documenting a plan here is also a natural fit for an estate lawyer's review.
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Business</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
+<script>
+  let biz;
+  function setBadge(score){
+    const el=$('bizBadge');
+    if(score>=80){ el.textContent='Complete ✓'; el.className='card-badge badge-complete'; }
+    else if(score>0){ el.textContent=score+'%'; el.className='card-badge badge-partial'; }
+    else { el.textContent='Set up'; el.className='card-badge badge-missing'; }
+  }
+  requireAuth(() => {
+    biz = new ListManager({
+      table:'business_items', container:'bizList',
+      emptyText:'No businesses added yet.', uploadLabel:'Relevant documents (optional)',
+      onChange:()=>setBadge(biz.score()),
+      fields:[
+        {key:'name', label:'Business name', placeholder:'e.g. Maple Lane Consulting'},
+        {key:'role', label:'Your role', placeholder:'e.g. Owner, Co-owner, Partner'},
+        {key:'succession_plan', label:'Succession plan', type:'select', options:['Documented','Discussed but not written','None yet']},
+        {key:'finances_separate', label:'Business finances separate from personal?', type:'select', options:['Yes','Partially','No']},
+        {key:'key_contact', label:'Key contact', placeholder:'e.g. partner / lawyer / accountant'},
+        {key:'key_contact_phone', label:'Key contact phone', placeholder:'e.g. 905-555-0100'},
+        {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. Partner has signing authority; corporate records with accountant'}
+      ]
+    });
+    biz.load().then(()=>setBadge(biz.score()));
+  });
+  async function saveData(){
+    const s=saving('saveBtn','saveStatus','Save Business');
+    try { await biz.saveAll(); setBadge(biz.score()); s.done(); }
+    catch(err){ s.fail(err); }
+  }
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insurance — Clarevo</title>
+<title>Property — Clarevo</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="plan-style.css">
 </head>
@@ -23,52 +23,50 @@
 
   <div class="card">
     <div class="card-head">
-      <div class="card-icon">🛡️</div>
-      <div class="card-head-text"><h2>Insurance Policies</h2>
-        <p>Life, home, auto, disability — every policy and who to call.</p></div>
-      <span class="card-badge badge-missing" id="insBadge">Set up</span>
+      <div class="card-icon">🏠</div>
+      <div class="card-head-text"><h2>Properties</h2>
+        <p>Primary home, cottage, rentals, land — every property you own or rent.</p></div>
+      <span class="card-badge badge-missing" id="propBadge">Set up</span>
     </div>
-    <div id="insList"></div>
-    <button class="add-btn" type="button" onclick="ins.addBlank()">+ Add a policy</button>
+    <div id="propList"></div>
+    <button class="add-btn" type="button" onclick="prop.addBlank()">+ Add a property</button>
   </div>
 </div>
 
 <div class="save-bar">
   <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
-  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Insurance</button>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Properties</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="plan-shared.js"></script>
 <script>
-  let ins;
+  let prop;
   function setBadge(score){
-    const el=$('insBadge');
+    const el=$('propBadge');
     if(score>=80){ el.textContent='Complete ✓'; el.className='card-badge badge-complete'; }
     else if(score>0){ el.textContent=score+'%'; el.className='card-badge badge-partial'; }
     else { el.textContent='Set up'; el.className='card-badge badge-missing'; }
   }
   requireAuth(() => {
-    ins = new ListManager({
-      table:'insurance_items', container:'insList',
-      emptyText:'No policies added yet.', uploadLabel:'Policy document',
-      onChange:()=>setBadge(ins.score()),
+    prop = new ListManager({
+      table:'property_items', container:'propList',
+      emptyText:'No properties added yet.', uploadLabel:'Relevant documents (deed, mortgage, lease)',
+      onChange:()=>setBadge(prop.score()),
       fields:[
-        {key:'kind', label:'Type', type:'select', options:['Life','Home / Tenant','Auto','Disability','Critical illness','Other']},
-        {key:'insurer', label:'Insurer', placeholder:'e.g. Sun Life, Intact'},
-        {key:'policy_number', label:'Policy number', placeholder:'e.g. SL-1234567'},
-        {key:'coverage', label:'Coverage', placeholder:'e.g. Term $500k'},
-        {key:'beneficiary', label:'Beneficiary', placeholder:'e.g. Spouse'},
+        {key:'address', label:'Address / name', placeholder:'e.g. 12 Maple St, or "The cottage"'},
+        {key:'kind', label:'Type', type:'select', options:['Primary residence','Secondary / cottage','Rental','Land']},
+        {key:'ownership', label:'Ownership', type:'select', options:['Owned outright','Mortgaged','Rented']},
+        {key:'mortgage_lender', label:'Mortgage lender', placeholder:'e.g. Scotiabank (if mortgaged)'},
         {key:'owner', label:'Owner', type:'select', options:['Me','Spouse','Joint']},
-        {key:'contact_name', label:'Advisor / agent', placeholder:'e.g. Jane Smith'},
-        {key:'claims_phone', label:'Claims phone', placeholder:'e.g. 1-800-555-0199'}
+        {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. Property tax auto-pays from joint chequing; spare keys with neighbour'}
       ]
     });
-    ins.load().then(()=>setBadge(ins.score()));
+    prop.load().then(()=>setBadge(prop.score()));
   });
   async function saveData(){
-    const s=saving('saveBtn','saveStatus','Save Insurance');
-    try { await ins.saveAll(); setBadge(ins.score()); s.done(); }
+    const s=saving('saveBtn','saveStatus','Save Properties');
+    try { await prop.saveAll(); setBadge(prop.score()); s.done(); }
     catch(err){ s.fail(err); }
   }
 </script>
