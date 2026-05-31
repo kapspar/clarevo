@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency Access — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <!-- EMERGENCY CONTACTS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">📞</div>
+      <div class="card-head-text">
+        <h2>Emergency Contacts</h2>
+        <p>The people your family should call first — all in one place.</p>
+      </div>
+      <span class="card-badge badge-missing" id="contactsBadge">Set up</span>
+    </div>
+
+    <div class="field-block" style="margin-top:0;">
+      <div class="subhead first">Primary contact</div>
+      <div class="field-grid">
+        <div class="field"><label>Name</label><input id="c1Name" placeholder="e.g. Sarah Kapoor"></div>
+        <div class="field"><label>Relationship</label><input id="c1Rel" placeholder="e.g. Spouse"></div>
+        <div class="field"><label>Phone</label><input id="c1Phone" placeholder="e.g. 905-555-0100"></div>
+        <div class="field"><label>Email</label><input id="c1Email" placeholder="e.g. sarah@email.com"></div>
+      </div>
+
+      <div class="subhead">Secondary contact</div>
+      <div class="field-grid">
+        <div class="field"><label>Name</label><input id="c2Name" placeholder="e.g. David Kapoor"></div>
+        <div class="field"><label>Relationship</label><input id="c2Rel" placeholder="e.g. Brother"></div>
+        <div class="field"><label>Phone</label><input id="c2Phone" placeholder="e.g. 416-555-0145"></div>
+        <div class="field"><label>Email</label><input id="c2Email" placeholder="e.g. david@email.com"></div>
+      </div>
+
+      <div class="subhead">Key professionals</div>
+      <div class="field-grid">
+        <div class="field"><label>Lawyer</label><input id="proLawyer" placeholder="Name &amp; phone"></div>
+        <div class="field"><label>Financial advisor</label><input id="proAdvisor" placeholder="Name &amp; phone"></div>
+        <div class="field"><label>Accountant</label><input id="proAccountant" placeholder="Name &amp; phone"></div>
+        <div class="field"><label>Family doctor</label><input id="proDoctor" placeholder="Name &amp; phone"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MASTER ACCESS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🗝️</div>
+      <div class="card-head-text">
+        <h2>Master Access Backup</h2>
+        <p>One trusted backup so your family can get in if everything else fails.</p>
+      </div>
+      <span class="card-badge badge-missing" id="masterBadge">Set up</span>
+    </div>
+
+    <div class="field-block" style="margin-top:0;">
+      <div class="field-grid">
+        <div class="field">
+          <label>Who holds your master access backup?</label>
+          <select id="masterHolder">
+            <option value="">Select…</option>
+            <option>Lawyer</option>
+            <option>Spouse / partner</option>
+            <option>Adult child</option>
+            <option>Sibling</option>
+            <option>Trusted friend</option>
+            <option>Safety deposit box</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Where is it physically stored?</label>
+          <input id="masterLocation" placeholder="e.g. Sealed envelope in lawyer's file">
+        </div>
+        <div class="field full">
+          <label>Instructions for your family <span class="hint">— how to reach it, not the code itself</span></label>
+          <textarea id="masterNotes" placeholder="e.g. Contact our lawyer John Davies; he holds a sealed envelope with the master access code. Do not store the actual code here."></textarea>
+        </div>
+      </div>
+
+      <div class="callout" style="background:#fffbeb;">
+        ⚠️ Never type the actual master code into Clarevo. Record only <strong>who holds it</strong> and <strong>how to reach them</strong>. This keeps the backup secure even if your account is compromised.
+      </div>
+    </div>
+  </div>
+
+  <!-- DEAD MAN'S SWITCH -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">⏱️</div>
+      <div class="card-head-text">
+        <h2>Emergency Access Switch</h2>
+        <p>If something happens to you, trusted people get access automatically.</p>
+      </div>
+      <span class="card-badge badge-missing" id="switchBadge">Off</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Enable emergency access switch</h3>
+        <p>If you don't check in within the set time, your chosen people are granted access.</p>
+      </div>
+      <div class="toggle" id="switchOn" data-onchange="onSwitchToggle"></div>
+    </div>
+
+    <div id="switchFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Check-in window</label>
+            <select id="switchWindow">
+              <option value="24h">24 hours</option>
+              <option value="48h">48 hours</option>
+              <option value="7d">7 days</option>
+              <option value="30d">30 days</option>
+            </select>
+            <span class="hint">How long without a check-in before access is granted.</span>
+          </div>
+          <div class="field">
+            <label>Who gets access?</label>
+            <input id="switchGrantee" placeholder="e.g. Sarah (spouse)">
+          </div>
+          <div class="field full">
+            <label>What can they access?</label>
+            <select id="switchScope">
+              <option value="">Select…</option>
+              <option>Everything</option>
+              <option>Legal &amp; emergency only</option>
+              <option>Finances &amp; bills only</option>
+              <option>Custom — set per section</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>How will you check in?</label>
+            <input id="switchCheckin" placeholder="e.g. Email reminder I click monthly">
+          </div>
+        </div>
+
+        <div class="callout">
+          💡 The switch is a safety net, not a trap. You'll get reminders before access is ever granted, and you can pause or reset it anytime.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Emergency Access</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
+<script>
+  function onSwitchToggle() {
+    const on = toggleVal('switchOn');
+    $('switchFields').classList.toggle('hidden', !on);
+    const b = $('switchBadge');
+    b.textContent = on ? 'On' : 'Off';
+    b.className = 'card-badge ' + (on ? 'badge-complete' : 'badge-missing');
+  }
+  bindToggle('switchOn');
+
+  requireAuth(loadData);
+
+  async function loadData() {
+    const { data } = await db.from('emergency_access').select('*').eq('user_id', currentUser.id).limit(1);
+    if (!data || data.length === 0) return;
+    const d = data[0];
+    existingRecordId = d.id;
+
+    setVal('c1Name', d.c1_name); setVal('c1Rel', d.c1_rel); setVal('c1Phone', d.c1_phone); setVal('c1Email', d.c1_email);
+    setVal('c2Name', d.c2_name); setVal('c2Rel', d.c2_rel); setVal('c2Phone', d.c2_phone); setVal('c2Email', d.c2_email);
+    setVal('proLawyer', d.pro_lawyer); setVal('proAdvisor', d.pro_advisor);
+    setVal('proAccountant', d.pro_accountant); setVal('proDoctor', d.pro_doctor);
+
+    setVal('masterHolder', d.master_holder); setVal('masterLocation', d.master_location);
+    setVal('masterNotes', d.master_notes);
+
+    setToggle('switchOn', d.switch_on);
+    setVal('switchWindow', d.switch_window); setVal('switchGrantee', d.switch_grantee);
+    setVal('switchScope', d.switch_scope); setVal('switchCheckin', d.switch_checkin);
+    onSwitchToggle();
+
+    updateBadges();
+  }
+
+  function updateBadges() {
+    setBadge('contactsBadge', getVal('c1Name') && getVal('c1Phone'));
+    setBadge('masterBadge', getVal('masterHolder') || getVal('masterLocation'));
+  }
+  function setBadge(id, complete) {
+    const el = $(id);
+    el.textContent = complete ? 'Complete ✓' : 'Set up';
+    el.className = 'card-badge ' + (complete ? 'badge-complete' : 'badge-missing');
+  }
+
+  async function saveData() {
+    const s = saving('saveBtn', 'saveStatus', 'Save Emergency Access');
+    const record = {
+      user_id: currentUser.id,
+      c1_name: getVal('c1Name'), c1_rel: getVal('c1Rel'), c1_phone: getVal('c1Phone'), c1_email: getVal('c1Email'),
+      c2_name: getVal('c2Name'), c2_rel: getVal('c2Rel'), c2_phone: getVal('c2Phone'), c2_email: getVal('c2Email'),
+      pro_lawyer: getVal('proLawyer'), pro_advisor: getVal('proAdvisor'),
+      pro_accountant: getVal('proAccountant'), pro_doctor: getVal('proDoctor'),
+
+      master_holder: getVal('masterHolder'), master_location: getVal('masterLocation'),
+      master_notes: getVal('masterNotes'),
+
+      switch_on: toggleVal('switchOn'),
+      switch_window: getVal('switchWindow'), switch_grantee: getVal('switchGrantee'),
+      switch_scope: getVal('switchScope'), switch_checkin: getVal('switchCheckin'),
+
+      updated_at: new Date().toISOString()
+    };
+    try {
+      let error;
+      if (existingRecordId) {
+        ({ error } = await db.from('emergency_access').update(record).eq('id', existingRecordId));
+      } else {
+        const { data, error: insErr } = await db.from('emergency_access').insert([record]).select();
+        error = insErr; if (data && data[0]) existingRecordId = data[0].id;
+      }
+      if (error) throw error;
+      updateBadges();
+      s.done();
+    } catch (err) { s.fail(err); }
+  }
+</script>
+</body>
+</html>

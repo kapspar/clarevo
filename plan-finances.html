@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finances — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <!-- BANK ACCOUNTS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🏦</div>
+      <div class="card-head-text">
+        <h2>Bank Accounts</h2>
+        <p>Where your everyday money lives — so it's never lost or forgotten.</p>
+      </div>
+      <span class="card-badge badge-missing" id="bankBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have bank accounts to document?</h3>
+        <p>Chequing, savings, joint accounts.</p>
+      </div>
+      <div class="toggle" id="hasBank" data-onchange="onBankToggle"></div>
+    </div>
+
+    <div id="bankFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Primary bank</label>
+            <input id="bankPrimary" placeholder="e.g. RBC, TD, Tangerine">
+          </div>
+          <div class="field">
+            <label>Account types held</label>
+            <input id="bankTypes" placeholder="e.g. Chequing, Savings, Joint">
+          </div>
+          <div class="field">
+            <label>Other banks / institutions</label>
+            <input id="bankOther" placeholder="e.g. Simplii, EQ Bank">
+          </div>
+          <div class="field">
+            <label>Approx. number of accounts</label>
+            <input id="bankCount" placeholder="e.g. 4">
+          </div>
+          <div class="field full">
+            <label>Where to find account details <span class="hint">— statements, online banking, safe</span></label>
+            <input id="bankLocation" placeholder="e.g. Online banking + paper statements in home safe">
+          </div>
+        </div>
+
+        <p class="upload-label">Upload a statement or account summary</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately — only you and people you share access with can view it.</p>
+        <div class="uploaded-section hidden" id="uploaded-bank">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-bank"></div>
+        </div>
+        <div class="dropzone" id="dz-bank">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-bank" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
+    </div>
+  </div>
+
+  <!-- INVESTMENTS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">📈</div>
+      <div class="card-head-text">
+        <h2>Investments &amp; Registered Accounts</h2>
+        <p>RRSPs, TFSAs, RESPs, brokerage accounts — easy for your family to miss.</p>
+      </div>
+      <span class="card-badge badge-missing" id="invBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have investments to document?</h3>
+        <p>Including workplace pensions and group RRSPs.</p>
+      </div>
+      <div class="toggle" id="hasInv" data-onchange="onInvToggle"></div>
+    </div>
+
+    <div id="invFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Investment providers</label>
+            <input id="invProviders" placeholder="e.g. Wealthsimple, Questrade">
+          </div>
+          <div class="field">
+            <label>Account types</label>
+            <input id="invTypes" placeholder="e.g. TFSA, RRSP, RESP">
+          </div>
+          <div class="field">
+            <label>Workplace pension / group plan?</label>
+            <select id="invPension">
+              <option value="">Select…</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>Not sure</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Named beneficiaries up to date?</label>
+            <select id="invBeneficiary">
+              <option value="">Select…</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>Not sure</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Where to find investment details</label>
+            <input id="invLocation" placeholder="e.g. Wealthsimple app, advisor contact in phone">
+          </div>
+        </div>
+
+        <div class="callout" id="wsCallout">
+          💡 Many Canadians keep RRSPs and TFSAs at <a href="https://www.wealthsimple.com" target="_blank" rel="noopener">Wealthsimple</a>. Recording your provider and beneficiaries here means your family knows exactly where to look.
+        </div>
+
+        <p class="upload-label">Upload a statement or summary</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately.</p>
+        <div class="uploaded-section hidden" id="uploaded-inv">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-inv"></div>
+        </div>
+        <div class="dropzone" id="dz-inv">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-inv" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
+    </div>
+  </div>
+
+  <!-- DEBTS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">💳</div>
+      <div class="card-head-text">
+        <h2>Debts &amp; Liabilities</h2>
+        <p>Mortgages, loans, credit cards — what's owed and to whom.</p>
+      </div>
+      <span class="card-badge badge-missing" id="debtBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have debts to document?</h3>
+        <p>This protects your family from surprises.</p>
+      </div>
+      <div class="toggle" id="hasDebt" data-onchange="onDebtToggle"></div>
+    </div>
+
+    <div id="debtFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Mortgage</label>
+            <select id="debtMortgage">
+              <option value="">Select…</option>
+              <option>Yes — primary residence</option>
+              <option>Yes — other property</option>
+              <option>No mortgage</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Mortgage lender</label>
+            <input id="debtMortgageLender" placeholder="e.g. Scotiabank">
+          </div>
+          <div class="field">
+            <label>Loans (car, line of credit, student)</label>
+            <input id="debtLoans" placeholder="e.g. Car loan — RBC">
+          </div>
+          <div class="field">
+            <label>Credit cards</label>
+            <input id="debtCards" placeholder="e.g. Visa, Amex">
+          </div>
+          <div class="field full">
+            <label>Notes <span class="hint">— anything your family should know</span></label>
+            <textarea id="debtNotes" placeholder="e.g. Mortgage is on auto-pay from joint chequing on the 1st"></textarea>
+          </div>
+        </div>
+
+        <p class="upload-label">Upload a statement</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately.</p>
+        <div class="uploaded-section hidden" id="uploaded-debt">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-debt"></div>
+        </div>
+        <div class="dropzone" id="dz-debt">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-debt" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Finances</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
+<script>
+  const BUCKET = 'documents';
+
+  function onBankToggle() { $('bankFields').classList.toggle('hidden', !toggleVal('hasBank')); }
+  function onInvToggle() { $('invFields').classList.toggle('hidden', !toggleVal('hasInv')); }
+  function onDebtToggle() { $('debtFields').classList.toggle('hidden', !toggleVal('hasDebt')); }
+
+  bindToggle('hasBank'); bindToggle('hasInv'); bindToggle('hasDebt');
+  initUploadSlot('bank', BUCKET, 'Bank statement');
+  initUploadSlot('inv', BUCKET, 'Investment statement');
+  initUploadSlot('debt', BUCKET, 'Debt statement');
+
+  requireAuth(loadData);
+
+  async function loadData() {
+    const { data } = await db.from('financial_accounts').select('*').eq('user_id', currentUser.id).limit(1);
+    if (!data || data.length === 0) return;
+    const d = data[0];
+    existingRecordId = d.id;
+
+    setToggle('hasBank', d.has_bank); onBankToggle();
+    setVal('bankPrimary', d.bank_primary); setVal('bankTypes', d.bank_types);
+    setVal('bankOther', d.bank_other); setVal('bankCount', d.bank_count);
+    setVal('bankLocation', d.bank_location);
+    restoreUploaded('bank', BUCKET, 'Bank statement', d.bank_file_path);
+
+    setToggle('hasInv', d.has_investments); onInvToggle();
+    setVal('invProviders', d.inv_providers); setVal('invTypes', d.inv_types);
+    setVal('invPension', d.inv_pension); setVal('invBeneficiary', d.inv_beneficiary);
+    setVal('invLocation', d.inv_location);
+    restoreUploaded('inv', BUCKET, 'Investment statement', d.inv_file_path);
+
+    setToggle('hasDebt', d.has_debts); onDebtToggle();
+    setVal('debtMortgage', d.debt_mortgage); setVal('debtMortgageLender', d.debt_mortgage_lender);
+    setVal('debtLoans', d.debt_loans); setVal('debtCards', d.debt_cards); setVal('debtNotes', d.debt_notes);
+    restoreUploaded('debt', BUCKET, 'Debt statement', d.debt_file_path);
+
+    updateBadges();
+  }
+
+  function updateBadges() {
+    setBadge('bankBadge', toggleVal('hasBank') && getVal('bankPrimary'));
+    setBadge('invBadge', toggleVal('hasInv') && getVal('invProviders'));
+    setBadge('debtBadge', toggleVal('hasDebt') && (getVal('debtMortgage') || getVal('debtLoans') || getVal('debtCards')));
+  }
+  function setBadge(id, complete) {
+    const el = $(id);
+    el.textContent = complete ? 'Complete ✓' : 'Set up';
+    el.className = 'card-badge ' + (complete ? 'badge-complete' : 'badge-missing');
+  }
+
+  async function saveData() {
+    const s = saving('saveBtn', 'saveStatus', 'Save Finances');
+    const record = {
+      user_id: currentUser.id,
+      has_bank: toggleVal('hasBank'),
+      bank_primary: getVal('bankPrimary'), bank_types: getVal('bankTypes'),
+      bank_other: getVal('bankOther'), bank_count: getVal('bankCount'),
+      bank_location: getVal('bankLocation'), bank_file_path: uploadedFiles.bank,
+
+      has_investments: toggleVal('hasInv'),
+      inv_providers: getVal('invProviders'), inv_types: getVal('invTypes'),
+      inv_pension: getVal('invPension'), inv_beneficiary: getVal('invBeneficiary'),
+      inv_location: getVal('invLocation'), inv_file_path: uploadedFiles.inv,
+
+      has_debts: toggleVal('hasDebt'),
+      debt_mortgage: getVal('debtMortgage'), debt_mortgage_lender: getVal('debtMortgageLender'),
+      debt_loans: getVal('debtLoans'), debt_cards: getVal('debtCards'), debt_notes: getVal('debtNotes'),
+      debt_file_path: uploadedFiles.debt,
+
+      updated_at: new Date().toISOString()
+    };
+    try {
+      let error;
+      if (existingRecordId) {
+        ({ error } = await db.from('financial_accounts').update(record).eq('id', existingRecordId));
+      } else {
+        const { data, error: insErr } = await db.from('financial_accounts').insert([record]).select();
+        error = insErr; if (data && data[0]) existingRecordId = data[0].id;
+      }
+      if (error) throw error;
+      updateBadges();
+      s.done();
+    } catch (err) { s.fail(err); }
+  }
+</script>
+</body>
+</html>

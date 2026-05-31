@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insurance — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <!-- LIFE -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🛡️</div>
+      <div class="card-head-text">
+        <h2>Life Insurance</h2>
+        <p>The policy your family relies on most — and the one most often forgotten.</p>
+      </div>
+      <span class="card-badge badge-missing" id="lifeBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have life insurance?</h3>
+        <p>Include workplace group coverage.</p>
+      </div>
+      <div class="toggle" id="hasLife" data-onchange="onLifeToggle"></div>
+    </div>
+
+    <div id="lifeFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Insurer</label>
+            <input id="lifeInsurer" placeholder="e.g. Sun Life, Manulife">
+          </div>
+          <div class="field">
+            <label>Policy number</label>
+            <input id="lifePolicy" placeholder="e.g. SL-1234567">
+          </div>
+          <div class="field">
+            <label>Coverage type</label>
+            <select id="lifeType">
+              <option value="">Select…</option>
+              <option>Term</option>
+              <option>Whole life</option>
+              <option>Group / workplace</option>
+              <option>Mix</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Beneficiary</label>
+            <input id="lifeBeneficiary" placeholder="e.g. Spouse">
+          </div>
+          <div class="field">
+            <label>Advisor / agent name</label>
+            <input id="lifeAdvisor" placeholder="e.g. Jane Smith">
+          </div>
+          <div class="field">
+            <label>Advisor phone</label>
+            <input id="lifeAdvisorPhone" placeholder="e.g. 905-555-0100">
+          </div>
+        </div>
+
+        <p class="upload-label">Upload your policy document</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately — only you and people you share access with can view it.</p>
+        <div class="uploaded-section hidden" id="uploaded-life">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-life"></div>
+        </div>
+        <div class="dropzone" id="dz-life">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-life" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🏠</div>
+      <div class="card-head-text">
+        <h2>Home / Tenant Insurance</h2>
+        <p>Property coverage and who to call after a flood, fire, or break-in.</p>
+      </div>
+      <span class="card-badge badge-missing" id="homeBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have home or tenant insurance?</h3>
+        <p>Owners and renters both need this documented.</p>
+      </div>
+      <div class="toggle" id="hasHome" data-onchange="onHomeToggle"></div>
+    </div>
+
+    <div id="homeFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Insurer</label>
+            <input id="homeInsurer" placeholder="e.g. Intact, TD Insurance">
+          </div>
+          <div class="field">
+            <label>Policy number</label>
+            <input id="homePolicy" placeholder="e.g. HM-9988776">
+          </div>
+          <div class="field">
+            <label>Coverage type</label>
+            <select id="homeType">
+              <option value="">Select…</option>
+              <option>Homeowner</option>
+              <option>Condo</option>
+              <option>Tenant / renter</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Claims phone</label>
+            <input id="homeClaims" placeholder="e.g. 1-800-555-0199">
+          </div>
+        </div>
+
+        <p class="upload-label">Upload your policy document</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately.</p>
+        <div class="uploaded-section hidden" id="uploaded-home">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-home"></div>
+        </div>
+        <div class="dropzone" id="dz-home">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-home" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTO -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🚗</div>
+      <div class="card-head-text">
+        <h2>Auto Insurance</h2>
+        <p>Vehicle coverage and the number to call after an accident.</p>
+      </div>
+      <span class="card-badge badge-missing" id="autoBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have auto insurance?</h3>
+        <p>One entry per household is fine to start.</p>
+      </div>
+      <div class="toggle" id="hasAuto" data-onchange="onAutoToggle"></div>
+    </div>
+
+    <div id="autoFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Insurer</label>
+            <input id="autoInsurer" placeholder="e.g. Belairdirect, Aviva">
+          </div>
+          <div class="field">
+            <label>Policy number</label>
+            <input id="autoPolicy" placeholder="e.g. AU-5544332">
+          </div>
+          <div class="field">
+            <label>Vehicles covered</label>
+            <input id="autoVehicles" placeholder="e.g. 2021 Honda CR-V">
+          </div>
+          <div class="field">
+            <label>Claims phone</label>
+            <input id="autoClaims" placeholder="e.g. 1-888-555-0123">
+          </div>
+        </div>
+
+        <p class="upload-label">Upload your policy / pink slip</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately.</p>
+        <div class="uploaded-section hidden" id="uploaded-auto">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-auto"></div>
+        </div>
+        <div class="dropzone" id="dz-auto">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-auto" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Insurance</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
+<script>
+  const BUCKET = 'documents';
+
+  function onLifeToggle() { $('lifeFields').classList.toggle('hidden', !toggleVal('hasLife')); }
+  function onHomeToggle() { $('homeFields').classList.toggle('hidden', !toggleVal('hasHome')); }
+  function onAutoToggle() { $('autoFields').classList.toggle('hidden', !toggleVal('hasAuto')); }
+
+  bindToggle('hasLife'); bindToggle('hasHome'); bindToggle('hasAuto');
+  initUploadSlot('life', BUCKET, 'Life policy');
+  initUploadSlot('home', BUCKET, 'Home policy');
+  initUploadSlot('auto', BUCKET, 'Auto policy');
+
+  requireAuth(loadData);
+
+  async function loadData() {
+    const { data } = await db.from('insurance_policies').select('*').eq('user_id', currentUser.id).limit(1);
+    if (!data || data.length === 0) return;
+    const d = data[0];
+    existingRecordId = d.id;
+
+    setToggle('hasLife', d.has_life); onLifeToggle();
+    setVal('lifeInsurer', d.life_insurer); setVal('lifePolicy', d.life_policy);
+    setVal('lifeType', d.life_type); setVal('lifeBeneficiary', d.life_beneficiary);
+    setVal('lifeAdvisor', d.life_advisor); setVal('lifeAdvisorPhone', d.life_advisor_phone);
+    restoreUploaded('life', BUCKET, 'Life policy', d.life_file_path);
+
+    setToggle('hasHome', d.has_home); onHomeToggle();
+    setVal('homeInsurer', d.home_insurer); setVal('homePolicy', d.home_policy);
+    setVal('homeType', d.home_type); setVal('homeClaims', d.home_claims);
+    restoreUploaded('home', BUCKET, 'Home policy', d.home_file_path);
+
+    setToggle('hasAuto', d.has_auto); onAutoToggle();
+    setVal('autoInsurer', d.auto_insurer); setVal('autoPolicy', d.auto_policy);
+    setVal('autoVehicles', d.auto_vehicles); setVal('autoClaims', d.auto_claims);
+    restoreUploaded('auto', BUCKET, 'Auto policy', d.auto_file_path);
+
+    updateBadges();
+  }
+
+  function updateBadges() {
+    setBadge('lifeBadge', toggleVal('hasLife') && getVal('lifeInsurer'));
+    setBadge('homeBadge', toggleVal('hasHome') && getVal('homeInsurer'));
+    setBadge('autoBadge', toggleVal('hasAuto') && getVal('autoInsurer'));
+  }
+  function setBadge(id, complete) {
+    const el = $(id);
+    el.textContent = complete ? 'Complete ✓' : 'Set up';
+    el.className = 'card-badge ' + (complete ? 'badge-complete' : 'badge-missing');
+  }
+
+  async function saveData() {
+    const s = saving('saveBtn', 'saveStatus', 'Save Insurance');
+    const record = {
+      user_id: currentUser.id,
+      has_life: toggleVal('hasLife'),
+      life_insurer: getVal('lifeInsurer'), life_policy: getVal('lifePolicy'),
+      life_type: getVal('lifeType'), life_beneficiary: getVal('lifeBeneficiary'),
+      life_advisor: getVal('lifeAdvisor'), life_advisor_phone: getVal('lifeAdvisorPhone'),
+      life_file_path: uploadedFiles.life,
+
+      has_home: toggleVal('hasHome'),
+      home_insurer: getVal('homeInsurer'), home_policy: getVal('homePolicy'),
+      home_type: getVal('homeType'), home_claims: getVal('homeClaims'),
+      home_file_path: uploadedFiles.home,
+
+      has_auto: toggleVal('hasAuto'),
+      auto_insurer: getVal('autoInsurer'), auto_policy: getVal('autoPolicy'),
+      auto_vehicles: getVal('autoVehicles'), auto_claims: getVal('autoClaims'),
+      auto_file_path: uploadedFiles.auto,
+
+      updated_at: new Date().toISOString()
+    };
+    try {
+      let error;
+      if (existingRecordId) {
+        ({ error } = await db.from('insurance_policies').update(record).eq('id', existingRecordId));
+      } else {
+        const { data, error: insErr } = await db.from('insurance_policies').insert([record]).select();
+        error = insErr; if (data && data[0]) existingRecordId = data[0].id;
+      }
+      if (error) throw error;
+      updateBadges();
+      s.done();
+    } catch (err) { s.fail(err); }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bills &amp; Subscriptions — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <!-- RECURRING BILLS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🧾</div>
+      <div class="card-head-text">
+        <h2>Recurring Bills</h2>
+        <p>The payments that keep the lights on — literally. So nothing lapses in a crisis.</p>
+      </div>
+      <span class="card-badge badge-missing" id="billsBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have recurring bills to document?</h3>
+        <p>Utilities, phone, internet, property tax.</p>
+      </div>
+      <div class="toggle" id="hasBills" data-onchange="onBillsToggle"></div>
+    </div>
+
+    <div id="billsFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Utilities provider(s)</label>
+            <input id="billUtilities" placeholder="e.g. Alectra, Enbridge">
+          </div>
+          <div class="field">
+            <label>Phone / internet</label>
+            <input id="billTelecom" placeholder="e.g. Rogers, Bell">
+          </div>
+          <div class="field">
+            <label>Property tax / rent</label>
+            <input id="billProperty" placeholder="e.g. City of Pickering">
+          </div>
+          <div class="field">
+            <label>Other key bills</label>
+            <input id="billOther" placeholder="e.g. Condo fees, water heater rental">
+          </div>
+          <div class="field full">
+            <label>Which account pays these? <span class="hint">— so your family knows where money flows out</span></label>
+            <input id="billPayAccount" placeholder="e.g. Joint chequing at TD">
+          </div>
+        </div>
+
+        <p class="upload-label">Upload a bill or summary</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately — only you and people you share access with can view it.</p>
+        <div class="uploaded-section hidden" id="uploaded-bills">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-bills"></div>
+        </div>
+        <div class="dropzone" id="dz-bills">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-bills" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTOPAY -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🔁</div>
+      <div class="card-head-text">
+        <h2>What's on Autopay</h2>
+        <p>Automatic payments are easy to forget — and easy to keep paying after they shouldn't.</p>
+      </div>
+      <span class="card-badge badge-missing" id="autopayBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>Do you have payments on autopay?</h3>
+        <p>Anything charged automatically each month.</p>
+      </div>
+      <div class="toggle" id="hasAutopay" data-onchange="onAutopayToggle"></div>
+    </div>
+
+    <div id="autopayFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field full">
+            <label>What's set to autopay?</label>
+            <textarea id="autopayList" placeholder="e.g. Hydro, internet, car insurance, gym, Netflix, mortgage"></textarea>
+          </div>
+          <div class="field">
+            <label>Charged to which card / account?</label>
+            <input id="autopaySource" placeholder="e.g. Visa ending 1234">
+          </div>
+          <div class="field">
+            <label>Subscriptions to review</label>
+            <input id="autopaySubs" placeholder="e.g. Streaming, apps, memberships">
+          </div>
+        </div>
+
+        <div class="callout">
+          💡 After someone passes, families often keep paying subscriptions for months because nobody knew they existed. Listing them here makes them easy to find and cancel.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCESS / LOGINS -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🔑</div>
+      <div class="card-head-text">
+        <h2>Account Access</h2>
+        <p>Where the logins live — never the passwords themselves.</p>
+      </div>
+      <span class="card-badge badge-missing" id="accessBadge">Set up</span>
+    </div>
+
+    <div class="field-block" style="margin-top:0;">
+      <div class="field-grid">
+        <div class="field">
+          <label>Do you use a password manager?</label>
+          <select id="accessManager">
+            <option value="">Select…</option>
+            <option>1Password</option>
+            <option>Bitwarden</option>
+            <option>LastPass</option>
+            <option>Apple / Google built-in</option>
+            <option>No — written down</option>
+            <option>No — memorized</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Where is the master access kept?</label>
+          <input id="accessMasterLocation" placeholder="e.g. Sealed envelope with lawyer">
+        </div>
+        <div class="field full">
+          <label>Notes for your family <span class="hint">— do NOT write actual passwords here</span></label>
+          <textarea id="accessNotes" placeholder="e.g. Phone unlock code is in the safe. Email recovery goes to my work address."></textarea>
+        </div>
+      </div>
+
+      <div class="callout" style="background:#fffbeb;">
+        ⚠️ For your security, never type real passwords into Clarevo. Record only <strong>where</strong> access can be found — the safe, the lawyer, the password manager.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Bills &amp; Access</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
+<script>
+  const BUCKET = 'documents';
+
+  function onBillsToggle() { $('billsFields').classList.toggle('hidden', !toggleVal('hasBills')); }
+  function onAutopayToggle() { $('autopayFields').classList.toggle('hidden', !toggleVal('hasAutopay')); }
+
+  bindToggle('hasBills'); bindToggle('hasAutopay');
+  initUploadSlot('bills', BUCKET, 'Bill');
+
+  requireAuth(loadData);
+
+  async function loadData() {
+    const { data } = await db.from('bills_access').select('*').eq('user_id', currentUser.id).limit(1);
+    if (!data || data.length === 0) return;
+    const d = data[0];
+    existingRecordId = d.id;
+
+    setToggle('hasBills', d.has_bills); onBillsToggle();
+    setVal('billUtilities', d.bill_utilities); setVal('billTelecom', d.bill_telecom);
+    setVal('billProperty', d.bill_property); setVal('billOther', d.bill_other);
+    setVal('billPayAccount', d.bill_pay_account);
+    restoreUploaded('bills', BUCKET, 'Bill', d.bills_file_path);
+
+    setToggle('hasAutopay', d.has_autopay); onAutopayToggle();
+    setVal('autopayList', d.autopay_list); setVal('autopaySource', d.autopay_source);
+    setVal('autopaySubs', d.autopay_subs);
+
+    setVal('accessManager', d.access_manager);
+    setVal('accessMasterLocation', d.access_master_location);
+    setVal('accessNotes', d.access_notes);
+
+    updateBadges();
+  }
+
+  function updateBadges() {
+    setBadge('billsBadge', toggleVal('hasBills') && (getVal('billUtilities') || getVal('billTelecom')));
+    setBadge('autopayBadge', toggleVal('hasAutopay') && getVal('autopayList'));
+    setBadge('accessBadge', getVal('accessManager') || getVal('accessMasterLocation'));
+  }
+  function setBadge(id, complete) {
+    const el = $(id);
+    el.textContent = complete ? 'Complete ✓' : 'Set up';
+    el.className = 'card-badge ' + (complete ? 'badge-complete' : 'badge-missing');
+  }
+
+  async function saveData() {
+    const s = saving('saveBtn', 'saveStatus', 'Save Bills & Access');
+    const record = {
+      user_id: currentUser.id,
+      has_bills: toggleVal('hasBills'),
+      bill_utilities: getVal('billUtilities'), bill_telecom: getVal('billTelecom'),
+      bill_property: getVal('billProperty'), bill_other: getVal('billOther'),
+      bill_pay_account: getVal('billPayAccount'), bills_file_path: uploadedFiles.bills,
+
+      has_autopay: toggleVal('hasAutopay'),
+      autopay_list: getVal('autopayList'), autopay_source: getVal('autopaySource'),
+      autopay_subs: getVal('autopaySubs'),
+
+      access_manager: getVal('accessManager'),
+      access_master_location: getVal('accessMasterLocation'),
+      access_notes: getVal('accessNotes'),
+
+      updated_at: new Date().toISOString()
+    };
+    try {
+      let error;
+      if (existingRecordId) {
+        ({ error } = await db.from('bills_access').update(record).eq('id', existingRecordId));
+      } else {
+        const { data, error: insErr } = await db.from('bills_access').insert([record]).select();
+        error = insErr; if (data && data[0]) existingRecordId = data[0].id;
+      }
+      if (error) throw error;
+      updateBadges();
+      s.done();
+    } catch (err) { s.fail(err); }
+  }
+</script>
+</body>
+</html>

@@ -1,528 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legal Documents — Clarevo</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { background: var(--gray-light); }
-
-    .plan-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 100px; }
-
-    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray); margin-bottom: 28px; }
-    .breadcrumb a { color: var(--blue); text-decoration: none; font-weight: 500; }
-    .breadcrumb-sep { color: var(--border); }
-
-    .plan-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; gap: 16px; flex-wrap: wrap; }
-    .plan-header-left h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
-    .plan-header-left p { font-size: 14px; color: var(--gray); line-height: 1.5; }
-
-    .score-badge { display: flex; flex-direction: column; align-items: center; background: var(--white); border-radius: var(--radius-lg); padding: 16px 24px; box-shadow: var(--shadow); min-width: 100px; text-align: center; flex-shrink: 0; }
-    .score-badge-num { font-size: 32px; font-weight: 800; line-height: 1; color: var(--red); }
-    .score-badge-num.fair { color: var(--yellow); }
-    .score-badge-num.good { color: var(--green); }
-    .score-badge-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-
-    .plan-section { background: var(--white); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px; }
-
-    .plan-section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-    .plan-section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .plan-section-icon.blue { background: var(--blue-light); }
-    .plan-section-icon.green { background: #f0fdf4; }
-    .plan-section-icon.yellow { background: #fffbeb; }
-    .plan-section-title { font-size: 16px; font-weight: 700; color: var(--dark); }
-    .plan-section-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
-
-    .section-badge { margin-left: auto; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; flex-shrink: 0; }
-    .section-badge.complete { background: #f0fdf4; color: var(--green); }
-    .section-badge.incomplete { background: #fef2f2; color: var(--red); }
-    .section-badge.partial { background: #fffbeb; color: var(--yellow); }
-
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .form-row.single { grid-template-columns: 1fr; }
-    .form-row:last-child { margin-bottom: 0; }
-
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 13px; font-weight: 600; color: var(--dark); }
-    .form-group input, .form-group select, .form-group textarea {
-      padding: 11px 14px; border: 2px solid var(--border); border-radius: var(--radius);
-      font-size: 14px; font-family: var(--font); color: var(--dark);
-      outline: none; transition: border 0.2s; background: var(--white);
-    }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue); }
-    .form-group .hint { font-size: 11px; color: var(--gray); line-height: 1.4; }
-
-    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f5f5f5; margin-bottom: 16px; }
-    .toggle-row:last-of-type { border-bottom: none; margin-bottom: 0; }
-    .toggle-row-label { font-size: 14px; font-weight: 600; color: var(--dark); }
-    .toggle-row-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
-
-    .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 24px; cursor: pointer; transition: background 0.2s; }
-    .toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; }
-    .toggle-switch input:checked + .toggle-slider { background: var(--blue); }
-    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
-
-    .conditional-fields { background: var(--gray-light); border-radius: var(--radius); padding: 20px; margin-top: 4px; display: none; }
-    .conditional-fields.show { display: block; }
-
-    /* UPLOAD ZONE */
-    .upload-zone {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--gray-light);
-      margin-top: 12px;
-    }
-    .upload-zone:hover { border-color: var(--blue); background: var(--blue-light); }
-    .upload-zone.dragover { border-color: var(--blue); background: var(--blue-light); }
-    .upload-zone input { display: none; }
-    .upload-icon { font-size: 24px; margin-bottom: 6px; }
-    .upload-label { font-size: 13px; font-weight: 600; color: var(--dark); }
-    .upload-hint { font-size: 11px; color: var(--gray); margin-top: 4px; }
-
-    /* UPLOADED FILE */
-    .uploaded-file {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      margin-top: 10px;
-    }
-    .uploaded-file-icon { font-size: 20px; flex-shrink: 0; }
-    .uploaded-file-name { font-size: 13px; font-weight: 600; color: var(--dark); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .uploaded-file-size { font-size: 11px; color: var(--gray); }
-    .uploaded-file-actions { display: flex; gap: 8px; flex-shrink: 0; }
-    .file-btn { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; border: none; cursor: pointer; font-family: var(--font); }
-    .file-btn.view { background: var(--blue-light); color: var(--blue); }
-    .file-btn.delete { background: #fef2f2; color: var(--red); }
-
-    .uploading-indicator { font-size: 12px; color: var(--blue); margin-top: 8px; display: none; }
-
-    /* WILLFUL CALLOUT */
-    .willful-callout {
-      background: var(--blue-light);
-      border: 1px solid var(--blue-mid);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-top: 12px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .willful-callout-icon { font-size: 18px; flex-shrink: 0; }
-    .willful-callout-text { font-size: 13px; color: var(--dark); line-height: 1.5; }
-    .willful-callout-text a { color: var(--blue); font-weight: 600; text-decoration: none; }
-    .willful-callout-text a:hover { text-decoration: underline; }
-
-    /* SAVE BAR */
-    .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 50; }
-    .save-status { font-size: 13px; color: var(--gray); }
-    .save-status.saved { color: var(--green); font-weight: 600; }
-    .save-status.saving { color: var(--blue); }
-    .save-status.error { color: var(--red); }
-    .save-btn { background: var(--blue); color: white; border: none; padding: 12px 28px; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font); transition: background 0.2s; }
-    .save-btn:hover { background: #2563eb; }
-    .save-btn:disabled { background: #93c5fd; cursor: not-allowed; }
-
-    .learn-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--blue); text-decoration: none; font-weight: 600; margin-top: 4px; }
-
-    @media (max-width: 600px) {
-      .plan-wrap { padding: 24px 16px 100px; }
-      .form-row { grid-template-columns: 1fr; }
-      .plan-header { flex-direction: column; }
-      .save-bar { padding: 12px 16px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Documents — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
 </head>
 <body>
 
-<nav>
-  <a href="home.html" class="logo">Clar<span>evo</span></a>
-  <ul class="nav-links">
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="form.html">Retake Assessment</a></li>
-    <li><a href="#" onclick="signOut()">Sign Out</a></li>
-  </ul>
-  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
 </nav>
-<div class="mobile-menu" id="mobileMenu">
-  <a href="dashboard.html" onclick="toggleMenu()">Dashboard</a>
-  <a href="form.html" onclick="toggleMenu()">Retake Assessment</a>
-  <a href="#" onclick="signOut()">Sign Out</a>
-</div>
 
-<div class="plan-wrap">
-
-  <div class="breadcrumb">
-    <a href="dashboard.html">Dashboard</a>
-    <span class="breadcrumb-sep">›</span>
-    <a href="dashboard.html">My Plan</a>
-    <span class="breadcrumb-sep">›</span>
-    <span>Legal Documents</span>
-  </div>
-
-  <div class="plan-header">
-    <div class="plan-header-left">
-      <h1>📄 Legal Documents</h1>
-      <p>Document your will, powers of attorney, and executor details — and upload the actual documents so your family can find everything in one place.</p>
-      <a href="learn-executor.html" class="learn-link">📖 Learn about executors and wills →</a>
-    </div>
-    <div class="score-badge">
-      <div class="score-badge-num" id="categoryScore">0%</div>
-      <div class="score-badge-label">Complete</div>
-    </div>
-  </div>
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
 
   <!-- WILL -->
-  <div class="plan-section">
-    <div class="plan-section-header">
-      <div class="plan-section-icon blue">📄</div>
-      <div>
-        <div class="plan-section-title">Your Will</div>
-        <div class="plan-section-desc">Tells your family what to do with your estate after you pass.</div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">📄</div>
+      <div class="card-head-text">
+        <h2>Your Will</h2>
+        <p>Tells your family what to do with your estate after you pass.</p>
       </div>
-      <div class="section-badge incomplete" id="willBadge">Incomplete</div>
+      <span class="card-badge badge-missing" id="willBadge">Set up</span>
     </div>
 
     <div class="toggle-row">
-      <div>
-        <div class="toggle-row-label">Do you have a will?</div>
-        <div class="toggle-row-desc">Even a basic will is better than none.</div>
+      <div class="tr-text">
+        <h3>Do you have a will?</h3>
+        <p>Even a basic will is better than none.</p>
       </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="hasWill" onchange="toggleFields('willFields', this.checked); updateScore()">
-        <span class="toggle-slider"></span>
-      </label>
+      <div class="toggle" id="hasWill" data-onchange="onWillToggle"></div>
     </div>
 
-    <div class="conditional-fields" id="willFields">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Where is your will stored?</label>
-          <select id="willLocation" onchange="updateScore()">
-            <option value="">Select location...</option>
-            <option value="lawyer">At my lawyer's office</option>
-            <option value="home-safe">Home safe</option>
-            <option value="safety-deposit">Safety deposit box</option>
-            <option value="filing-cabinet">Filing cabinet at home</option>
-            <option value="digital">Digital copy only</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Year last updated</label>
-          <input type="number" id="willLastUpdated" placeholder="e.g. 2024" min="1990" max="2030" oninput="updateScore()">
-          <span class="hint">Review every 3-5 years or after major life changes.</span>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Lawyer's name (optional)</label>
-          <input type="text" id="willLawyerName" placeholder="e.g. John Davies">
-        </div>
-        <div class="form-group">
-          <label>Lawyer's phone (optional)</label>
-          <input type="tel" id="willLawyerPhone" placeholder="e.g. 905-555-0100">
-        </div>
-      </div>
-
-      <!-- Created with Willful -->
-      <div class="toggle-row" style="margin-top:8px;">
-        <div>
-          <div class="toggle-row-label">Created with Willful?</div>
-          <div class="toggle-row-desc">If you used Willful's online service, we can note your account email for reference.</div>
-        </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="createdWithWillful" onchange="toggleFields('willfulFields', this.checked)">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-      <div class="conditional-fields" id="willfulFields" style="margin-top:0;">
-        <div class="form-row single">
-          <div class="form-group">
-            <label>Willful account email</label>
-            <input type="email" id="willfulEmail" placeholder="The email you used to sign up at willful.co">
-            <span class="hint">This is stored privately and only visible to you and anyone you share access with.</span>
+    <div id="willFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Where is your will stored?</label>
+            <select id="willLocation">
+              <option value="">Select…</option>
+              <option>Home safe</option>
+              <option>Safety deposit box</option>
+              <option>With my lawyer</option>
+              <option>Filing cabinet at home</option>
+              <option>Digital copy only</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Year last updated</label>
+            <input id="willLastUpdated" placeholder="e.g. 2022">
+            <span class="hint">Review every 3–5 years or after major life changes.</span>
+          </div>
+          <div class="field">
+            <label>Lawyer's name <span class="hint">(optional)</span></label>
+            <input id="willLawyerName" placeholder="e.g. John Davies">
+          </div>
+          <div class="field">
+            <label>Lawyer's phone <span class="hint">(optional)</span></label>
+            <input id="willLawyerPhone" placeholder="e.g. 905-555-0100">
           </div>
         </div>
-      </div>
 
-      <!-- Will upload -->
-      <div style="margin-top:16px;">
-        <div style="font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Upload your will document</div>
-        <div style="font-size:11px; color:var(--gray); margin-bottom:8px;">PDF, JPG, or PNG. Stored privately and securely — only you and people you share access with can view it.</div>
-        <div id="willUploadZone" class="upload-zone" onclick="document.getElementById('willFileInput').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'will')">
-          <input type="file" id="willFileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event, 'will')">
-          <div class="upload-icon">📎</div>
-          <div class="upload-label">Click to upload or drag and drop</div>
-          <div class="upload-hint">PDF, JPG, PNG up to 10MB</div>
+        <div class="toggle-row" style="margin-top:18px;">
+          <div class="tr-text">
+            <h3>Created with Willful?</h3>
+            <p>If you used Willful's online service, we can note your account email for reference.</p>
+          </div>
+          <div class="toggle" id="createdWithWillful" data-onchange="onWillfulToggle"></div>
         </div>
-        <div class="uploading-indicator" id="willUploading">⏳ Uploading...</div>
-        <div id="willFileDisplay"></div>
-      </div>
+        <div id="willfulEmailWrap" class="hidden" style="margin-top:14px;">
+          <div class="field">
+            <label>Willful account email</label>
+            <input id="willfulEmail" placeholder="e.g. you@email.com">
+          </div>
+        </div>
 
-      <!-- No will callout -->
+        <p class="upload-label">Upload your will document</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately and securely — only you and people you share access with can view it.</p>
+        <div class="uploaded-section hidden" id="uploaded-will">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-will"></div>
+        </div>
+        <div class="dropzone" id="dz-will">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
+        </div>
+        <input type="file" id="file-will" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
+      </div>
     </div>
 
-    <!-- If no will, show Willful suggestion -->
-    <div id="noWillCallout" class="willful-callout" style="margin-top:8px;">
-      <div class="willful-callout-icon">💡</div>
-      <div class="willful-callout-text">
-        Don't have a will yet? <a href="https://www.willful.co" target="_blank">Willful</a> makes it easy to create a legally valid Canadian will online for under $200 — in about an hour. It's one of the most important things you can do for your family.
-      </div>
+    <div id="willCallout" class="callout hidden">
+      💡 Don't have a will yet? <a href="https://www.willful.co" target="_blank" rel="noopener">Willful</a> is a Canadian online service that lets you create a legal will from home. Once done, come back and upload it here.
     </div>
   </div>
 
   <!-- POA PROPERTY -->
-  <div class="plan-section">
-    <div class="plan-section-header">
-      <div class="plan-section-icon yellow">⚖️</div>
-      <div>
-        <div class="plan-section-title">Power of Attorney — Property</div>
-        <div class="plan-section-desc">Gives someone authority to manage your finances if you're incapacitated.</div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🏛️</div>
+      <div class="card-head-text">
+        <h2>Power of Attorney — Property</h2>
+        <p>Lets someone manage your finances if you can't.</p>
       </div>
-      <div class="section-badge incomplete" id="poaPropBadge">Incomplete</div>
+      <span class="card-badge badge-missing" id="poaPropBadge">Set up</span>
     </div>
 
     <div class="toggle-row">
-      <div>
-        <div class="toggle-row-label">Do you have a POA for property?</div>
-        <div class="toggle-row-desc">Different from your will — this is for while you're still alive but unable to manage things.</div>
+      <div class="tr-text">
+        <h3>Do you have a POA for property?</h3>
+        <p>Covers banking, bills, and property if you're incapacitated.</p>
       </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="hasPoaProperty" onchange="toggleFields('poaPropertyFields', this.checked); toggleEl('noPoaPropCallout', !this.checked); updateScore()">
-        <span class="toggle-slider"></span>
-      </label>
+      <div class="toggle" id="hasPoaProperty" data-onchange="onPoaPropToggle"></div>
     </div>
 
-    <div class="conditional-fields" id="poaPropertyFields">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Who is named as your attorney?</label>
-          <input type="text" id="poaPropertyPerson" placeholder="e.g. Sarah Mitchell" oninput="updateScore()">
+    <div id="poaPropFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Who is your attorney for property?</label>
+            <input id="poaPropertyPerson" placeholder="e.g. Sarah Kapoor (spouse)">
+          </div>
+          <div class="field">
+            <label>Where is the document stored?</label>
+            <input id="poaPropertyLocation" placeholder="e.g. Home safe">
+          </div>
         </div>
-        <div class="form-group">
-          <label>Where is the document stored?</label>
-          <select id="poaPropertyLocation" onchange="updateScore()">
-            <option value="">Select location...</option>
-            <option value="lawyer">At my lawyer's office</option>
-            <option value="home-safe">Home safe</option>
-            <option value="safety-deposit">Safety deposit box</option>
-            <option value="filing-cabinet">Filing cabinet at home</option>
-            <option value="other">Other</option>
-          </select>
+
+        <p class="upload-label">Upload the POA Property document</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately.</p>
+        <div class="uploaded-section hidden" id="uploaded-poaprop">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-poaprop"></div>
         </div>
-      </div>
-      <div style="margin-top:8px;">
-        <div style="font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Upload POA document</div>
-        <div id="poaPropUploadZone" class="upload-zone" onclick="document.getElementById('poaPropFileInput').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'poa-property')">
-          <input type="file" id="poaPropFileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event, 'poa-property')">
-          <div class="upload-icon">📎</div>
-          <div class="upload-label">Click to upload or drag and drop</div>
-          <div class="upload-hint">PDF, JPG, PNG up to 10MB</div>
+        <div class="dropzone" id="dz-poaprop">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
         </div>
-        <div class="uploading-indicator" id="poaPropUploading">⏳ Uploading...</div>
-        <div id="poaPropFileDisplay"></div>
+        <input type="file" id="file-poaprop" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
       </div>
     </div>
 
-    <div id="noPoaPropCallout" class="willful-callout" style="margin-top:8px;">
-      <div class="willful-callout-icon">💡</div>
-      <div class="willful-callout-text">Don't have a POA for property? <a href="https://www.willful.co" target="_blank">Willful</a> can help you create one alongside your will.</div>
+    <div id="poaPropCallout" class="callout hidden">
+      💡 <a href="https://www.willful.co" target="_blank" rel="noopener">Willful</a> can help you set up a Power of Attorney for property online.
     </div>
   </div>
 
-  <!-- POA PERSONAL CARE -->
-  <div class="plan-section">
-    <div class="plan-section-header">
-      <div class="plan-section-icon yellow">🏥</div>
-      <div>
-        <div class="plan-section-title">Power of Attorney — Personal Care</div>
-        <div class="plan-section-desc">Gives someone authority to make healthcare decisions on your behalf.</div>
+  <!-- POA CARE -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">❤️</div>
+      <div class="card-head-text">
+        <h2>Power of Attorney — Personal Care</h2>
+        <p>Lets someone make health decisions if you can't.</p>
       </div>
-      <div class="section-badge incomplete" id="poaCareBadge">Incomplete</div>
+      <span class="card-badge badge-missing" id="poaCareBadge">Set up</span>
     </div>
 
     <div class="toggle-row">
-      <div>
-        <div class="toggle-row-label">Do you have a POA for personal care?</div>
-        <div class="toggle-row-desc">This person makes medical and care decisions if you can't make them yourself.</div>
+      <div class="tr-text">
+        <h3>Do you have a POA for personal care?</h3>
+        <p>Covers medical and care decisions on your behalf.</p>
       </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="hasPoaCare" onchange="toggleFields('poaCareFields', this.checked); toggleEl('noPoaCareCallout', !this.checked); updateScore()">
-        <span class="toggle-slider"></span>
-      </label>
+      <div class="toggle" id="hasPoaCare" data-onchange="onPoaCareToggle"></div>
     </div>
 
-    <div class="conditional-fields" id="poaCareFields">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Who is named for personal care decisions?</label>
-          <input type="text" id="poaCarePerson" placeholder="e.g. Sarah Mitchell" oninput="updateScore()">
+    <div id="poaCareFields" class="hidden">
+      <div class="field-block">
+        <div class="field-grid">
+          <div class="field">
+            <label>Who is your attorney for personal care?</label>
+            <input id="poaCarePerson" placeholder="e.g. Sarah Kapoor (spouse)">
+          </div>
+          <div class="field">
+            <label>Where is the document stored?</label>
+            <input id="poaCareLocation" placeholder="e.g. Home safe">
+          </div>
         </div>
-        <div class="form-group">
-          <label>Where is the document stored?</label>
-          <select id="poaCareLocation" onchange="updateScore()">
-            <option value="">Select location...</option>
-            <option value="lawyer">At my lawyer's office</option>
-            <option value="home-safe">Home safe</option>
-            <option value="safety-deposit">Safety deposit box</option>
-            <option value="filing-cabinet">Filing cabinet at home</option>
-            <option value="other">Other</option>
-          </select>
+
+        <p class="upload-label">Upload the POA Personal Care document</p>
+        <p class="upload-desc">PDF, JPG, or PNG. Stored privately.</p>
+        <div class="uploaded-section hidden" id="uploaded-poacare">
+          <div class="us-title">Uploaded documents</div>
+          <div id="uploaded-list-poacare"></div>
         </div>
-      </div>
-      <div style="margin-top:8px;">
-        <div style="font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Upload POA document</div>
-        <div id="poaCareUploadZone" class="upload-zone" onclick="document.getElementById('poaCareFileInput').click()" ondragover="handleDragOver(event)" ondrop="handleDrop(event, 'poa-care')">
-          <input type="file" id="poaCareFileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event, 'poa-care')">
-          <div class="upload-icon">📎</div>
-          <div class="upload-label">Click to upload or drag and drop</div>
-          <div class="upload-hint">PDF, JPG, PNG up to 10MB</div>
+        <div class="dropzone" id="dz-poacare">
+          <div class="dz-icon">📎</div>
+          <div class="dz-main">Click to upload or drag and drop</div>
+          <div class="dz-sub">PDF, JPG, PNG up to 10MB</div>
         </div>
-        <div class="uploading-indicator" id="poaCareUploading">⏳ Uploading...</div>
-        <div id="poaCareFileDisplay"></div>
+        <input type="file" id="file-poacare" accept=".pdf,.jpg,.jpeg,.png" class="hidden">
       </div>
     </div>
 
-    <div id="noPoaCareCallout" class="willful-callout" style="margin-top:8px;">
-      <div class="willful-callout-icon">💡</div>
-      <div class="willful-callout-text">Don't have a POA for personal care? <a href="https://www.willful.co" target="_blank">Willful</a> can help you create one as part of your estate plan.</div>
+    <div id="poaCareCallout" class="callout hidden">
+      💡 <a href="https://www.willful.co" target="_blank" rel="noopener">Willful</a> can help you set up a Power of Attorney for personal care online.
     </div>
   </div>
 
   <!-- EXECUTOR -->
-  <div class="plan-section">
-    <div class="plan-section-header">
-      <div class="plan-section-icon blue">👤</div>
-      <div>
-        <div class="plan-section-title">Your Executor</div>
-        <div class="plan-section-desc">The person responsible for carrying out your will after you pass.</div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">👤</div>
+      <div class="card-head-text">
+        <h2>Your Executor</h2>
+        <p>The person who'll carry out your will. <a href="learn-executor.html" style="color:var(--blue);font-weight:600;">What's an executor?</a></p>
       </div>
-      <div class="section-badge incomplete" id="executorBadge">Incomplete</div>
+      <span class="card-badge badge-missing" id="executorBadge">Set up</span>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Executor's full name</label>
-        <input type="text" id="executorName" placeholder="e.g. Robert Mitchell" oninput="updateScore()">
+    <div class="field-block" style="margin-top:0;">
+      <div class="field-grid">
+        <div class="field">
+          <label>Executor's name</label>
+          <input id="executorName" placeholder="e.g. Sarah Kapoor">
+        </div>
+        <div class="field">
+          <label>Executor's phone</label>
+          <input id="executorPhone" placeholder="e.g. 905-555-0100">
+        </div>
+        <div class="field">
+          <label>Executor's email</label>
+          <input id="executorEmail" placeholder="e.g. sarah@email.com">
+        </div>
+        <div class="field">
+          <label>Alternate executor <span class="hint">(backup)</span></label>
+          <input id="executorAlt" placeholder="e.g. David Kapoor">
+        </div>
       </div>
-      <div class="form-group">
-        <label>Executor's phone</label>
-        <input type="tel" id="executorPhone" placeholder="e.g. 416-555-0100" oninput="updateScore()">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Executor's email (optional)</label>
-        <input type="email" id="executorEmail" placeholder="e.g. robert@email.com">
-      </div>
-      <div class="form-group">
-        <label>Alternate executor (optional)</label>
-        <input type="text" id="executorAlt" placeholder="Backup if primary is unavailable">
-        <span class="hint">Recommended in case your primary executor can't serve.</span>
-      </div>
-    </div>
-    <div class="toggle-row" style="margin-top:8px;">
-      <div>
-        <div class="toggle-row-label">Does your executor know they've been named?</div>
-        <div class="toggle-row-desc">Have you had the conversation with them?</div>
-      </div>
-      <label class="toggle-switch">
-        <input type="checkbox" id="executorKnows" onchange="updateScore()">
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
-  </div>
 
-  <!-- DOCUMENT STORAGE -->
-  <div class="plan-section">
-    <div class="plan-section-header">
-      <div class="plan-section-icon green">📦</div>
-      <div>
-        <div class="plan-section-title">Document Storage</div>
-        <div class="plan-section-desc">Where your family can find all your important legal documents.</div>
-      </div>
-      <div class="section-badge incomplete" id="storageBadge">Incomplete</div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Primary document storage location</label>
-        <select id="docStorageLocation" onchange="updateScore()">
-          <option value="">Select location...</option>
-          <option value="lawyer">Lawyer's office</option>
-          <option value="home-safe">Home safe</option>
-          <option value="safety-deposit">Safety deposit box</option>
-          <option value="filing-cabinet">Filing cabinet</option>
-          <option value="digital">Digital — cloud storage</option>
-          <option value="multiple">Multiple locations</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Notes for your family</label>
-        <input type="text" id="docStorageNotes" placeholder="e.g. Safe code in 1Password, key in kitchen drawer">
+      <div class="toggle-row" style="margin-top:18px;">
+        <div class="tr-text">
+          <h3>Does your executor know?</h3>
+          <p>They should know they're named — and where to find everything.</p>
+        </div>
+        <div class="toggle" id="executorKnows"></div>
       </div>
     </div>
   </div>
 
-  <!-- SAVE BAR -->
-  <div class="save-bar">
-    <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
-    <button class="save-btn" id="saveBtn" onclick="saveData()">Save Legal Documents</button>
-  </div>
+  <!-- STORAGE -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">🗂️</div>
+      <div class="card-head-text">
+        <h2>Where Everything Lives</h2>
+        <p>So your family knows where to look for the originals.</p>
+      </div>
+      <span class="card-badge badge-missing" id="storageBadge">Set up</span>
+    </div>
 
+    <div class="field-block" style="margin-top:0;">
+      <div class="field-grid">
+        <div class="field">
+          <label>Primary document location</label>
+          <input id="docStorageLocation" placeholder="e.g. Fireproof safe in the home office">
+        </div>
+        <div class="field full">
+          <label>Access notes <span class="hint">— how to get in, never the actual code</span></label>
+          <textarea id="docStorageNotes" placeholder="e.g. Safe code is in 1Password; spare key in kitchen drawer"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Legal Documents</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
 <script>
-  const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  let currentUser = null;
-  let existingRecordId = null;
+  const BUCKET = 'documents';
 
-  // Uploaded file paths stored per category
-  const uploadedFiles = { will: null, 'poa-property': null, 'poa-care': null };
+  function onWillToggle() {
+    const on = toggleVal('hasWill');
+    $('willFields').classList.toggle('hidden', !on);
+    $('willCallout').classList.toggle('hidden', on);
+  }
+  function onWillfulToggle() { $('willfulEmailWrap').classList.toggle('hidden', !toggleVal('createdWithWillful')); }
+  function onPoaPropToggle() {
+    const on = toggleVal('hasPoaProperty');
+    $('poaPropFields').classList.toggle('hidden', !on);
+    $('poaPropCallout').classList.toggle('hidden', on);
+  }
+  function onPoaCareToggle() {
+    const on = toggleVal('hasPoaCare');
+    $('poaCareFields').classList.toggle('hidden', !on);
+    $('poaCareCallout').classList.toggle('hidden', on);
+  }
 
-  // Auth check
-  db.auth.getSession().then(({ data: { session } }) => {
-    if (!session) { window.location.href = 'login.html'; return; }
-    currentUser = session.user;
-    loadExistingData();
-  });
+  bindToggle('hasWill'); bindToggle('createdWithWillful');
+  bindToggle('hasPoaProperty'); bindToggle('hasPoaCare'); bindToggle('executorKnows');
 
-  // ── LOAD ──
-  async function loadExistingData() {
+  initUploadSlot('will', BUCKET, 'Will');
+  initUploadSlot('poaprop', BUCKET, 'POA Property');
+  initUploadSlot('poacare', BUCKET, 'POA Personal Care');
+
+  requireAuth(loadData);
+
+  async function loadData() {
     const { data } = await db.from('legal_documents').select('*').eq('user_id', currentUser.id).limit(1);
     if (!data || data.length === 0) return;
     const d = data[0];
     existingRecordId = d.id;
 
-    setToggle('hasWill', d.has_will);
+    setToggle('hasWill', d.has_will); onWillToggle();
     setVal('willLocation', d.will_location);
     setVal('willLastUpdated', d.will_last_updated);
     setVal('willLawyerName', d.will_lawyer_name);
     setVal('willLawyerPhone', d.will_lawyer_phone);
-    setToggle('createdWithWillful', d.created_with_willful);
+    setToggle('createdWithWillful', d.created_with_willful); onWillfulToggle();
     setVal('willfulEmail', d.willful_email);
+    restoreUploaded('will', BUCKET, 'Will', d.will_file_path);
 
-    setToggle('hasPoaProperty', d.has_poa_property);
+    setToggle('hasPoaProperty', d.has_poa_property); onPoaPropToggle();
     setVal('poaPropertyPerson', d.poa_property_person);
     setVal('poaPropertyLocation', d.poa_property_location);
+    restoreUploaded('poaprop', BUCKET, 'POA Property', d.poa_property_file_path);
 
-    setToggle('hasPoaCare', d.has_poa_care);
+    setToggle('hasPoaCare', d.has_poa_care); onPoaCareToggle();
     setVal('poaCarePerson', d.poa_care_person);
     setVal('poaCareLocation', d.poa_care_location);
+    restoreUploaded('poacare', BUCKET, 'POA Personal Care', d.poa_care_file_path);
 
     setVal('executorName', d.executor_name);
     setVal('executorPhone', d.executor_phone);
@@ -533,285 +345,87 @@
     setVal('docStorageLocation', d.doc_storage_location);
     setVal('docStorageNotes', d.doc_storage_notes);
 
-    // Show conditional fields
-    if (d.has_will) { toggleFields('willFields', true); toggleEl('noWillCallout', false); }
-    if (d.created_with_willful) toggleFields('willfulFields', true);
-    if (d.has_poa_property) { toggleFields('poaPropertyFields', true); toggleEl('noPoaPropCallout', false); }
-    if (d.has_poa_care) { toggleFields('poaCareFields', true); toggleEl('noPoaCareCallout', false); }
-
-    // Load existing uploaded files
-    if (d.will_file_path) { uploadedFiles.will = d.will_file_path; showUploadedFile('will', d.will_file_path); }
-    if (d.poa_property_file_path) { uploadedFiles['poa-property'] = d.poa_property_file_path; showUploadedFile('poa-property', d.poa_property_file_path); }
-    if (d.poa_care_file_path) { uploadedFiles['poa-care'] = d.poa_care_file_path; showUploadedFile('poa-care', d.poa_care_file_path); }
-
-    updateScore();
+    updateBadges();
   }
 
-  function setVal(id, val) { const el = document.getElementById(id); if (el && val) el.value = val; }
-  function setToggle(id, val) { const el = document.getElementById(id); if (el) el.checked = !!val; }
-
-  function toggleFields(id, show) {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('show', show);
+  function updateBadges() {
+    setBadge('willBadge', toggleVal('hasWill') && getVal('willLocation'), toggleVal('hasWill'));
+    setBadge('poaPropBadge', toggleVal('hasPoaProperty') && getVal('poaPropertyPerson'), toggleVal('hasPoaProperty'));
+    setBadge('poaCareBadge', toggleVal('hasPoaCare') && getVal('poaCarePerson'), toggleVal('hasPoaCare'));
+    setBadge('executorBadge', getVal('executorName') && toggleVal('executorKnows'), getVal('executorName'));
+    setBadge('storageBadge', getVal('docStorageLocation'), false);
+  }
+  function setBadge(id, complete, partial) {
+    const el = $(id);
+    if (complete) { el.textContent = 'Complete ✓'; el.className = 'card-badge badge-complete'; }
+    else if (partial) { el.textContent = 'Partial'; el.className = 'card-badge badge-partial'; }
+    else { el.textContent = 'Set up'; el.className = 'card-badge badge-missing'; }
   }
 
-  function toggleEl(id, show) {
-    const el = document.getElementById(id);
-    if (el) el.style.display = show ? '' : 'none';
-  }
-
-  // Show/hide no-will callout when toggle changes
-  document.getElementById('hasWill').addEventListener('change', function() {
-    toggleEl('noWillCallout', !this.checked);
-  });
-
-  // ── FILE UPLOADS ──
-  function handleDragOver(e) {
-    e.preventDefault();
-    e.currentTarget.classList.add('dragover');
-  }
-
-  function handleDrop(e, category) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file) uploadFile(file, category);
-  }
-
-  function handleFileSelect(e, category) {
-    const file = e.target.files[0];
-    if (file) uploadFile(file, category);
-  }
-
-  async function uploadFile(file, category) {
-    if (!currentUser) return;
-
-    // Validate
-    const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
-    if (!allowed.includes(file.type)) {
-      alert('Please upload a PDF, JPG, or PNG file.');
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      alert('File must be under 10MB.');
-      return;
-    }
-
-    // Show uploading state
-    const indicator = document.getElementById(category === 'will' ? 'willUploading' : category === 'poa-property' ? 'poaPropUploading' : 'poaCareUploading');
-    indicator.style.display = 'block';
-
-    const ext = file.name.split('.').pop();
-    const path = `${currentUser.id}/legal/${category}-${Date.now()}.${ext}`;
-
-    try {
-      // Delete old file if exists
-      if (uploadedFiles[category]) {
-        await db.storage.from('documents').remove([uploadedFiles[category]]);
-      }
-
-      const { error } = await db.storage.from('documents').upload(path, file, { upsert: true });
-      if (error) throw error;
-
-      uploadedFiles[category] = path;
-      indicator.style.display = 'none';
-      showUploadedFile(category, path, file.name, file.size);
-
-      // Auto-save file path
-      await saveFilePath(category, path);
-
-    } catch (err) {
-      console.error('Upload error:', err);
-      indicator.style.display = 'none';
-      alert('Upload failed. Please try again.');
-    }
-  }
-
-  function showUploadedFile(category, path, fileName, fileSize) {
-    const displayId = category === 'will' ? 'willFileDisplay' : category === 'poa-property' ? 'poaPropFileDisplay' : 'poaCareFileDisplay';
-    const displayName = fileName || path.split('/').pop();
-    const sizeText = fileSize ? formatFileSize(fileSize) : '';
-
-    document.getElementById(displayId).innerHTML = `
-      <div class="uploaded-file">
-        <div class="uploaded-file-icon">📄</div>
-        <div>
-          <div class="uploaded-file-name">${displayName}</div>
-          ${sizeText ? `<div class="uploaded-file-size">${sizeText}</div>` : ''}
-        </div>
-        <div class="uploaded-file-actions">
-          <button class="file-btn view" onclick="viewFile('${path}')">View</button>
-          <button class="file-btn delete" onclick="deleteFile('${category}', '${path}')">Remove</button>
-        </div>
-      </div>`;
-  }
-
-  async function viewFile(path) {
-    const { data } = await db.storage.from('documents').createSignedUrl(path, 60);
-    if (data?.signedUrl) window.open(data.signedUrl, '_blank');
-  }
-
-  async function deleteFile(category, path) {
-    if (!confirm('Remove this document?')) return;
-    await db.storage.from('documents').remove([path]);
-    uploadedFiles[category] = null;
-    const displayId = category === 'will' ? 'willFileDisplay' : category === 'poa-property' ? 'poaPropFileDisplay' : 'poaCareFileDisplay';
-    document.getElementById(displayId).innerHTML = '';
-    await saveFilePath(category, null);
-  }
-
-  async function saveFilePath(category, path) {
-    if (!existingRecordId) return;
-    const field = category === 'will' ? 'will_file_path' : category === 'poa-property' ? 'poa_property_file_path' : 'poa_care_file_path';
-    await db.from('legal_documents').update({ [field]: path }).eq('id', existingRecordId);
-  }
-
-  function formatFileSize(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
-    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
-  }
-
-  // ── SCORE ──
-  function updateScore() {
+  function computeScore() {
     let points = 0, max = 0;
-
-    // Will — 25pts
     max += 25;
-    const hasWill = document.getElementById('hasWill').checked;
-    if (hasWill) {
-      points += 15;
-      if (document.getElementById('willLocation').value) points += 5;
-      if (document.getElementById('willLastUpdated').value) points += 5;
-    }
-    updateBadge('willBadge', hasWill && document.getElementById('willLocation').value ? 'complete' : hasWill ? 'partial' : 'incomplete');
-
-    // POA Property — 20pts
+    if (toggleVal('hasWill')) { points += 15; if (getVal('willLocation')) points += 5; if (getVal('willLastUpdated')) points += 5; }
     max += 20;
-    const hasPOAProp = document.getElementById('hasPoaProperty').checked;
-    if (hasPOAProp) {
-      points += 12;
-      if (document.getElementById('poaPropertyPerson').value) points += 8;
-    }
-    updateBadge('poaPropBadge', hasPOAProp && document.getElementById('poaPropertyPerson').value ? 'complete' : hasPOAProp ? 'partial' : 'incomplete');
-
-    // POA Care — 20pts
+    if (toggleVal('hasPoaProperty')) { points += 12; if (getVal('poaPropertyPerson')) points += 8; }
     max += 20;
-    const hasPOACare = document.getElementById('hasPoaCare').checked;
-    if (hasPOACare) {
-      points += 12;
-      if (document.getElementById('poaCarePerson').value) points += 8;
-    }
-    updateBadge('poaCareBadge', hasPOACare && document.getElementById('poaCarePerson').value ? 'complete' : hasPOACare ? 'partial' : 'incomplete');
-
-    // Executor — 25pts
+    if (toggleVal('hasPoaCare')) { points += 12; if (getVal('poaCarePerson')) points += 8; }
     max += 25;
-    const execName = document.getElementById('executorName').value;
-    const execPhone = document.getElementById('executorPhone').value;
-    const execKnows = document.getElementById('executorKnows').checked;
-    if (execName) points += 10;
-    if (execPhone) points += 5;
-    if (execKnows) points += 10;
-    updateBadge('executorBadge', execName && execKnows ? 'complete' : execName ? 'partial' : 'incomplete');
-
-    // Storage — 10pts
+    if (getVal('executorName')) points += 10;
+    if (getVal('executorPhone')) points += 5;
+    if (toggleVal('executorKnows')) points += 10;
     max += 10;
-    const storageLocation = document.getElementById('docStorageLocation').value;
-    if (storageLocation) points += 10;
-    updateBadge('storageBadge', storageLocation ? 'complete' : 'incomplete');
-
-    const score = Math.round((points / max) * 100);
-    const scoreEl = document.getElementById('categoryScore');
-    scoreEl.textContent = score + '%';
-    scoreEl.className = 'score-badge-num' + (score >= 80 ? ' good' : score >= 50 ? ' fair' : '');
-    return score;
+    if (getVal('docStorageLocation')) points += 10;
+    return Math.round((points / max) * 100);
   }
 
-  function updateBadge(id, status) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.className = 'section-badge ' + status;
-    el.textContent = status === 'complete' ? 'Complete ✓' : status === 'partial' ? 'Partial' : 'Incomplete';
-  }
-
-  // ── SAVE ──
   async function saveData() {
-    if (!currentUser) return;
-    const btn = document.getElementById('saveBtn');
-    const status = document.getElementById('saveStatus');
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
-    status.textContent = 'Saving...';
-    status.className = 'save-status saving';
-
-    const score = updateScore();
-
+    const s = saving('saveBtn', 'saveStatus', 'Save Legal Documents');
     const record = {
       user_id: currentUser.id,
-      has_will: document.getElementById('hasWill').checked,
-      will_location: document.getElementById('willLocation').value || null,
-      will_last_updated: document.getElementById('willLastUpdated').value || null,
-      will_lawyer_name: document.getElementById('willLawyerName').value || null,
-      will_lawyer_phone: document.getElementById('willLawyerPhone').value || null,
-      created_with_willful: document.getElementById('createdWithWillful').checked,
-      willful_email: document.getElementById('willfulEmail').value || null,
-      will_file_path: uploadedFiles.will || null,
+      has_will: toggleVal('hasWill'),
+      will_location: getVal('willLocation'),
+      will_last_updated: getVal('willLastUpdated'),
+      will_lawyer_name: getVal('willLawyerName'),
+      will_lawyer_phone: getVal('willLawyerPhone'),
+      created_with_willful: toggleVal('createdWithWillful'),
+      willful_email: getVal('willfulEmail'),
+      will_file_path: uploadedFiles.will,
 
-      has_poa_property: document.getElementById('hasPoaProperty').checked,
-      poa_property_person: document.getElementById('poaPropertyPerson').value || null,
-      poa_property_location: document.getElementById('poaPropertyLocation').value || null,
-      poa_property_file_path: uploadedFiles['poa-property'] || null,
+      has_poa_property: toggleVal('hasPoaProperty'),
+      poa_property_person: getVal('poaPropertyPerson'),
+      poa_property_location: getVal('poaPropertyLocation'),
+      poa_property_file_path: uploadedFiles.poaprop,
 
-      has_poa_care: document.getElementById('hasPoaCare').checked,
-      poa_care_person: document.getElementById('poaCarePerson').value || null,
-      poa_care_location: document.getElementById('poaCareLocation').value || null,
-      poa_care_file_path: uploadedFiles['poa-care'] || null,
+      has_poa_care: toggleVal('hasPoaCare'),
+      poa_care_person: getVal('poaCarePerson'),
+      poa_care_location: getVal('poaCareLocation'),
+      poa_care_file_path: uploadedFiles.poacare,
 
-      executor_name: document.getElementById('executorName').value || null,
-      executor_phone: document.getElementById('executorPhone').value || null,
-      executor_email: document.getElementById('executorEmail').value || null,
-      executor_alt: document.getElementById('executorAlt').value || null,
-      executor_knows: document.getElementById('executorKnows').checked,
+      executor_name: getVal('executorName'),
+      executor_phone: getVal('executorPhone'),
+      executor_email: getVal('executorEmail'),
+      executor_alt: getVal('executorAlt'),
+      executor_knows: toggleVal('executorKnows'),
 
-      doc_storage_location: document.getElementById('docStorageLocation').value || null,
-      doc_storage_notes: document.getElementById('docStorageNotes').value || null,
+      doc_storage_location: getVal('docStorageLocation'),
+      doc_storage_notes: getVal('docStorageNotes'),
 
-      completion_score: score,
+      completion_score: computeScore(),
       updated_at: new Date().toISOString()
     };
-
     try {
       let error;
       if (existingRecordId) {
         ({ error } = await db.from('legal_documents').update(record).eq('id', existingRecordId));
       } else {
-        const { data, error: insertError } = await db.from('legal_documents').insert([record]).select();
-        error = insertError;
-        if (data && data[0]) existingRecordId = data[0].id;
+        const { data, error: insErr } = await db.from('legal_documents').insert([record]).select();
+        error = insErr; if (data && data[0]) existingRecordId = data[0].id;
       }
       if (error) throw error;
-
-      btn.disabled = false;
-      btn.textContent = 'Save Legal Documents';
-      status.textContent = '✅ Saved — ' + new Date().toLocaleTimeString();
-      status.className = 'save-status saved';
-
-    } catch (err) {
-      console.error('Save error:', err);
-      btn.disabled = false;
-      btn.textContent = 'Save Legal Documents';
-      status.textContent = '❌ Error saving. Please try again.';
-      status.className = 'save-status error';
-    }
-  }
-
-  async function signOut() {
-    await db.auth.signOut();
-    window.location.href = 'login.html';
-  }
-
-  function toggleMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
+      updateBadges();
+      s.done();
+    } catch (err) { s.fail(err); }
   }
 </script>
 </body>
