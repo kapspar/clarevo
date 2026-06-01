@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service — Clarevo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero {
+      background: var(--dark);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .learn-hero .category {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--blue);
+      margin-bottom: 14px;
+    }
+    .learn-hero h1 {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .learn-hero p {
+      font-size: 17px;
+      color: #aaa;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .learn-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 48px;
+    }
+
+    .learn-body h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin: 48px 0 16px;
+      color: var(--dark);
+    }
+    .learn-body h2:first-child { margin-top: 0; }
+
+    .learn-body p {
+      font-size: 16px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      background: var(--blue-light);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .warning-callout {
+      background: #fffbeb;
+      border-left: 4px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .warning-callout p {
+      font-size: 15px;
+      color: #78350f;
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .checklist {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      box-shadow: var(--shadow);
+    }
+    .checklist h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+    .check-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.5;
+      align-items: flex-start;
+    }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot {
+      width: 22px; height: 22px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .scenario {
+      background: var(--gray-light);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      border: 1px solid var(--border);
+    }
+    .scenario .scenario-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
+    .scenario p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .cta-box {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      text-align: center;
+      color: var(--white);
+      margin-top: 48px;
+    }
+    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+
+    .learn-nav {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .learn-nav a {
+      flex: 1;
+      min-width: 200px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 600px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 28px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="learn.html">Learn</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Legal</div>
+  <h1>Terms of Service</h1>
+  <p>The rules for using Clarevo. Plain English where possible. Last updated June 2026.</p>
+</div>
+
+<div class="learn-body">
+
+  <h2>Acceptance of terms</h2>
+  <p>By creating a Clarevo account or using the Clarevo service at clarevo.ca, you agree to these terms. If you don't agree, please don't use the service. These terms form a legal agreement between you and Clarevo Inc.</p>
+
+  <h2>What Clarevo is — and isn't</h2>
+  <p>Clarevo is a household financial organization and readiness tool. It helps you document your accounts, insurance, legal documents, and contacts so your family can access them in an emergency.</p>
+
+  <div class="warning-callout">
+    <p>⚠️ <strong>Important:</strong> Clarevo is not a law firm, financial advisor, or insurance provider. Nothing on Clarevo constitutes legal, financial, or insurance advice. The learning content and readiness assessments are for general informational purposes only. For advice specific to your situation, consult a qualified professional.</p>
+  </div>
+
+  <h2>Your account</h2>
+  <p>You must be 18 or older to create a Clarevo account. You are responsible for maintaining the security of your account credentials and for all activity that occurs under your account. If you suspect unauthorized access, contact us immediately at <a href="mailto:hello@clarevo.ca">hello@clarevo.ca</a>.</p>
+  <p>You agree to provide accurate information when creating your account and to keep it up to date.</p>
+
+  <h2>Your data</h2>
+  <p>You own your data. By uploading documents or entering information into Clarevo, you grant us a limited license to store and process that data solely to provide you with the service. We do not sell your data or use it for advertising. See our <a href="privacy.html">Privacy Policy</a> for full details on how your data is handled.</p>
+  <p>You are responsible for the accuracy of the information you enter. Clarevo does not verify the legal validity of documents you upload.</p>
+
+  <h2>Acceptable use</h2>
+  <p>You agree not to use Clarevo to store information that belongs to someone else without their authorization, to attempt to gain unauthorized access to other users' data, to use the service for any unlawful purpose, or to interfere with the operation of the service.</p>
+
+  <h2>Shared access</h2>
+  <p>If you grant another person access to your Clarevo plan, you are responsible for that decision and its consequences. You can revoke access at any time. Clarevo is not responsible for actions taken by people you have authorized to access your account.</p>
+
+  <h2>Partner links</h2>
+  <p>Clarevo may recommend third-party services such as Willful or Wealthsimple. These recommendations are not endorsements and Clarevo is not responsible for the products, services, or practices of these third parties. Any transactions you enter into with these partners are solely between you and them.</p>
+
+  <h2>Service availability</h2>
+  <p>We aim to keep Clarevo available at all times but cannot guarantee uninterrupted access. We may perform maintenance, updates, or modifications to the service at any time. We will make reasonable efforts to notify users of planned downtime.</p>
+
+  <h2>Limitation of liability</h2>
+  <p>To the maximum extent permitted by Canadian law, Clarevo and its founders, employees, and agents are not liable for any indirect, incidental, or consequential damages arising from your use of the service, including but not limited to loss of data, financial loss, or decisions made based on information in the service.</p>
+  <p>Our total liability for any claim arising from use of Clarevo is limited to the amount you paid us in the twelve months preceding the claim.</p>
+
+  <h2>Termination</h2>
+  <p>You may cancel your account at any time. We may suspend or terminate accounts that violate these terms. Upon termination, your right to use the service ends immediately. We will retain your data for 30 days after termination, after which it will be deleted.</p>
+
+  <h2>Changes to these terms</h2>
+  <p>We may update these terms from time to time. We'll notify you by email or in-app notice when we make material changes. Continued use of the service after changes constitutes acceptance of the new terms.</p>
+
+  <h2>Governing law</h2>
+  <p>These terms are governed by the laws of the Province of Ontario and the federal laws of Canada applicable therein, without regard to conflict of law principles.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about these terms? Email us at <a href="mailto:hello@clarevo.ca">hello@clarevo.ca</a>.</p>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2026 Clarevo. Built for Canadian families. <a href="privacy.html" style="color:#aaa;">Privacy Policy</a></p>
+</footer>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+</script>
+</body>
+</html>

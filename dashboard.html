@@ -615,28 +615,75 @@
     document.getElementById('sidebarName').textContent = name;
     document.getElementById('sidebarEmail').textContent = user.email;
 
-    const { data: assessments } = await db
-      .from('assessments')
-      .select('*')
-      .eq('email', user.email)
-      .order('created_at', { ascending: false })
-      .limit(1);
+    // Show the plan grid and shared sections regardless of assessment
+    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.classList.remove('hidden');
+    });
+    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.classList.add('hidden');
+    });
 
-    if (assessments && assessments.length > 0) {
-      showRealData(assessments[0], user);
-    } else {
-      showEmpty();
-    }
+    // Load all plan sections in parallel and collect their scores
+    const [legalScore, financesScore, insuranceScore, propertyScore,
+           businessScore, digitalScore, billsScore, emergencyScore] = await Promise.all([
+      loadLegalPreview(user),
+      loadFinancesPreview(user),
+      loadInsurancePreview(user),
+      loadPropertyPreview(user),
+      loadBusinessPreview(user),
+      loadDigitalPreview(user),
+      loadBillsPreview(user),
+      loadEmergencyPreview(user)
+    ]);
 
-    // Load all plan section previews
-    loadLegalPreview(user);
-    loadFinancesPreview(user);
-    loadInsurancePreview(user);
-    loadPropertyPreview(user);
-    loadBusinessPreview(user);
-    loadDigitalPreview(user);
-    loadBillsPreview(user);
-    loadEmergencyPreview(user);
+    // Build plan-based score from section scores
+    // Property and Business are optional — only include if user has engaged with them
+    const coreSections = { 'Legal Documents': legalScore, 'Finances': financesScore,
+      'Insurance': insuranceScore, 'Bills & Access': billsScore, 'Emergency': emergencyScore, 'Digital': digitalScore };
+    const optionalSections = { 'Property': propertyScore, 'Business': businessScore };
+
+    // Include optional sections if user has saved data there (score > 0 or N/A = 100)
+    const allSections = { ...coreSections };
+    if (propertyScore > 0) allSections['Property'] = propertyScore;
+    if (businessScore > 0) allSections['Business'] = businessScore;
+
+    const scores = Object.values(allSections);
+    const overallScore = scores.length ? Math.round(scores.reduce((a,b) => a+b, 0) / scores.length) : 0;
+
+    // Render score
+    document.getElementById('scoreNum').innerHTML = overallScore + '<span>/100</span>';
+    const bar = document.getElementById('scoreBar');
+    bar.style.width = overallScore + '%';
+    bar.style.background = overallScore < 40 ? 'var(--red)' : overallScore < 70 ? 'var(--yellow)' : 'var(--green)';
+    document.getElementById('scoreSub').textContent =
+      overallScore === 0 ? 'Start filling in your plan to build your score.' :
+      overallScore < 40 ? 'Your family has significant gaps to address.' :
+      overallScore < 70 ? "You're partway there — some gaps remain." :
+      'Great — your family is better prepared than most.';
+
+    // Render category bars from plan data
+    const container = document.getElementById('categoryBarsContainer');
+    const entries = Object.entries(allSections);
+    container.innerHTML = entries.map(([name, pct], i) => {
+      const color = pct < 30 ? 'red' : pct < 70 ? 'yellow' : 'green';
+      const colorVar = color === 'red' ? 'var(--red)' : color === 'yellow' ? 'var(--yellow)' : 'var(--green)';
+      const mb = i === entries.length - 1 ? 'margin-bottom:0' : '';
+      return `<div class="cat-row" style="${mb}">
+        <div class="cat-name">${name}</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fill ${color}" style="width:${pct}%"></div></div>
+        <div class="cat-pct" style="color:${colorVar}">${pct}%</div>
+      </div>`;
+    }).join('');
+
+    // Update gap stat cards from section scores
+    const critical = scores.filter(s => s === 0).length;
+    const warnings = scores.filter(s => s > 0 && s < 80).length;
+    const complete = scores.filter(s => s >= 80).length;
+    document.getElementById('critNum').textContent = critical;
+    document.getElementById('warnNum').textContent = warnings;
+    document.getElementById('compNum').textContent = complete;
+
+    // Gaps tab loads separately
     loadGapsTab(user);
   }
 
@@ -684,7 +731,9 @@
     setPlanItem('planBank', banks.length ? banks.length + ' documented' : null, 'None yet');
     setPlanItem('planInv',  invs.length  ? invs.length  + ' documented' : null, 'None yet');
     setPlanItem('planDebt', debts.length ? debts.length + ' documented' : null, 'None yet');
-    setPlanBadge('financesPlanBadge', listScore(rows, ['institution','account_type','owner','location']));
+    const score = listScore(rows, ['institution','account_type','owner','location']);
+    setPlanBadge('financesPlanBadge', score);
+    return score;
   }
 
   async function loadInsurancePreview(user) {
@@ -696,7 +745,9 @@
     setPlanItem('planLife', life ? (life.insurer || 'Documented') : null);
     setPlanItem('planHome', home ? (home.insurer || 'Documented') : null);
     setPlanItem('planAuto', auto ? (auto.insurer || 'Documented') : null);
-    setPlanBadge('insurancePlanBadge', listScore(rows, ['kind','insurer','coverage','beneficiary']));
+    const score = listScore(rows, ['kind','insurer','coverage','beneficiary']);
+    setPlanBadge('insurancePlanBadge', score);
+    return score;
   }
 
   async function loadPropertyPreview(user) {
@@ -704,13 +755,16 @@
     const rows = data || [];
     const isNa = rows.some(r => r.address === '__na__');
     const realRows = rows.filter(r => r.address !== '__na__');
+    let score;
     if (isNa) {
       setPlanItem('planProperty', 'Not applicable', null);
-      setPlanBadge('propertyPlanBadge', 100);
+      score = 100;
     } else {
       setPlanItem('planProperty', realRows.length ? realRows.length + ' documented' : null, 'None yet');
-      setPlanBadge('propertyPlanBadge', listScore(realRows, ['address','kind','ownership','owner']));
+      score = listScore(realRows, ['address','kind','ownership','owner']);
     }
+    setPlanBadge('propertyPlanBadge', score);
+    return score;
   }
 
   async function loadBusinessPreview(user) {
@@ -718,13 +772,16 @@
     const rows = data || [];
     const isNa = rows.some(r => r.name === '__na__');
     const realRows = rows.filter(r => r.name !== '__na__');
+    let score;
     if (isNa) {
       setPlanItem('planBusiness', 'Not applicable', null);
-      setPlanBadge('businessPlanBadge', 100);
+      score = 100;
     } else {
       setPlanItem('planBusiness', realRows.length ? realRows.length + ' documented' : null, 'Not reviewed');
-      setPlanBadge('businessPlanBadge', listScore(realRows, ['name','role','succession_plan','key_contact']));
+      score = listScore(realRows, ['name','role','succession_plan','key_contact']);
     }
+    setPlanBadge('businessPlanBadge', score);
+    return score;
   }
 
   async function loadDigitalPreview(user) {
@@ -732,16 +789,19 @@
     const rows = data || [];
     const isNa = rows.some(r => r.label === '__na__');
     const realRows = rows.filter(r => r.label !== '__na__');
+    let score;
     if (isNa) {
       setPlanItem('planDigital', 'Not applicable', null);
       setPlanItem('planLegacy', 'Not applicable', null);
-      setPlanBadge('digitalPlanBadge', 100);
+      score = 100;
     } else {
       const legacy = realRows.filter(r => r.legacy_contact === 'Yes — set up').length;
       setPlanItem('planDigital', realRows.length ? realRows.length + ' documented' : null, 'None yet');
       setPlanItem('planLegacy', realRows.length ? legacy + ' set up' : null, 'None yet');
-      setPlanBadge('digitalPlanBadge', listScore(realRows, ['label','kind','recovery_location','legacy_contact']));
+      score = listScore(realRows, ['label','kind','recovery_location','legacy_contact']);
     }
+    setPlanBadge('digitalPlanBadge', score);
+    return score;
   }
 
   async function loadBillsPreview(user) {
@@ -757,7 +817,9 @@
     if (billRows.length) done++;
     if (billRows.length && billRows.every(r => r.autopay)) done++;
     if (s && (s.access_manager || s.access_master_location)) done++;
-    setPlanBadge('billsPlanBadge', pct(done, total));
+    const score = pct(done, total);
+    setPlanBadge('billsPlanBadge', score);
+    return score;
   }
 
   async function loadEmergencyPreview(user) {
@@ -777,152 +839,51 @@
     if (c.length) done++;
     if (s && (s.master_holder || s.master_location)) done++;
     if (s && s.switch_on) done++;
-    setPlanBadge('emergencyPlanBadge', pct(done, total));
+    const score = pct(done, total);
+    setPlanBadge('emergencyPlanBadge', score);
+    return score;
   }
 
   async function loadLegalPreview(user) {
-    const { data } = await db
-      .from('legal_documents')
-      .select('*')
-      .eq('user_id', user.id)
-      .limit(1);
-
-    if (!data || data.length === 0) return;
+    const { data } = await db.from('legal_documents').select('*').eq('user_id', user.id).limit(1);
+    if (!data || data.length === 0) return 0;
     const d = data[0];
 
     const setPreview = (id, val, fallback) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (val) {
-        el.textContent = val;
-        el.className = 'pi-value';
-      } else {
-        el.textContent = fallback || 'Not documented';
-        el.className = 'pi-value missing';
-      }
+      const el = document.getElementById(id); if (!el) return;
+      if (val) { el.textContent = val; el.className = 'pi-value'; }
+      else { el.textContent = fallback || 'Not documented'; el.className = 'pi-value missing'; }
     };
-
     setPreview('planWill', d.has_will ? (d.will_location ? 'Documented — ' + d.will_location : 'Yes — location not set') : null);
     setPreview('planPoaProp', d.has_poa_property ? (d.poa_property_person || 'Documented') : null);
     setPreview('planPoaCare', d.has_poa_care ? (d.poa_care_person || 'Documented') : null);
     setPreview('planExecutor', d.executor_name ? (d.executor_knows ? d.executor_name + ' — briefed' : d.executor_name + ' — not briefed') : null);
 
-    // Update badge
+    // Calculate legal score from actual fields
+    let done = 0, total = 6;
+    if (d.has_will) done++;
+    if (d.has_will && d.will_location) done++;
+    if (d.has_poa_property && d.poa_property_person) done++;
+    if (d.has_poa_care && d.poa_care_person) done++;
+    if (d.executor_name) done++;
+    if (d.executor_name && d.executor_knows) done++;
+    const score = pct(done, total);
     const badge = document.getElementById('legalPlanBadge');
-    if (badge && d.completion_score) {
-      const score = d.completion_score;
-      badge.textContent = score + '% complete';
-      badge.style.background = score >= 80 ? '#f0fdf4' : score >= 50 ? '#fffbeb' : '#fef2f2';
-      badge.style.color = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--yellow)' : 'var(--red)';
-    }
-  }
-
-  function showRealData(a, user) {
-    const score = a.score || 0;
-    document.getElementById('scoreNum').innerHTML = score + '<span>/100</span>';
-    document.getElementById('scoreBar').style.width = score + '%';
-
-    const bar = document.getElementById('scoreBar');
-    if (score < 40) bar.style.background = 'var(--red)';
-    else if (score < 70) bar.style.background = 'var(--yellow)';
-    else bar.style.background = 'var(--green)';
-
-    if (score < 40) document.getElementById('scoreSub').textContent = 'Your family has significant gaps to address.';
-    else if (score < 70) document.getElementById('scoreSub').textContent = "You're partway there — some gaps remain.";
-    else document.getElementById('scoreSub').textContent = 'Great — your family is better prepared than most.';
-
-    // Parse raw answers
-    let raw = {};
-    try { raw = typeof a.raw_answers === 'string' ? JSON.parse(a.raw_answers) : (a.raw_answers || {}); } catch(e) {}
-
-    // Detect new vs old form (new form has q0)
-    const isNewForm = raw['q0'] !== undefined;
-
-    let cats;
-    if (isNewForm) {
-      const pct = (qs, max) => Math.min(100, Math.round(qs.filter(Boolean).reduce((s,q) => s+(q?.points||0),0)/max*100));
-      cats = {
-        'Legal Documents':    pct([raw.q15,raw.q16,raw.q17,raw.q18], 400),
-        'Insurance':          pct([raw.q12,raw.q13,raw.q14], 300),
-        'Finances':           pct([raw.q9,raw.q10,raw.q11], 300),
-        'Household Bills':    pct([raw.q6,raw.q7,raw.q8], 300),
-        'Access & Passwords': pct([raw.q19,raw.q20,raw.q21], 300),
-      };
-      if (raw.q2?.value === 'yes') cats['Kids & Family'] = pct([raw.q22,raw.q23], 200);
-      if (raw.q3?.value === 'yes') cats['Business'] = pct([raw.q24,raw.q25,raw.q26], 300);
-    } else {
-      const pct = (qs, max) => Math.min(100, Math.round(qs.filter(Boolean).reduce((s,q) => s+(q?.points||0),0)/max*100));
-      cats = {
-        'Legal Documents':    pct([raw.q14,raw.q15,raw.q16,raw.q17], 45),
-        'Insurance':          pct([raw.q11,raw.q12,raw.q13], 30),
-        'Finances':           pct([raw.q8,raw.q9,raw.q10], 30),
-        'Household Bills':    pct([raw.q5,raw.q6,raw.q7], 25),
-        'Access & Passwords': pct([raw.q18,raw.q19,raw.q20], 30),
-      };
-    }
-
-    // Render category bars
-    const container = document.getElementById('categoryBarsContainer');
-    const entries = Object.entries(cats);
-    container.innerHTML = entries.map(([name, pct], i) => {
-      const color = pct === 0 ? 'red' : pct < 60 ? 'yellow' : 'green';
-      const colorVar = color === 'red' ? 'var(--red)' : color === 'yellow' ? 'var(--yellow)' : 'var(--green)';
-      const mb = i === entries.length - 1 ? 'margin-bottom:0' : '';
-      return `<div class="cat-row" style="${mb}">
-        <div class="cat-name">${name}</div>
-        <div class="cat-bar-bg"><div class="cat-bar-fill ${color}" style="width:${pct}%"></div></div>
-        <div class="cat-pct" style="color:${colorVar}">${pct}%</div>
-      </div>`;
-    }).join('');
-
-    // Count gaps
-    const gapFields = ['has_will','has_poa','has_insurance','beneficiary_confirmed','bills_documented','finances_documented','password_plan','has_executor'];
-    let critical = 0, warnings = 0, complete = 0;
-    gapFields.forEach(f => {
-      const v = a[f];
-      if (!v || v === 'no' || v === 'no-will' || v === 'unsure') critical++;
-      else if (['sort-of','some','think-so','maybe','named','through-work','outdated','list','discussed','partial','yes-verbal'].includes(v)) warnings++;
-      else complete++;
-    });
-    document.getElementById('critNum').textContent = critical;
-    document.getElementById('warnNum').textContent = warnings;
-    document.getElementById('compNum').textContent = complete;
-    document.getElementById('gapsBadge').textContent = critical + warnings;
-
-    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('hidden');
-    });
-    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
-    });
-
-    if (user) {
-      const name = user.user_metadata?.full_name || '—';
-      const els = document.querySelectorAll('.pi-value');
-      if (els[0]) els[0].textContent = name;
-      if (els[1]) els[1].textContent = user.email;
-    }
+    if (badge) setPlanBadge('legalPlanBadge', score);
+    return score;
   }
 
   function showEmpty() {
-    document.getElementById('scoreNum').innerHTML = '—<span>/100</span>';
+    // Score starts at zero — plan sections still show so user can start filling in
+    document.getElementById('scoreNum').innerHTML = '0<span>/100</span>';
     document.getElementById('scoreBar').style.width = '0%';
-    document.getElementById('scoreSub').textContent = 'Complete your assessment to get your score.';
-    document.getElementById('critNum').textContent = '—';
-    document.getElementById('warnNum').textContent = '—';
-    document.getElementById('compNum').textContent = '—';
+    document.getElementById('scoreBar').style.background = 'var(--red)';
+    document.getElementById('scoreSub').textContent = 'Start filling in your plan to build your score.';
+    document.getElementById('critNum').textContent = '0';
+    document.getElementById('warnNum').textContent = '0';
+    document.getElementById('compNum').textContent = '0';
     document.getElementById('gapsBadge').textContent = '0';
-    document.getElementById('categoryBarsContainer').innerHTML = '<p style="font-size:13px;color:var(--gray);">Complete your assessment to see category scores.</p>';
-    ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
-    });
-    ['emptyOverview','emptyGaps','emptyPlan','emptyShared'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('hidden');
-    });
+    document.getElementById('categoryBarsContainer').innerHTML = '<p style="font-size:13px;color:var(--gray);padding:8px 0;">Fill in your plan sections to see scores here.</p>';
   }
 
   async function signOut() {
@@ -961,7 +922,7 @@
       gaps.push({ severity:'red', icon:'📄', title:'No will documented',
         desc:'Without a documented will, your province decides what happens to your estate.',
         planUrl:'plan-legal.html', planLabel:'Document your will',
-        partnerUrl:'https://www.willful.co', partnerLabel:'Get a will with Willful',
+        partnerUrl:'https://www.willful.co?utm_source=clarevo&utm_medium=gaps&utm_campaign=partner', partnerLabel:'Get a will with Willful',
         learnUrl:'learn-will.html', learnLabel:'What is a will?' });
     } else if (L.has_will && !L.will_location) {
       gaps.push({ severity:'yellow', icon:'📄', title:'Will location not recorded',
@@ -972,14 +933,14 @@
       gaps.push({ severity:'red', icon:'⚖️', title:'No POA for property',
         desc:'Covers your bank accounts, investments, and bills — not just real estate. Anyone with finances needs one in case they\'re incapacitated.',
         planUrl:'plan-legal.html', planLabel:'Document your POA',
-        partnerUrl:'https://www.willful.co', partnerLabel:'Set one up with Willful',
+        partnerUrl:'https://www.willful.co?utm_source=clarevo&utm_medium=gaps&utm_campaign=partner', partnerLabel:'Set one up with Willful',
         learnUrl:'learn-poa.html', learnLabel:'What is a POA?' });
     }
     if (!L || !L.has_poa_care) {
       gaps.push({ severity:'red', icon:'❤️', title:'No POA for personal care',
         desc:'No one has authority to make healthcare decisions for you if you can\'t make them yourself.',
         planUrl:'plan-legal.html', planLabel:'Document your POA',
-        partnerUrl:'https://www.willful.co', partnerLabel:'Set one up with Willful',
+        partnerUrl:'https://www.willful.co?utm_source=clarevo&utm_medium=gaps&utm_campaign=partner', partnerLabel:'Set one up with Willful',
         learnUrl:'learn-poa.html', learnLabel:'What is a POA?' });
     }
     if (!L || !L.executor_name) {
@@ -1006,7 +967,7 @@
       gaps.push({ severity:'yellow', icon:'📈', title:'Investments not documented',
         desc:'RRSPs, TFSAs, pensions — if your family can\'t find them, they may go unclaimed.',
         planUrl:'plan-finances.html', planLabel:'Document your investments',
-        partnerUrl:'https://www.wealthsimple.com', partnerLabel:'Don\'t have one? Try Wealthsimple' });
+        partnerUrl:'https://www.wealthsimple.com?utm_source=clarevo&utm_medium=gaps&utm_campaign=partner', partnerLabel:'Don\'t have one? Try Wealthsimple' });
     } else {
       const missingBeneficiary = invs.filter(r => !r.beneficiary);
       if (missingBeneficiary.length > 0) {

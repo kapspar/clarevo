@@ -512,7 +512,7 @@
 <!-- FOOTER -->
 <footer>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
-  <p>© 2026 Clarevo. Built for Canadian families. clarevo.ca</p>
+  <p>© 2026 Clarevo. Built for Canadian families. <a href="privacy.html" style="color:#aaa;">Privacy</a> · <a href="terms.html" style="color:#aaa;">Terms</a></p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -520,7 +520,6 @@
   function toggleMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
   }
-  // Close menu when clicking outside
   document.addEventListener('click', function(e) {
     const menu = document.getElementById('mobileMenu');
     const hamburger = document.querySelector('.hamburger');
@@ -542,6 +541,23 @@
       }
     });
   })();
+  // Cookie notice
+  if (!localStorage.getItem('clarevo_cookies_ok')) {
+    document.addEventListener('DOMContentLoaded', function() {
+      const notice = document.getElementById('cookieNotice');
+      if (notice) notice.style.display = 'flex';
+    });
+  }
+  function dismissCookies() {
+    localStorage.setItem('clarevo_cookies_ok', '1');
+    const notice = document.getElementById('cookieNotice');
+    if (notice) notice.style.display = 'none';
+  }
 </script>
+
+<div class="cookie-notice" id="cookieNotice" style="display:none;">
+  <span>This site uses essential cookies to keep you signed in. No tracking or advertising cookies. <a href="privacy.html">Privacy Policy</a></span>
+  <button class="cookie-dismiss" onclick="dismissCookies()">Got it</button>
+</div>
 </body>
 </html>

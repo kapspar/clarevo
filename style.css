@@ -235,3 +235,32 @@ footer p { font-size: 13px; color: #aaa; }
 @media (max-width: 768px) {
   html, body { overflow-x: hidden; max-width: 100%; }
 }
+
+/* ── COOKIE NOTICE ── */
+.cookie-notice {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--dark);
+  color: #ccc;
+  font-size: 13px;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  z-index: 999;
+  flex-wrap: wrap;
+}
+.cookie-notice a { color: #60a5fa; }
+.cookie-dismiss {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+}

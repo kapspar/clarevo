@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Clarevo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero {
+      background: var(--dark);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .learn-hero .category {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--blue);
+      margin-bottom: 14px;
+    }
+    .learn-hero h1 {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .learn-hero p {
+      font-size: 17px;
+      color: #aaa;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .learn-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 48px;
+    }
+
+    .learn-body h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin: 48px 0 16px;
+      color: var(--dark);
+    }
+    .learn-body h2:first-child { margin-top: 0; }
+
+    .learn-body p {
+      font-size: 16px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      background: var(--blue-light);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .warning-callout {
+      background: #fffbeb;
+      border-left: 4px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .warning-callout p {
+      font-size: 15px;
+      color: #78350f;
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .checklist {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      box-shadow: var(--shadow);
+    }
+    .checklist h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+    .check-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.5;
+      align-items: flex-start;
+    }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot {
+      width: 22px; height: 22px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .scenario {
+      background: var(--gray-light);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      border: 1px solid var(--border);
+    }
+    .scenario .scenario-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
+    .scenario p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .cta-box {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      text-align: center;
+      color: var(--white);
+      margin-top: 48px;
+    }
+    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+
+    .learn-nav {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .learn-nav a {
+      flex: 1;
+      min-width: 200px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 600px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 28px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="learn.html">Learn</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Legal</div>
+  <h1>Privacy Policy</h1>
+  <p>How Clarevo collects, stores, and protects your information. Last updated June 2026.</p>
+</div>
+
+<div class="learn-body">
+
+  <h2>Who we are</h2>
+  <p>Clarevo is operated by Clarevo Inc., a Canadian company. Our service helps Canadian households document their financial life and prepare their family for emergencies. You can reach us at <a href="mailto:hello@clarevo.ca">hello@clarevo.ca</a>.</p>
+
+  <h2>What we collect and why</h2>
+  <p>We collect only what's necessary to provide the service. Here's what that means in practice:</p>
+
+  <div class="checklist">
+    <h3>Information you provide directly</h3>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Account information</strong> — your name and email address when you create an account.</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Assessment answers</strong> — your responses to the readiness questionnaire, used to calculate your score and identify gaps.</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Plan information</strong> — details you enter about your accounts, insurance, legal documents, and contacts. This is the core of your family plan.</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Uploaded documents</strong> — files you choose to upload such as your will or insurance policy. These are stored privately and securely.</div>
+  </div>
+
+  <div class="callout">
+    <p>💡 <strong>What we never collect:</strong> We never ask for full account numbers, social insurance numbers, passwords, or complete financial account credentials. We record institution names, account types, and document locations — not the sensitive data itself.</p>
+  </div>
+
+  <h2>How your data is stored</h2>
+  <p>Your data is stored using Supabase, a secure database platform that uses industry-standard encryption. Supabase infrastructure runs on servers located in the United States. By using Clarevo, you consent to your data being stored in the United States under the protection of contractual safeguards consistent with PIPEDA requirements.</p>
+  <p>Row-level security ensures that your data is only accessible by you and people you explicitly grant access to. We do not have open access to browse individual user records.</p>
+
+  <h2>Who we share your data with</h2>
+  <p>We do not sell your personal information. We do not share your data with third parties for advertising purposes.</p>
+  <p>We may share data in the following limited circumstances:</p>
+  <div class="checklist">
+    <h3>Limited sharing</h3>
+    <div class="check-item"><div class="check-dot">1</div><strong>People you authorize</strong> — if you share your plan with a spouse or executor, they can access only the sections you've enabled.</div>
+    <div class="check-item"><div class="check-dot">2</div><strong>Service providers</strong> — Supabase (database and file storage). These providers are contractually required to protect your data.</div>
+    <div class="check-item"><div class="check-dot">3</div><strong>Legal requirements</strong> — if required by Canadian law or a valid court order.</div>
+  </div>
+
+  <h2>Partner links and referrals</h2>
+  <p>Clarevo may include links to third-party services such as Willful and Wealthsimple. These links may include tracking parameters that help us measure how many users click through, so we can demonstrate the value we provide to partners. We do not share your personal information with these partners — clicking a link is anonymous.</p>
+
+  <h2>Cookies</h2>
+  <p>Clarevo uses only essential cookies required to keep you signed in. We do not use advertising cookies, tracking pixels, or analytics that follow you across the internet. No cookie consent banner is required because we don't set any non-essential cookies.</p>
+
+  <h2>Your rights under PIPEDA</h2>
+  <p>As a Canadian resident, you have the right to access the personal information we hold about you, request corrections, and request deletion of your account and associated data. To exercise any of these rights, email us at <a href="mailto:hello@clarevo.ca">hello@clarevo.ca</a> and we will respond within 30 days.</p>
+  <p>Quebec residents have additional rights under Law 25, including the right to data portability and to withdraw consent. Contact us at the same address.</p>
+
+  <h2>Data retention</h2>
+  <p>We retain your data for as long as your account is active. If you delete your account, your personal data and uploaded files are deleted within 30 days. Anonymized, aggregate data (such as overall readiness score distributions) may be retained for product improvement purposes.</p>
+
+  <h2>Security</h2>
+  <p>We use encryption in transit (HTTPS) and at rest. Access to our database is controlled by row-level security policies. We do not store passwords — authentication is handled by Supabase Auth, which follows industry best practices.</p>
+  <p>No system is perfectly secure. If you believe there has been a security incident affecting your data, contact us immediately at <a href="mailto:hello@clarevo.ca">hello@clarevo.ca</a>.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>We may update this privacy policy from time to time. When we make significant changes, we'll notify you by email or with a notice in the app. The date at the top of this page reflects the most recent update.</p>
+
+  <h2>Contact us</h2>
+  <p>Questions about your privacy or this policy? Email us at <a href="mailto:hello@clarevo.ca">hello@clarevo.ca</a>. We're a small team and we'll respond personally.</p>
+
+  <div class="warning-callout">
+    <p>⚠️ <strong>Note:</strong> This privacy policy has been prepared in good faith for a Canadian audience. It is not legal advice. Clarevo recommends having this reviewed by a privacy lawyer before public launch, particularly to ensure full compliance with Quebec's Law 25 if serving Quebec residents.</p>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2026 Clarevo. Built for Canadian families. <a href="terms.html" style="color:#aaa;">Terms of Service</a></p>
+</footer>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+</script>
+</body>
+</html>
