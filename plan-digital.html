@@ -28,13 +28,30 @@
         <p>Phones, Apple ID, Google account, cloud photos — and how your family gets in.</p></div>
       <span class="card-badge badge-missing" id="digBadge">Set up</span>
     </div>
-    <div id="digList"></div>
-    <button class="add-btn" type="button" onclick="dig.addBlank()">+ Add a device or account</button>
-    <div class="callout" style="margin-top:16px;">
-      💡 Apple and Google both let you name a <strong>Legacy Contact</strong> who can access your account if something happens to you. Setting that up — and noting it here — means years of photos and messages aren't locked away forever. <a href="learn-digital.html" target="_blank" rel="noopener">Learn how →</a>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>I have no digital accounts or devices to document</h3>
+        <p>Mark this section complete — it won't affect your overall score.</p>
+      </div>
+      <div class="toggle" id="notApplicable" data-on="false"></div>
     </div>
-    <div class="callout" style="background:#fffbeb; margin-top:12px;">
-      ⚠️ Never type real passwords into Clarevo. Record only <strong>where</strong> recovery info lives and <strong>whether a legacy contact is set up</strong>.
+
+    <div id="digSection" style="margin-top:20px;">
+      <div id="digList"></div>
+      <button class="add-btn" type="button" onclick="dig.addBlank()">+ Add a device or account</button>
+      <div class="callout" style="margin-top:16px;">
+        💡 Apple and Google both let you name a <strong>Legacy Contact</strong> who can access your account after you pass. Setting that up — and noting it here — means years of photos and messages aren't locked away forever. <a href="learn-digital.html" target="_blank" rel="noopener">Learn how →</a>
+      </div>
+      <div class="callout" style="background:#fffbeb; margin-top:12px;">
+        ⚠️ Never type real passwords into Clarevo. Record only <strong>where</strong> recovery info lives and <strong>whether a legacy contact is set up</strong>.
+      </div>
+    </div>
+
+    <div id="naMessage" class="hidden">
+      <div class="callout" style="margin-top:16px; background:#f0fdf4; border-left-color: var(--green);">
+        ✅ Marked as not applicable. This section is complete.
+      </div>
     </div>
   </div>
 </div>
@@ -47,19 +64,39 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="plan-shared.js"></script>
 <script>
-  let dig;
-  function setBadge(score){
-    const el=$('digBadge');
-    if(score>=80){ el.textContent='Complete ✓'; el.className='card-badge badge-complete'; }
-    else if(score>0){ el.textContent=score+'%'; el.className='card-badge badge-partial'; }
-    else { el.textContent='Set up'; el.className='card-badge badge-missing'; }
+  let dig, naRowId = null;
+
+  function onNaToggle() {
+    const na = toggleVal('notApplicable');
+    document.getElementById('digSection').classList.toggle('hidden', na);
+    document.getElementById('naMessage').classList.toggle('hidden', !na);
+    updateBadge();
   }
+
+  function updateBadge() {
+    const el = document.getElementById('digBadge');
+    const na = toggleVal('notApplicable');
+    if (na) {
+      el.textContent = 'Not applicable ✓';
+      el.className = 'card-badge badge-complete';
+    } else {
+      const score = dig ? dig.score() : 0;
+      if (score >= 80) { el.textContent = 'Complete ✓'; el.className = 'card-badge badge-complete'; }
+      else if (score > 0) { el.textContent = score + '%'; el.className = 'card-badge badge-partial'; }
+      else { el.textContent = 'Set up'; el.className = 'card-badge badge-missing'; }
+    }
+  }
+
   requireAuth(() => {
+    bindToggle('notApplicable');
+    document.getElementById('notApplicable').addEventListener('click', onNaToggle);
+
     dig = new ListManager({
-      table:'digital_items', container:'digList',
-      emptyText:'No devices or accounts added yet.', uploadLabel:'Relevant documents (optional)',
-      onChange:()=>setBadge(dig.score()),
-      fields:[
+      table: 'digital_items', container: 'digList',
+      emptyText: 'No devices or accounts added yet. Add one below, or mark this section as not applicable above.',
+      uploadLabel: 'Relevant documents (optional)',
+      onChange: updateBadge,
+      fields: [
         {key:'label', label:'Device / account', placeholder:'e.g. My iPhone, Apple ID, iCloud Photos'},
         {key:'kind', label:'Type', type:'select', options:['Phone / device','Apple ID','Google account','Cloud photos','Email','Social media','Other']},
         {key:'recovery_location', label:'Where recovery info lives', hint:'never the password itself', placeholder:'e.g. Master access with lawyer; phone unlock in safe'},
@@ -68,12 +105,42 @@
         {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. Apple Legacy Contact is Sarah; access key stored with will'}
       ]
     });
-    dig.load().then(()=>setBadge(dig.score()));
+    dig.load().then(() => {
+      const naRow = dig.rows.find(r => r.label === '__na__');
+      if (naRow) {
+        naRowId = naRow.id;
+        dig.rows = dig.rows.filter(r => r.label !== '__na__');
+        dig.render();
+        const el = document.getElementById('notApplicable');
+        el.dataset.on = 'true'; el.classList.add('on');
+      }
+      onNaToggle();
+    });
   });
-  async function saveData(){
-    const s=saving('saveBtn','saveStatus','Save Digital & Devices');
-    try { await dig.saveAll(); setBadge(dig.score()); s.done(); }
-    catch(err){ s.fail(err); }
+
+  async function saveData() {
+    const s = saving('saveBtn', 'saveStatus', 'Save Digital & Devices');
+    try {
+      const na = toggleVal('notApplicable');
+      if (na) {
+        if (naRowId) {
+          await db.from('digital_items').update({ updated_at: new Date().toISOString() }).eq('id', naRowId);
+        } else {
+          const { data } = await db.from('digital_items')
+            .insert([{ user_id: currentUser.id, label: '__na__', kind: 'not_applicable', updated_at: new Date().toISOString() }])
+            .select();
+          if (data && data[0]) naRowId = data[0].id;
+        }
+      } else {
+        if (naRowId) {
+          await db.from('digital_items').delete().eq('id', naRowId);
+          naRowId = null;
+        }
+        await dig.saveAll();
+      }
+      updateBadge();
+      s.done();
+    } catch(err) { s.fail(err); }
   }
 </script>
 </body>

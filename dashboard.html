@@ -730,10 +730,18 @@
   async function loadDigitalPreview(user) {
     const { data } = await db.from('digital_items').select('*').eq('user_id', user.id);
     const rows = data || [];
-    const legacy = rows.filter(r => r.legacy_contact === 'Yes — set up').length;
-    setPlanItem('planDigital', rows.length ? rows.length + ' documented' : null, 'None yet');
-    setPlanItem('planLegacy', rows.length ? legacy + ' set up' : null, 'None yet');
-    setPlanBadge('digitalPlanBadge', listScore(rows, ['label','kind','recovery_location','legacy_contact']));
+    const isNa = rows.some(r => r.label === '__na__');
+    const realRows = rows.filter(r => r.label !== '__na__');
+    if (isNa) {
+      setPlanItem('planDigital', 'Not applicable', null);
+      setPlanItem('planLegacy', 'Not applicable', null);
+      setPlanBadge('digitalPlanBadge', 100);
+    } else {
+      const legacy = realRows.filter(r => r.legacy_contact === 'Yes — set up').length;
+      setPlanItem('planDigital', realRows.length ? realRows.length + ' documented' : null, 'None yet');
+      setPlanItem('planLegacy', realRows.length ? legacy + ' set up' : null, 'None yet');
+      setPlanBadge('digitalPlanBadge', listScore(realRows, ['label','kind','recovery_location','legacy_contact']));
+    }
   }
 
   async function loadBillsPreview(user) {
@@ -1051,18 +1059,22 @@
     }
 
     // ── DIGITAL ──
-    if (digRows.length === 0) {
-      gaps.push({ severity:'yellow', icon:'📱', title:'Digital accounts not documented',
-        desc:'Phones, Apple ID, Google account, cloud photos — years of memories locked behind one passcode.',
-        planUrl:'plan-digital.html', planLabel:'Document your devices',
-        learnUrl:'learn-digital.html', learnLabel:'What is a digital legacy?' });
-    } else {
-      const noLegacy = digRows.filter(r => r.legacy_contact === 'Not set up');
-      if (noLegacy.length > 0) {
-        gaps.push({ severity:'yellow', icon:'📱', title:'Digital legacy contacts not set up',
-          desc: noLegacy.length + ' account(s) have no legacy contact configured. Apple and Google both support this — it takes 10 minutes.',
-          planUrl:'plan-digital.html', planLabel:'Update digital accounts',
-          learnUrl:'learn-digital.html', learnLabel:'How to set it up' });
+    const digNa = digRows.some(r => r.label === '__na__');
+    const realDig = digRows.filter(r => r.label !== '__na__');
+    if (!digNa) {
+      if (realDig.length === 0) {
+        gaps.push({ severity:'yellow', icon:'📱', title:'Digital accounts not documented',
+          desc:'Phones, Apple ID, Google account, cloud photos — years of memories locked behind one passcode.',
+          planUrl:'plan-digital.html', planLabel:'Document your devices',
+          learnUrl:'learn-digital.html', learnLabel:'What is a digital legacy?' });
+      } else {
+        const noLegacy = realDig.filter(r => r.legacy_contact === 'Not set up');
+        if (noLegacy.length > 0) {
+          gaps.push({ severity:'yellow', icon:'📱', title:'Digital legacy contacts not set up',
+            desc: noLegacy.length + ' account(s) have no legacy contact configured. Apple and Google both support this — it takes 10 minutes.',
+            planUrl:'plan-digital.html', planLabel:'Update digital accounts',
+            learnUrl:'learn-digital.html', learnLabel:'How to set it up' });
+        }
       }
     }
 
