@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids &amp; Family — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <!-- N/A TOGGLE -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">👶</div>
+      <div class="card-head-text">
+        <h2>Kids &amp; Family</h2>
+        <p>Everything a guardian or caregiver needs to step in and keep things running.</p>
+      </div>
+      <span class="card-badge badge-missing" id="kidsBadge">Set up</span>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>I don't have dependent children to plan for</h3>
+        <p>Mark this section complete — it won't affect your overall score.</p>
+      </div>
+      <div class="toggle" id="notApplicable" data-on="false"></div>
+    </div>
+
+    <div id="naMessage" class="hidden">
+      <div class="callout" style="margin-top:16px; background:#f0fdf4; border-left-color: var(--green);">
+        ✅ Marked as not applicable. This section is complete.
+      </div>
+    </div>
+  </div>
+
+  <!-- GUARDIAN -->
+  <div id="kidsSection">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">👤</div>
+        <div class="card-head-text">
+          <h2>Guardian</h2>
+          <p>Who raises your children if both parents are unavailable. Named in your will — documented here.</p>
+        </div>
+        <span class="card-badge badge-missing" id="guardianBadge">Set up</span>
+      </div>
+
+      <div class="callout" style="margin-bottom:16px;">
+        💡 The guardian should be named in your will <em>and</em> should know they're named. Document them here so the right person can be contacted immediately in a crisis. <a href="plan-legal.html">Update your will →</a>
+      </div>
+
+      <div id="guardianList"></div>
+      <button class="add-btn" type="button" onclick="guardian.addBlank()">+ Add guardian</button>
+    </div>
+
+    <!-- KEY CONTACTS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">📞</div>
+        <div class="card-head-text">
+          <h2>Key Contacts</h2>
+          <p>School, doctor, daycare, regular caregivers — anyone who needs to be reached.</p>
+        </div>
+        <span class="card-badge badge-missing" id="contactsBadge">Set up</span>
+      </div>
+
+      <div id="contactsList"></div>
+      <button class="add-btn" type="button" onclick="contacts.addBlank()">+ Add a contact</button>
+    </div>
+
+    <!-- MEDICAL & ESSENTIALS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">🏥</div>
+        <div class="card-head-text">
+          <h2>Medical &amp; Essentials</h2>
+          <p>Allergies, medications, health card — what anyone caring for your kids must know.</p>
+        </div>
+        <span class="card-badge badge-missing" id="medicalBadge">Set up</span>
+      </div>
+
+      <div id="medicalList"></div>
+      <button class="add-btn" type="button" onclick="medical.addBlank()">+ Add a child's details</button>
+
+      <div class="callout" style="margin-top:16px;">
+        💡 Even if nothing is urgent, document each child's health card number location, family doctor, and any medications. A guardian stepping in for the first time will be grateful for even basic notes.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Kids &amp; Family</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
+<script>
+  let guardian, contacts, medical, naRowId = null;
+
+  function onNaToggle() {
+    const na = toggleVal('notApplicable');
+    document.getElementById('kidsSection').classList.toggle('hidden', na);
+    document.getElementById('naMessage').classList.toggle('hidden', !na);
+    updateBadge();
+  }
+
+  function updateBadge() {
+    const na = toggleVal('notApplicable');
+    const el = document.getElementById('kidsBadge');
+    if (na) {
+      el.textContent = 'Not applicable ✓'; el.className = 'card-badge badge-complete'; return;
+    }
+    const scores = [
+      guardian ? guardian.score() : 0,
+      contacts ? contacts.score() : 0,
+      medical ? medical.score() : 0
+    ];
+    const avg = Math.round(scores.reduce((a,b)=>a+b,0) / scores.length);
+    if (avg >= 80) { el.textContent = 'Complete ✓'; el.className = 'card-badge badge-complete'; }
+    else if (avg > 0) { el.textContent = avg + '%'; el.className = 'card-badge badge-partial'; }
+    else { el.textContent = 'Set up'; el.className = 'card-badge badge-missing'; }
+  }
+
+  function setSectionBadge(id, score) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (score >= 80) { el.textContent = 'Complete ✓'; el.className = 'card-badge badge-complete'; }
+    else if (score > 0) { el.textContent = score + '%'; el.className = 'card-badge badge-partial'; }
+    else { el.textContent = 'Set up'; el.className = 'card-badge badge-missing'; }
+  }
+
+  function onChange() {
+    setSectionBadge('guardianBadge', guardian ? guardian.score() : 0);
+    setSectionBadge('contactsBadge', contacts ? contacts.score() : 0);
+    setSectionBadge('medicalBadge', medical ? medical.score() : 0);
+    updateBadge();
+  }
+
+  requireAuth(() => {
+    bindToggle('notApplicable');
+    document.getElementById('notApplicable').addEventListener('click', onNaToggle);
+
+    guardian = new ListManager({
+      table: 'kids_items', container: 'guardianList',
+      emptyText: 'No guardian documented yet.',
+      uploadLabel: 'Relevant documents (optional)',
+      onChange,
+      fields: [
+        {key:'name', label:'Guardian\'s name', placeholder:'e.g. Sarah Kapoor'},
+        {key:'relationship', label:'Relationship', placeholder:'e.g. Aunt, Uncle, Family friend'},
+        {key:'phone', label:'Phone', placeholder:'e.g. 905-555-0100'},
+        {key:'email', label:'Email', placeholder:'e.g. sarah@email.com'},
+        {key:'notes', label:'Notes', full:true, type:'textarea',
+          placeholder:'e.g. They know they\'re named. Copy of their contact info is in the home safe.'}
+      ]
+    });
+
+    contacts = new ListManager({
+      table: 'kids_items', container: 'contactsList',
+      emptyText: 'No contacts added yet.',
+      hasUpload: false,
+      onChange,
+      fields: [
+        {key:'name', label:'Name / place', placeholder:'e.g. Sunnydale Public School, Dr. Smith'},
+        {key:'kind', label:'Type', type:'select', options:['School','Daycare','Pediatrician / doctor','Caregiver','Other']},
+        {key:'phone', label:'Phone', placeholder:'e.g. 905-555-0200'},
+        {key:'address', label:'Address', placeholder:'e.g. 123 Main St, Pickering'},
+        {key:'notes', label:'Notes', full:true, placeholder:'e.g. Pick-up code: 1234. After-school runs Mon/Wed.'}
+      ]
+    });
+
+    medical = new ListManager({
+      table: 'kids_items', container: 'medicalList',
+      emptyText: 'No medical details added yet.',
+      hasUpload: false,
+      onChange,
+      fields: [
+        {key:'name', label:'Child\'s name', placeholder:'e.g. Aiden'},
+        {key:'notes', label:'Allergies / medications', full:true, type:'textarea',
+          placeholder:'e.g. Peanut allergy — EpiPen in red bag in kitchen. No current medications.'},
+        {key:'phone', label:'Health card number location', placeholder:'e.g. In the filing cabinet under K'},
+        {key:'address', label:'Family doctor', placeholder:'e.g. Dr. Smith — 905-555-0300'}
+      ]
+    });
+
+    // Load all three, filtering by kind
+    loadAllKidsData();
+  });
+
+  async function loadAllKidsData() {
+    const { data } = await db.from('kids_items').select('*')
+      .eq('user_id', currentUser.id).order('created_at', {ascending:true});
+    const rows = data || [];
+
+    // Check N/A
+    const naRow = rows.find(r => r.name === '__na__');
+    if (naRow) {
+      naRowId = naRow.id;
+      const el = document.getElementById('notApplicable');
+      el.dataset.on = 'true'; el.classList.add('on');
+    }
+
+    // Guardian rows: kind = 'guardian' or first entry without a kind that has relationship
+    const guardianRows = rows.filter(r => r.name !== '__na__' && r.kind === 'guardian');
+    const contactRows  = rows.filter(r => r.name !== '__na__' && ['School','Daycare','Pediatrician / doctor','Caregiver','Other'].includes(r.kind));
+    const medicalRows  = rows.filter(r => r.name !== '__na__' && r.kind === 'medical');
+
+    guardian.rows = guardianRows; guardian.render();
+    contacts.rows = contactRows; contacts.render();
+    medical.rows = medicalRows; medical.render();
+
+    onNaToggle();
+  }
+
+  async function saveData() {
+    const s = saving('saveBtn', 'saveStatus', 'Save Kids & Family');
+    try {
+      const na = toggleVal('notApplicable');
+      if (na) {
+        if (naRowId) {
+          await db.from('kids_items').update({ updated_at: new Date().toISOString() }).eq('id', naRowId);
+        } else {
+          const { data } = await db.from('kids_items')
+            .insert([{ user_id: currentUser.id, name: '__na__', kind: 'not_applicable',
+              updated_at: new Date().toISOString() }]).select();
+          if (data && data[0]) naRowId = data[0].id;
+        }
+      } else {
+        if (naRowId) {
+          await db.from('kids_items').delete().eq('id', naRowId);
+          naRowId = null;
+        }
+        // Stamp kind on each manager's rows before saving
+        guardian.rows.forEach(r => r.kind = 'guardian');
+        medical.rows.forEach(r => { if (!r.kind || r.kind === 'not_applicable') r.kind = 'medical'; });
+        await guardian.saveAll();
+        await contacts.saveAll();
+        await medical.saveAll();
+      }
+      onChange();
+      s.done();
+    } catch(err) { s.fail(err); }
+  }
+</script>
+</body>
+</html>

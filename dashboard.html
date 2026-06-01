@@ -551,6 +551,17 @@
         </div>
       </a>
 
+      <a href="plan-kids.html" style="text-decoration:none;">
+        <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0;">👶 Kids &amp; Family</h3>
+            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="kidsPlanBadge">Set up →</span>
+          </div>
+          <div class="plan-item"><span class="pi-label">Guardian documented</span><span class="pi-value missing" id="planGuardian">Not set</span></div>
+          <div class="plan-item"><span class="pi-label">Key contacts</span><span class="pi-value missing" id="planKidsContacts">None yet</span></div>
+        </div>
+      </a>
+
       <a href="plan-business.html" style="text-decoration:none;">
         <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -625,7 +636,7 @@
 
     // Load all plan sections in parallel and collect their scores
     const [legalScore, financesScore, insuranceScore, propertyScore,
-           businessScore, digitalScore, billsScore, emergencyScore] = await Promise.all([
+           businessScore, digitalScore, billsScore, emergencyScore, kidsScore] = await Promise.all([
       loadLegalPreview(user),
       loadFinancesPreview(user),
       loadInsurancePreview(user),
@@ -633,19 +644,21 @@
       loadBusinessPreview(user),
       loadDigitalPreview(user),
       loadBillsPreview(user),
-      loadEmergencyPreview(user)
+      loadEmergencyPreview(user),
+      loadKidsPreview(user)
     ]);
 
     // Build plan-based score from section scores
     // Property and Business are optional — only include if user has engaged with them
     const coreSections = { 'Legal Documents': legalScore, 'Finances': financesScore,
       'Insurance': insuranceScore, 'Bills & Access': billsScore, 'Emergency': emergencyScore, 'Digital': digitalScore };
-    const optionalSections = { 'Property': propertyScore, 'Business': businessScore };
+    const optionalSections = { 'Property': propertyScore, 'Business': businessScore, 'Kids & Family': kidsScore };
 
     // Include optional sections if user has saved data there (score > 0 or N/A = 100)
     const allSections = { ...coreSections };
     if (propertyScore > 0) allSections['Property'] = propertyScore;
     if (businessScore > 0) allSections['Business'] = businessScore;
+    if (kidsScore > 0) allSections['Kids & Family'] = kidsScore;
 
     const scores = Object.values(allSections);
     const overallScore = scores.length ? Math.round(scores.reduce((a,b) => a+b, 0) / scores.length) : 0;
@@ -784,6 +797,27 @@
     return score;
   }
 
+  async function loadKidsPreview(user) {
+    const { data } = await db.from('kids_items').select('*').eq('user_id', user.id);
+    const rows = data || [];
+    const isNa = rows.some(r => r.name === '__na__');
+    const realRows = rows.filter(r => r.name !== '__na__');
+    let score;
+    if (isNa) {
+      setPlanItem('planGuardian', 'Not applicable', null);
+      setPlanItem('planKidsContacts', 'Not applicable', null);
+      score = 100;
+    } else {
+      const guardian = realRows.find(r => r.kind === 'guardian');
+      const contacts = realRows.filter(r => r.kind !== 'guardian');
+      setPlanItem('planGuardian', guardian ? (guardian.name || 'Documented') : null, 'Not set');
+      setPlanItem('planKidsContacts', contacts.length ? contacts.length + ' documented' : null, 'None yet');
+      score = listScore(realRows, ['name','kind','phone']);
+    }
+    setPlanBadge('kidsPlanBadge', score);
+    return score;
+  }
+
   async function loadDigitalPreview(user) {
     const { data } = await db.from('digital_items').select('*').eq('user_id', user.id);
     const rows = data || [];
@@ -896,14 +930,15 @@
     const uid = user.id;
 
     // Fetch all plan tables in parallel
-    const [legal, accounts, insurance, bills, settings, contacts, digital] = await Promise.all([
+    const [legal, accounts, insurance, bills, settings, contacts, digital, kids] = await Promise.all([
       db.from('legal_documents').select('*').eq('user_id', uid).limit(1),
       db.from('account_items').select('*').eq('user_id', uid),
       db.from('insurance_items').select('*').eq('user_id', uid),
       db.from('bill_items').select('*').eq('user_id', uid),
       db.from('emergency_settings').select('*').eq('user_id', uid).limit(1),
       db.from('contact_items').select('*').eq('user_id', uid),
-      db.from('digital_items').select('*').eq('user_id', uid)
+      db.from('digital_items').select('*').eq('user_id', uid),
+      db.from('kids_items').select('*').eq('user_id', uid)
     ]);
 
     const L = legal.data && legal.data[0];
@@ -913,6 +948,7 @@
     const S = settings.data && settings.data[0];
     const contactRows = contacts.data || [];
     const digRows = digital.data || [];
+    const kidsRows = kids.data || [];
 
     // Each gap: { severity:'red'|'yellow', icon, title, desc, planUrl, planLabel, partnerUrl, partnerLabel, learnUrl, learnLabel }
     const gaps = [];
@@ -1039,7 +1075,22 @@
       }
     }
 
-    // ── RENDER ──
+    // ── KIDS ──
+    const kidsNa = kidsRows.some(r => r.name === '__na__');
+    const realKids = kidsRows.filter(r => r.name !== '__na__');
+    if (!kidsNa && realKids.length === 0) {
+      gaps.push({ severity:'yellow', icon:'👶', title:'Kids & family plan not documented',
+        desc:'If you have children, document their guardian, doctor, school, and key contacts so anyone stepping in knows exactly what to do.',
+        planUrl:'plan-kids.html', planLabel:'Document your family plan' });
+    } else if (!kidsNa) {
+      const guardian = realKids.find(r => r.kind === 'guardian');
+      if (!guardian) {
+        gaps.push({ severity:'red', icon:'👶', title:'No guardian documented',
+          desc:'Your will may name a guardian, but your family plan doesn\'t. Make sure the right person is documented and knows what to expect.',
+          planUrl:'plan-kids.html', planLabel:'Add guardian',
+          learnUrl:'learn-executor.html', learnLabel:'Estate planning for parents' });
+      }
+    }
     const list = document.getElementById('gapsList');
     const card = document.getElementById('allGapsCard');
     const empty = document.getElementById('emptyGaps');
