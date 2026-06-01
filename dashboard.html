@@ -702,8 +702,15 @@
   async function loadPropertyPreview(user) {
     const { data } = await db.from('property_items').select('*').eq('user_id', user.id);
     const rows = data || [];
-    setPlanItem('planProperty', rows.length ? rows.length + ' documented' : null, 'None yet');
-    setPlanBadge('propertyPlanBadge', listScore(rows, ['address','kind','ownership','owner']));
+    const isNa = rows.some(r => r.address === '__na__');
+    const realRows = rows.filter(r => r.address !== '__na__');
+    if (isNa) {
+      setPlanItem('planProperty', 'Not applicable', null);
+      setPlanBadge('propertyPlanBadge', 100);
+    } else {
+      setPlanItem('planProperty', realRows.length ? realRows.length + ' documented' : null, 'None yet');
+      setPlanBadge('propertyPlanBadge', listScore(realRows, ['address','kind','ownership','owner']));
+    }
   }
 
   async function loadBusinessPreview(user) {
@@ -955,7 +962,7 @@
     }
     if (!L || !L.has_poa_property) {
       gaps.push({ severity:'red', icon:'⚖️', title:'No POA for property',
-        desc:'No one can legally manage your finances or property if you\'re incapacitated.',
+        desc:'Covers your bank accounts, investments, and bills — not just real estate. Anyone with finances needs one in case they\'re incapacitated.',
         planUrl:'plan-legal.html', planLabel:'Document your POA',
         partnerUrl:'https://www.willful.co', partnerLabel:'Set one up with Willful',
         learnUrl:'learn-poa.html', learnLabel:'What is a POA?' });
