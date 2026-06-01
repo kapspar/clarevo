@@ -28,10 +28,30 @@
         <p>Any business you own or co-own — and what happens to it if you're unavailable.</p></div>
       <span class="card-badge badge-missing" id="bizBadge">Set up</span>
     </div>
-    <div id="bizList"></div>
-    <button class="add-btn" type="button" onclick="biz.addBlank()">+ Add a business</button>
-    <div class="callout" style="margin-top:16px;">
-      💡 A business with no succession plan can stall completely if the owner is suddenly unavailable. Documenting a plan here is also a natural fit for an estate lawyer's review.
+
+    <!-- Not applicable toggle -->
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>I don't own or co-own a business</h3>
+        <p>Mark this section complete — it won't affect your overall score.</p>
+      </div>
+      <div class="toggle" id="notApplicable" data-on="false"></div>
+    </div>
+
+    <div id="bizSection">
+      <div style="margin-top:20px;">
+        <div id="bizList"></div>
+        <button class="add-btn" type="button" onclick="biz.addBlank()">+ Add a business</button>
+        <div class="callout" style="margin-top:16px;">
+          💡 A business with no succession plan can stall completely if the owner is suddenly unavailable. Documenting a plan here is also a natural fit for an estate lawyer's review.
+        </div>
+      </div>
+    </div>
+
+    <div id="naMessage" class="hidden">
+      <div class="callout" style="margin-top:16px; background:#f0fdf4; border-left-color: var(--green);">
+        ✅ Marked as not applicable. This section is complete.
+      </div>
     </div>
   </div>
 </div>
@@ -44,19 +64,39 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="plan-shared.js"></script>
 <script>
-  let biz;
-  function setBadge(score){
-    const el=$('bizBadge');
-    if(score>=80){ el.textContent='Complete ✓'; el.className='card-badge badge-complete'; }
-    else if(score>0){ el.textContent=score+'%'; el.className='card-badge badge-partial'; }
-    else { el.textContent='Set up'; el.className='card-badge badge-missing'; }
+  let biz, naSettingId = null;
+
+  function onNaToggle() {
+    const na = toggleVal('notApplicable');
+    $('bizSection').classList.toggle('hidden', na);
+    $('naMessage').classList.toggle('hidden', !na);
+    updateBadge();
   }
+
+  function updateBadge() {
+    const el = $('bizBadge');
+    const na = toggleVal('notApplicable');
+    if (na) {
+      el.textContent = 'Not applicable ✓';
+      el.className = 'card-badge badge-complete';
+    } else {
+      const score = biz ? biz.score() : 0;
+      if (score >= 80) { el.textContent = 'Complete ✓'; el.className = 'card-badge badge-complete'; }
+      else if (score > 0) { el.textContent = score + '%'; el.className = 'card-badge badge-partial'; }
+      else { el.textContent = 'Set up'; el.className = 'card-badge badge-missing'; }
+    }
+  }
+
   requireAuth(() => {
+    bindToggle('notApplicable');
+    $('notApplicable').addEventListener('click', onNaToggle);
+
     biz = new ListManager({
-      table:'business_items', container:'bizList',
-      emptyText:'No businesses added yet.', uploadLabel:'Relevant documents (optional)',
-      onChange:()=>setBadge(biz.score()),
-      fields:[
+      table: 'business_items', container: 'bizList',
+      emptyText: 'No businesses added yet. Add one below, or mark this section as not applicable above.',
+      uploadLabel: 'Relevant documents (optional)',
+      onChange: updateBadge,
+      fields: [
         {key:'name', label:'Business name', placeholder:'e.g. Maple Lane Consulting'},
         {key:'role', label:'Your role', placeholder:'e.g. Owner, Co-owner, Partner'},
         {key:'succession_plan', label:'Succession plan', type:'select', options:['Documented','Discussed but not written','None yet']},
@@ -66,12 +106,52 @@
         {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. Partner has signing authority; corporate records with accountant'}
       ]
     });
-    biz.load().then(()=>setBadge(biz.score()));
+    biz.load().then(() => {
+      loadNaSetting();
+    });
   });
-  async function saveData(){
-    const s=saving('saveBtn','saveStatus','Save Business');
-    try { await biz.saveAll(); setBadge(biz.score()); s.done(); }
-    catch(err){ s.fail(err); }
+
+  async function loadNaSetting() {
+    // Reuse emergency_settings to store the N/A flag (add column via SQL if needed)
+    // Simpler: store in business_items as a sentinel row with name='__na__'
+    const naRow = biz.rows.find(r => r.name === '__na__');
+    if (naRow) {
+      naSettingId = naRow.id;
+      // Remove from display rows
+      biz.rows = biz.rows.filter(r => r.name !== '__na__');
+      biz.render();
+      // Set toggle on
+      const el = $('notApplicable');
+      el.dataset.on = 'true'; el.classList.add('on');
+    }
+    onNaToggle();
+  }
+
+  async function saveData() {
+    const s = saving('saveBtn', 'saveStatus', 'Save Business');
+    try {
+      const na = toggleVal('notApplicable');
+      if (na) {
+        // Save/update the sentinel row
+        if (naSettingId) {
+          await db.from('business_items').update({ updated_at: new Date().toISOString() }).eq('id', naSettingId);
+        } else {
+          const { data } = await db.from('business_items')
+            .insert([{ user_id: currentUser.id, name: '__na__', role: 'not_applicable', updated_at: new Date().toISOString() }])
+            .select();
+          if (data && data[0]) naSettingId = data[0].id;
+        }
+      } else {
+        // Delete sentinel if switching back to "I have a business"
+        if (naSettingId) {
+          await db.from('business_items').delete().eq('id', naSettingId);
+          naSettingId = null;
+        }
+        await biz.saveAll();
+      }
+      updateBadge();
+      s.done();
+    } catch(err) { s.fail(err); }
   }
 </script>
 </body>

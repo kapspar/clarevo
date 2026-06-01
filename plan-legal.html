@@ -37,7 +37,7 @@
         <h3>Do you have a will?</h3>
         <p>Even a basic will is better than none.</p>
       </div>
-      <div class="toggle" id="hasWill" data-onchange="onWillToggle"></div>
+      <div class="toggle" id="hasWill" data-on="false" data-onchange="onWillToggle"></div>
     </div>
 
     <div id="willFields" class="hidden">
@@ -75,7 +75,7 @@
             <h3>Created with Willful?</h3>
             <p>If you used Willful's online service, we can note your account email for reference.</p>
           </div>
-          <div class="toggle" id="createdWithWillful" data-onchange="onWillfulToggle"></div>
+          <div class="toggle" id="createdWithWillful" data-on="false" data-onchange="onWillfulToggle"></div>
         </div>
         <div id="willfulEmailWrap" class="hidden" style="margin-top:14px;">
           <div class="field">
@@ -120,7 +120,7 @@
         <h3>Do you have a POA for property?</h3>
         <p>Covers banking, bills, and property if you're incapacitated.</p>
       </div>
-      <div class="toggle" id="hasPoaProperty" data-onchange="onPoaPropToggle"></div>
+      <div class="toggle" id="hasPoaProperty" data-on="false" data-onchange="onPoaPropToggle"></div>
     </div>
 
     <div id="poaPropFields" class="hidden">
@@ -172,7 +172,7 @@
         <h3>Do you have a POA for personal care?</h3>
         <p>Covers medical and care decisions on your behalf.</p>
       </div>
-      <div class="toggle" id="hasPoaCare" data-onchange="onPoaCareToggle"></div>
+      <div class="toggle" id="hasPoaCare" data-on="false" data-onchange="onPoaCareToggle"></div>
     </div>
 
     <div id="poaCareFields" class="hidden">
@@ -244,7 +244,7 @@
           <h3>Does your executor know?</h3>
           <p>They should know they're named — and where to find everything.</p>
         </div>
-        <div class="toggle" id="executorKnows"></div>
+        <div class="toggle" id="executorKnows" data-on="false"></div>
       </div>
     </div>
   </div>

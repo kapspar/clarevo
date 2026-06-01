@@ -532,16 +532,6 @@
         </div>
       </a>
 
-      <a href="plan-business.html" style="text-decoration:none;">
-        <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <h3 style="margin:0;">💼 Business</h3>
-            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="businessPlanBadge">Set up →</span>
-          </div>
-          <div class="plan-item"><span class="pi-label">Businesses documented</span><span class="pi-value missing" id="planBusiness">None yet</span></div>
-        </div>
-      </a>
-
       <a href="plan-digital.html" style="text-decoration:none;">
         <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -550,6 +540,16 @@
           </div>
           <div class="plan-item"><span class="pi-label">Devices &amp; accounts</span><span class="pi-value missing" id="planDigital">None yet</span></div>
           <div class="plan-item"><span class="pi-label">Legacy contacts set</span><span class="pi-value missing" id="planLegacy">None yet</span></div>
+        </div>
+      </a>
+
+      <a href="plan-business.html" style="text-decoration:none;">
+        <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0;">💼 Business</h3>
+            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="businessPlanBadge">Set up →</span>
+          </div>
+          <div class="plan-item"><span class="pi-label">Status</span><span class="pi-value missing" id="planBusiness">Not reviewed</span></div>
         </div>
       </a>
 
@@ -700,8 +700,15 @@
   async function loadBusinessPreview(user) {
     const { data } = await db.from('business_items').select('*').eq('user_id', user.id);
     const rows = data || [];
-    setPlanItem('planBusiness', rows.length ? rows.length + ' documented' : null, 'None yet');
-    setPlanBadge('businessPlanBadge', listScore(rows, ['name','role','succession_plan','key_contact']));
+    const isNa = rows.some(r => r.name === '__na__');
+    const realRows = rows.filter(r => r.name !== '__na__');
+    if (isNa) {
+      setPlanItem('planBusiness', 'Not applicable', null);
+      setPlanBadge('businessPlanBadge', 100);
+    } else {
+      setPlanItem('planBusiness', realRows.length ? realRows.length + ' documented' : null, 'Not reviewed');
+      setPlanBadge('businessPlanBadge', listScore(realRows, ['name','role','succession_plan','key_contact']));
+    }
   }
 
   async function loadDigitalPreview(user) {
