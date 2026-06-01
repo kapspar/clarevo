@@ -329,6 +329,8 @@
   <div class="sidebar-user">
     <div class="name" id="sidebarName">Loading...</div>
     <div class="email" id="sidebarEmail"></div>
+    <a href="login.html" onclick="signOut(); return false;"
+       style="display:inline-block; margin-top:10px; font-size:12px; font-weight:600; color:#fca5a5; border:1px solid rgba(252,165,165,0.4); border-radius:8px; padding:6px 12px; text-decoration:none;">Sign Out</a>
   </div>
 
   <div class="nav-group">
@@ -351,9 +353,7 @@
   </div>
 
   <div class="sidebar-footer">
-    <div style="margin-top:4px;">
-      <a href="login.html" onclick="signOut(); return false;" style="font-size:12px; color:#666; text-decoration:none; display:block; padding:6px 0;">Sign Out</a>
-    </div>
+    <div style="margin-top:4px; font-size:11px; color:#555;">Clarevo · Clarity before crisis</div>
   </div>
 </div>
 
@@ -542,6 +542,17 @@
         </div>
       </a>
 
+      <a href="plan-digital.html" style="text-decoration:none;">
+        <div class="card" style="cursor:pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)'">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0;">📱 Digital &amp; Devices</h3>
+            <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="digitalPlanBadge">Set up →</span>
+          </div>
+          <div class="plan-item"><span class="pi-label">Devices &amp; accounts</span><span class="pi-value missing" id="planDigital">None yet</span></div>
+          <div class="plan-item"><span class="pi-label">Legacy contacts set</span><span class="pi-value missing" id="planLegacy">None yet</span></div>
+        </div>
+      </a>
+
     </div>
     <div class="hidden" id="emptyPlan"><div class="card"><div class="empty"><div class="empty-icon">📋</div><h3>Your plan is empty</h3><p>Start your assessment to begin building your family emergency plan.</p><a href="form.html" class="btn-primary">Start Assessment →</a></div></div></div>
   </div>
@@ -615,6 +626,7 @@
     loadInsurancePreview(user);
     loadPropertyPreview(user);
     loadBusinessPreview(user);
+    loadDigitalPreview(user);
     loadBillsPreview(user);
     loadEmergencyPreview(user);
   }
@@ -690,6 +702,15 @@
     const rows = data || [];
     setPlanItem('planBusiness', rows.length ? rows.length + ' documented' : null, 'None yet');
     setPlanBadge('businessPlanBadge', listScore(rows, ['name','role','succession_plan','key_contact']));
+  }
+
+  async function loadDigitalPreview(user) {
+    const { data } = await db.from('digital_items').select('*').eq('user_id', user.id);
+    const rows = data || [];
+    const legacy = rows.filter(r => r.legacy_contact === 'Yes — set up').length;
+    setPlanItem('planDigital', rows.length ? rows.length + ' documented' : null, 'None yet');
+    setPlanItem('planLegacy', rows.length ? legacy + ' set up' : null, 'None yet');
+    setPlanBadge('digitalPlanBadge', listScore(rows, ['label','kind','recovery_location','legacy_contact']));
   }
 
   async function loadBillsPreview(user) {

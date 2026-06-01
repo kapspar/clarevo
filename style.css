@@ -192,3 +192,46 @@ footer p { font-size: 13px; color: #aaa; }
   .hamburger { display: flex; }
   footer { padding: 24px 20px; flex-direction: column; text-align: center; }
 }
+
+/* ── LEARN CAROUSEL (swipeable on mobile) ── */
+.learn-carousel {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+.learn-c-card {
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.learn-c-card:hover { transform: translateY(-3px); }
+.learn-c-light {
+  background: var(--gray-light);
+  border: 1px solid var(--border);
+}
+.learn-c-light:hover { border-color: var(--blue); }
+
+@media (max-width: 900px) {
+  .learn-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px;
+    padding: 4px 4px 16px;
+    scrollbar-width: none;
+  }
+  .learn-carousel::-webkit-scrollbar { display: none; }
+  .learn-c-card {
+    scroll-snap-align: start;
+    flex: 0 0 78%;
+    max-width: 280px;
+  }
+}
+
+/* ── MOBILE OVERFLOW GUARD ── */
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden; max-width: 100%; }
+}

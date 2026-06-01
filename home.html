@@ -288,7 +288,7 @@
     <li><a href="learn.html">Learn</a></li>
     <li><a href="pricing.html">Pricing</a></li>
     <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="login.html">Sign In</a></li>
+    <li><a href="login.html" id="authLink">Log In</a></li>
     <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
   </ul>
   <div class="hamburger" onclick="toggleMenu()">
@@ -301,7 +301,7 @@
   <a href="learn.html" onclick="toggleMenu()">Learn</a>
   <a href="pricing.html">Pricing</a>
   <a href="dashboard.html">Dashboard</a>
-  <a href="login.html">Sign In</a>
+  <a href="login.html" id="authLinkMobile">Log In</a>
   <a href="form.html" class="mob-cta">Check Your Score →</a>
 </div>
 
@@ -422,29 +422,35 @@
       <h2 style="font-size: 36px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 12px;">Not sure where to start?</h2>
       <p style="font-size: 16px; color: var(--gray); max-width: 440px; margin: 0 auto; line-height: 1.6;">Plain-English guides that explain everything — no jargon, no legal speak.</p>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-      <a href="learn-emergency.html" style="background: var(--dark); border-radius: var(--radius-lg); padding: 24px; text-decoration: none; display: block; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+    <div class="learn-carousel">
+      <a href="learn-emergency.html" class="learn-c-card" style="background: var(--dark);">
         <div style="font-size: 28px; margin-bottom: 12px;">🚨</div>
         <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #f87171; margin-bottom: 6px;">Most Important</div>
-        <div style="font-size: 14px; font-weight: 700; color: white; line-height: 1.4; margin-bottom: 10px;">What happens in a financial emergency?</div>
+        <div style="font-size: 15px; font-weight: 700; color: white; line-height: 1.4; margin-bottom: 10px;">What happens in a financial emergency?</div>
         <div style="font-size: 12px; color: #60a5fa; font-weight: 600;">Read the guide →</div>
       </a>
-      <a href="learn-executor.html" style="background: var(--gray-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-decoration: none; display: block; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform='translateY(0)'">
+      <a href="learn-executor.html" class="learn-c-card learn-c-light">
         <div style="font-size: 28px; margin-bottom: 12px;">👤</div>
         <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 6px;">Estates</div>
-        <div style="font-size: 14px; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 10px;">What is an executor and why does it matter?</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 10px;">What is an executor and why does it matter?</div>
         <div style="font-size: 12px; color: var(--blue); font-weight: 600;">Read more →</div>
       </a>
-      <a href="learn-poa.html" style="background: var(--gray-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-decoration: none; display: block; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform='translateY(0)'">
+      <a href="learn-poa.html" class="learn-c-card learn-c-light">
         <div style="font-size: 28px; margin-bottom: 12px;">⚖️</div>
         <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 6px;">Legal</div>
-        <div style="font-size: 14px; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 10px;">What is a Power of Attorney?</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 10px;">What is a Power of Attorney?</div>
         <div style="font-size: 12px; color: var(--blue); font-weight: 600;">Read more →</div>
       </a>
-      <a href="learn-will.html" style="background: var(--gray-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-decoration: none; display: block; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--blue)'; this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--border)'; this.style.transform='translateY(0)'">
+      <a href="learn-will.html" class="learn-c-card learn-c-light">
         <div style="font-size: 28px; margin-bottom: 12px;">📄</div>
         <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 6px;">Wills</div>
-        <div style="font-size: 14px; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 10px;">What happens if you don't have a will?</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 10px;">What happens if you don't have a will?</div>
+        <div style="font-size: 12px; color: var(--blue); font-weight: 600;">Read more →</div>
+      </a>
+      <a href="learn-digital.html" class="learn-c-card learn-c-light">
+        <div style="font-size: 28px; margin-bottom: 12px;">📱</div>
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue); margin-bottom: 6px;">Digital Legacy</div>
+        <div style="font-size: 15px; font-weight: 700; color: var(--dark); line-height: 1.4; margin-bottom: 10px;">Your phone, photos &amp; online accounts</div>
         <div style="font-size: 12px; color: var(--blue); font-weight: 600;">Read more →</div>
       </a>
     </div>
@@ -508,9 +514,10 @@
 <!-- FOOTER -->
 <footer>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
-  <p>© 2025 Clarevo. Built for Canadian families. clarevo.ca</p>
+  <p>© 2026 Clarevo. Built for Canadian families. clarevo.ca</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   function toggleMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
@@ -523,6 +530,20 @@
       menu.classList.remove('open');
     }
   });
+  // Flip auth link to Dashboard when signed in
+  (function(){
+    const SB_URL='https://ulabvzjtullhsshtstnt.supabase.co';
+    const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+    const c=window.supabase.createClient(SB_URL,SB_KEY);
+    c.auth.getSession().then(({data:{session}})=>{
+      if(session){
+        ['authLink','authLinkMobile'].forEach(id=>{
+          const el=document.getElementById(id);
+          if(el){ el.textContent='Dashboard'; el.href='dashboard.html'; }
+        });
+      }
+    });
+  })();
 </script>
 </body>
 </html>

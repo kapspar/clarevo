@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital &amp; Devices — Clarevo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="plan-style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="dashboard.html" class="logo">Clar<span>evo</span></a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link hide-mobile">Dashboard</a>
+    <a href="learn.html" class="nav-link hide-mobile">Learn</a>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-icon">📱</div>
+      <div class="card-head-text"><h2>Digital &amp; Devices</h2>
+        <p>Phones, Apple ID, Google account, cloud photos — and how your family gets in.</p></div>
+      <span class="card-badge badge-missing" id="digBadge">Set up</span>
+    </div>
+    <div id="digList"></div>
+    <button class="add-btn" type="button" onclick="dig.addBlank()">+ Add a device or account</button>
+    <div class="callout" style="margin-top:16px;">
+      💡 Apple and Google both let you name a <strong>Legacy Contact</strong> who can access your account if something happens to you. Setting that up — and noting it here — means years of photos and messages aren't locked away forever. <a href="learn-digital.html" target="_blank" rel="noopener">Learn how →</a>
+    </div>
+    <div class="callout" style="background:#fffbeb; margin-top:12px;">
+      ⚠️ Never type real passwords into Clarevo. Record only <strong>where</strong> recovery info lives and <strong>whether a legacy contact is set up</strong>.
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <div class="save-status" id="saveStatus">All changes saved securely to your account.</div>
+  <button class="save-btn" id="saveBtn" onclick="saveData()">Save Digital &amp; Devices</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan-shared.js"></script>
+<script>
+  let dig;
+  function setBadge(score){
+    const el=$('digBadge');
+    if(score>=80){ el.textContent='Complete ✓'; el.className='card-badge badge-complete'; }
+    else if(score>0){ el.textContent=score+'%'; el.className='card-badge badge-partial'; }
+    else { el.textContent='Set up'; el.className='card-badge badge-missing'; }
+  }
+  requireAuth(() => {
+    dig = new ListManager({
+      table:'digital_items', container:'digList',
+      emptyText:'No devices or accounts added yet.', uploadLabel:'Relevant documents (optional)',
+      onChange:()=>setBadge(dig.score()),
+      fields:[
+        {key:'label', label:'Device / account', placeholder:'e.g. My iPhone, Apple ID, iCloud Photos'},
+        {key:'kind', label:'Type', type:'select', options:['Phone / device','Apple ID','Google account','Cloud photos','Email','Social media','Other']},
+        {key:'recovery_location', label:'Where recovery info lives', hint:'never the password itself', placeholder:'e.g. Master access with lawyer; phone unlock in safe'},
+        {key:'legacy_contact', label:'Legacy contact set up?', type:'select', options:['Yes — set up','Not set up','Not applicable']},
+        {key:'owner', label:'Owner', type:'select', options:['Me','Spouse','Joint']},
+        {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. Apple Legacy Contact is Sarah; access key stored with will'}
+      ]
+    });
+    dig.load().then(()=>setBadge(dig.score()));
+  });
+  async function saveData(){
+    const s=saving('saveBtn','saveStatus','Save Digital & Devices');
+    try { await dig.saveAll(); setBadge(dig.score()); s.done(); }
+    catch(err){ s.fail(err); }
+  }
+</script>
+</body>
+</html>

@@ -165,7 +165,7 @@
     <li><a href="learn.html">Learn</a></li>
     <li><a href="pricing.html">Pricing</a></li>
     <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="login.html">Sign In</a></li>
+    <li><a href="login.html" id="authLink">Log In</a></li>
     <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
   </ul>
   <div class="hamburger" onclick="toggleMenu()">
@@ -178,7 +178,7 @@
   <a href="learn.html" onclick="toggleMenu()">Learn</a>
   <a href="pricing.html">Pricing</a>
   <a href="dashboard.html">Dashboard</a>
-  <a href="login.html">Sign In</a>
+  <a href="login.html" id="authLinkMobile">Log In</a>
   <a href="form.html" class="mob-cta">Check Your Score →</a>
 </div>
 
@@ -288,13 +288,30 @@
 
 <footer>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
-  <p>© 2025 Clarevo. Built for Canadian families. clarevo.ca</p>
+  <p>© 2026 Clarevo. Built for Canadian families. clarevo.ca</p>
 </footer>
 
 <script>
   function toggleMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
   }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (function(){
+    const SB_URL="https://ulabvzjtullhsshtstnt.supabase.co";
+    const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w";
+    if(!window.supabase) return;
+    const c=window.supabase.createClient(SB_URL,SB_KEY);
+    c.auth.getSession().then(function(res){
+      if(res.data.session){
+        ["authLink","authLinkMobile"].forEach(function(id){
+          var el=document.getElementById(id);
+          if(el){ el.textContent="Dashboard"; el.href="dashboard.html"; }
+        });
+      }
+    });
+  })();
 </script>
 </body>
 </html>

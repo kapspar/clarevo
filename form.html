@@ -147,7 +147,7 @@
     <li><a href="home.html#how">How it works</a></li>
     <li><a href="learn.html">Learn</a></li>
     <li><a href="pricing.html">Pricing</a></li>
-    <li><a href="login.html">Sign In</a></li>
+    <li><a href="login.html" id="authLink">Log In</a></li>
   </ul>
   <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
@@ -155,7 +155,7 @@
   <a href="home.html" onclick="toggleMenu()">Home</a>
   <a href="learn.html" onclick="toggleMenu()">Learn</a>
   <a href="pricing.html">Pricing</a>
-  <a href="login.html">Sign In</a>
+  <a href="login.html" id="authLinkMobile">Log In</a>
 </div>
 
 <div class="form-wrap">
@@ -568,7 +568,7 @@
 
 <footer>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
-  <p>© 2025 Clarevo. Built for Canadian families.</p>
+  <p>© 2026 Clarevo. Built for Canadian families.</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -580,7 +580,13 @@
 
   async function initAuth() {
     const { data: { session } } = await db.auth.getSession();
-    if (session) loggedInUser = session.user;
+    if (session) {
+      loggedInUser = session.user;
+      ['authLink','authLinkMobile'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) { el.textContent = 'Dashboard'; el.href = 'dashboard.html'; }
+      });
+    }
   }
   initAuth();
 

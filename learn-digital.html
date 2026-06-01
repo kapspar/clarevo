@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Digital Legacy — Clarevo</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero {
+      background: var(--dark);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .learn-hero .category {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--blue);
+      margin-bottom: 14px;
+    }
+    .learn-hero h1 {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .learn-hero p {
+      font-size: 17px;
+      color: #aaa;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .learn-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 48px;
+    }
+
+    .learn-body h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin: 48px 0 16px;
+      color: var(--dark);
+    }
+    .learn-body h2:first-child { margin-top: 0; }
+
+    .learn-body p {
+      font-size: 16px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      background: var(--blue-light);
+      border-left: 4px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .warning-callout {
+      background: #fffbeb;
+      border-left: 4px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .warning-callout p {
+      font-size: 15px;
+      color: #78350f;
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .checklist {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      box-shadow: var(--shadow);
+    }
+    .checklist h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+    .check-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.5;
+      align-items: flex-start;
+    }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot {
+      width: 22px; height: 22px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .scenario {
+      background: var(--gray-light);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 28px 0;
+      border: 1px solid var(--border);
+    }
+    .scenario .scenario-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gray);
+      margin-bottom: 10px;
+    }
+    .scenario p {
+      font-size: 15px;
+      color: var(--dark);
+      margin: 0;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .cta-box {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      text-align: center;
+      color: var(--white);
+      margin-top: 48px;
+    }
+    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+
+    .learn-nav {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .learn-nav a {
+      flex: 1;
+      min-width: 200px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 600px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 28px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="learn.html">Learn</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Digital Legacy</div>
+  <h1>What happens to your phone, photos, and online accounts?</h1>
+  <p>Your whole life is on your devices now. Here's how to make sure your family can actually reach it.</p>
+</div>
+
+<div class="learn-body">
+
+  <h2>The problem nobody thinks about</h2>
+  <p>A generation ago, everything important was on paper in a drawer. Today it's behind a passcode on your phone and a password on a dozen accounts. Years of family photos, your email, your messages, even access to your banking — all locked behind credentials only you know.</p>
+  <p>When someone passes away, families often discover they can't get into the one device that holds every photo of their kids growing up. Not because anyone did anything wrong — just because nobody set it up ahead of time.</p>
+
+  <div class="callout">
+    <p>💡 The good news: both Apple and Google have built tools specifically for this. They take ten minutes to set up and they're free. Most people just don't know they exist.</p>
+  </div>
+
+  <h2>Apple: Legacy Contact</h2>
+  <p>An Apple Legacy Contact is a trusted person you choose who can access your Apple Account data after you pass away. They can download photos, messages, and documents — though not sensitive things like saved passwords or purchased media.</p>
+  <p>It means your loved ones can reach your digital memories without going through a slow, expensive court process.</p>
+
+  <div class="checklist">
+    <h3>How to set up an Apple Legacy Contact</h3>
+    <div class="check-item"><div class="check-dot">1</div>On iPhone or iPad: open Settings, tap your name at the top, then Sign-In &amp; Security, then Legacy Contact</div>
+    <div class="check-item"><div class="check-dot">2</div>On a Mac: open the Apple menu, then System Settings, your name, Sign-In &amp; Security, then Legacy Contact</div>
+    <div class="check-item"><div class="check-dot">3</div>Choose the person you trust — Apple generates a unique access key</div>
+    <div class="check-item"><div class="check-dot">4</div>Send them the key (it can go straight to them in Messages), or print it and keep it with your estate documents</div>
+  </div>
+
+  <h2>Google: Inactive Account Manager</h2>
+  <p>Google's version is called Inactive Account Manager. You decide how long your account can sit unused — say three or six months — and who should be notified or given access if you never sign back in. You choose exactly which data they can see, from photos to email to Drive.</p>
+
+  <div class="checklist">
+    <h3>How to set up Google Inactive Account Manager</h3>
+    <div class="check-item"><div class="check-dot">1</div>Go to your Google Account settings, then Data &amp; privacy</div>
+    <div class="check-item"><div class="check-dot">2</div>Find "Make a plan for your account" and open Inactive Account Manager</div>
+    <div class="check-item"><div class="check-dot">3</div>Set the waiting period before the account is considered inactive</div>
+    <div class="check-item"><div class="check-dot">4</div>Add up to ten trusted contacts and choose what each can access</div>
+  </div>
+
+  <h2>Don't forget your photos</h2>
+  <p>For many families, the photos hurt the most to lose. They might live in iCloud, Google Photos, Amazon Photos, or on an external drive in a closet. Wherever they are, someone needs to know where to look and how to get in.</p>
+
+  <div class="warning-callout">
+    <p>⚠️ Storing the actual passwords anywhere — even with a lawyer — is risky. The safer approach is to record <strong>where</strong> recovery information lives (a password manager, a sealed envelope, a legacy contact) rather than the passwords themselves. That's exactly how Clarevo is built to work.</p>
+  </div>
+
+  <h2>What to actually do this week</h2>
+  <div class="checklist">
+    <h3>Your digital legacy checklist</h3>
+    <div class="check-item"><div class="check-dot">✓</div>Set up an Apple Legacy Contact and/or Google Inactive Account Manager</div>
+    <div class="check-item"><div class="check-dot">✓</div>Note where your phone passcode can be found in an emergency</div>
+    <div class="check-item"><div class="check-dot">✓</div>Write down which service holds your photos — and who can reach them</div>
+    <div class="check-item"><div class="check-dot">✓</div>Consider a password manager so one trusted recovery method covers everything</div>
+    <div class="check-item"><div class="check-dot">✓</div>Record all of this in your Clarevo plan under Digital &amp; Devices</div>
+  </div>
+
+  <div class="cta-box">
+    <h3>Add your devices and accounts to your plan</h3>
+    <p>Document where recovery lives and whether your legacy contacts are set up — all in one place your family can reach.</p>
+    <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+  </div>
+
+  <div class="learn-nav">
+    <a href="learn-emergency.html">
+      <div class="nav-label">Also read</div>
+      <div class="nav-title">What happens in a financial emergency?</div>
+    </a>
+    <a href="learn.html">
+      <div class="nav-label">More</div>
+      <div class="nav-title">All Clarevo guides</div>
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2026 Clarevo. This page is for general information only and is not legal advice.</p>
+</footer>
+
+<script>
+  function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
+</script>
+</body>
+</html>
