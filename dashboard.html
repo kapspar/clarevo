@@ -211,6 +211,19 @@
       font-family: var(--font);
     }
     .fix-btn:hover { background: var(--blue-mid); }
+    .partner-link {
+      display: inline-block; margin-top: 6px;
+      font-size: 11px; font-weight: 600; color: var(--blue);
+      text-decoration: none;
+    }
+    .partner-link:hover { text-decoration: underline; }
+    .gap-section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--gray);
+      padding: 12px 0 6px; margin-top: 8px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .gap-section-label:first-child { margin-top: 0; border-top: none; padding-top: 0; }
 
     /* PLAN GRID */
     .plan-grid {
@@ -442,18 +455,13 @@
   <!-- ── GAPS ── -->
   <div id="tab-gaps" class="hidden">
     <div class="card" id="allGapsCard">
-      <div style="margin-bottom:20px;"><h3 style="margin:0;">All Gaps — 6 items need attention</h3></div>
-      <div class="gap-row"><div class="gi red">📄</div><div class="gc"><div class="gc-title">No Will on File</div><div class="gc-desc">Without a will, the province decides what happens to your assets.</div></div><div class="gp missing">Missing</div><button class="fix-btn">Fix with Willful →</button></div>
-      <div class="gap-row"><div class="gi red">⚖️</div><div class="gc"><div class="gc-title">No Power of Attorney for Property</div><div class="gc-desc">No one can legally manage your finances if incapacitated.</div></div><div class="gp missing">Missing</div><button class="fix-btn">Fix with Willful →</button></div>
-      <div class="gap-row"><div class="gi red">👤</div><div class="gc"><div class="gc-title">Executor Not Briefed</div><div class="gc-desc">Your executor doesn't know they've been named or what to do.</div></div><div class="gp missing">Missing</div><a href="learn-executor.html" class="fix-btn">Learn More →</a></div>
-      <div class="gap-row"><div class="gi yellow">🛡️</div><div class="gc"><div class="gc-title">Life Insurance Beneficiary Not Confirmed</div><div class="gc-desc">You have life insurance but beneficiary hasn't been verified recently.</div></div><div class="gp incomplete">Incomplete</div><button class="fix-btn">Review →</button></div>
-      <div class="gap-row"><div class="gi yellow">💰</div><div class="gc"><div class="gc-title">Financial Accounts Not Fully Documented</div><div class="gc-desc">Your spouse doesn't know where all your accounts are held.</div></div><div class="gp incomplete">Incomplete</div><button class="fix-btn">Update →</button></div>
-      <div class="gap-row"><div class="gi yellow">🔐</div><div class="gc"><div class="gc-title">No Password Recovery Plan</div><div class="gc-desc">If you were unreachable, no one could access your email or banking.</div></div><div class="gp incomplete">Incomplete</div><a href="learn-emergency.html" class="fix-btn">Learn More →</a></div>
-      <div class="gap-row"><div class="gi green">✅</div><div class="gc"><div class="gc-title">Emergency Contacts</div><div class="gc-desc">Spouse and family contacts are documented and up to date.</div></div><div class="gp complete">Complete</div></div>
-      <div class="gap-row"><div class="gi green">✅</div><div class="gc"><div class="gc-title">Household Bills</div><div class="gc-desc">Monthly bills and payment methods are documented.</div></div><div class="gp complete">Complete</div></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="margin:0;" id="gapsHeading">Loading gaps…</h3>
+      </div>
+      <div id="gapsList"></div>
     </div>
     <div class="card hidden" id="emptyGaps">
-      <div class="empty"><div class="empty-icon">⚠️</div><h3>No gaps detected yet</h3><p>Complete your assessment to see where your family plan has gaps.</p><a href="form.html" class="btn-primary">Start Assessment →</a></div>
+      <div class="empty"><div class="empty-icon">🎉</div><h3>No gaps found</h3><p>Your plan looks complete. Keep it updated as life changes.</p></div>
     </div>
   </div>
 
@@ -629,6 +637,7 @@
     loadDigitalPreview(user);
     loadBillsPreview(user);
     loadEmergencyPreview(user);
+    loadGapsTab(user);
   }
 
   // completeness 0..1 of one row across given field keys (+ file_path)
@@ -904,6 +913,223 @@
   async function signOut() {
     await db.auth.signOut();
     window.location.href = 'login.html';
+  }
+
+  // ── GAPS TAB ──────────────────────────────────────────────────
+  async function loadGapsTab(user) {
+    const uid = user.id;
+
+    // Fetch all plan tables in parallel
+    const [legal, accounts, insurance, bills, settings, contacts, digital] = await Promise.all([
+      db.from('legal_documents').select('*').eq('user_id', uid).limit(1),
+      db.from('account_items').select('*').eq('user_id', uid),
+      db.from('insurance_items').select('*').eq('user_id', uid),
+      db.from('bill_items').select('*').eq('user_id', uid),
+      db.from('emergency_settings').select('*').eq('user_id', uid).limit(1),
+      db.from('contact_items').select('*').eq('user_id', uid),
+      db.from('digital_items').select('*').eq('user_id', uid)
+    ]);
+
+    const L = legal.data && legal.data[0];
+    const accs = accounts.data || [];
+    const ins = insurance.data || [];
+    const billRows = bills.data || [];
+    const S = settings.data && settings.data[0];
+    const contactRows = contacts.data || [];
+    const digRows = digital.data || [];
+
+    // Each gap: { severity:'red'|'yellow', icon, title, desc, planUrl, planLabel, partnerUrl, partnerLabel, learnUrl, learnLabel }
+    const gaps = [];
+
+    // ── LEGAL ──
+    if (!L || !L.has_will) {
+      gaps.push({ severity:'red', icon:'📄', title:'No will documented',
+        desc:'Without a documented will, your province decides what happens to your estate.',
+        planUrl:'plan-legal.html', planLabel:'Document your will',
+        partnerUrl:'https://www.willful.co', partnerLabel:'Get a will with Willful',
+        learnUrl:'learn-will.html', learnLabel:'What is a will?' });
+    } else if (L.has_will && !L.will_location) {
+      gaps.push({ severity:'yellow', icon:'📄', title:'Will location not recorded',
+        desc:'You have a will but haven\'t noted where it\'s stored — your family needs to be able to find it.',
+        planUrl:'plan-legal.html', planLabel:'Add location' });
+    }
+    if (!L || !L.has_poa_property) {
+      gaps.push({ severity:'red', icon:'⚖️', title:'No POA for property',
+        desc:'No one can legally manage your finances or property if you\'re incapacitated.',
+        planUrl:'plan-legal.html', planLabel:'Document your POA',
+        partnerUrl:'https://www.willful.co', partnerLabel:'Set one up with Willful',
+        learnUrl:'learn-poa.html', learnLabel:'What is a POA?' });
+    }
+    if (!L || !L.has_poa_care) {
+      gaps.push({ severity:'red', icon:'❤️', title:'No POA for personal care',
+        desc:'No one has authority to make healthcare decisions for you if you can\'t make them yourself.',
+        planUrl:'plan-legal.html', planLabel:'Document your POA',
+        partnerUrl:'https://www.willful.co', partnerLabel:'Set one up with Willful',
+        learnUrl:'learn-poa.html', learnLabel:'What is a POA?' });
+    }
+    if (!L || !L.executor_name) {
+      gaps.push({ severity:'red', icon:'👤', title:'No executor documented',
+        desc:'Your executor carries out your will. Without one on record, your family won\'t know who to call.',
+        planUrl:'plan-legal.html', planLabel:'Document your executor',
+        learnUrl:'learn-executor.html', learnLabel:'What is an executor?' });
+    } else if (L && L.executor_name && !L.executor_knows) {
+      gaps.push({ severity:'yellow', icon:'👤', title:'Executor hasn\'t been told',
+        desc: L.executor_name + ' is named as your executor but may not know — they should be prepared.',
+        planUrl:'plan-legal.html', planLabel:'Update executor details',
+        learnUrl:'learn-executor.html', learnLabel:'Why it matters' });
+    }
+
+    // ── FINANCES ──
+    const banks = accs.filter(r => r.kind === 'bank');
+    const invs  = accs.filter(r => r.kind === 'investment');
+    if (banks.length === 0) {
+      gaps.push({ severity:'red', icon:'🏦', title:'No bank accounts documented',
+        desc:'Your family won\'t know where your accounts are held or how to access them.',
+        planUrl:'plan-finances.html', planLabel:'Document your accounts' });
+    }
+    if (invs.length === 0) {
+      gaps.push({ severity:'yellow', icon:'📈', title:'Investments not documented',
+        desc:'RRSPs, TFSAs, pensions — if your family can\'t find them, they may go unclaimed.',
+        planUrl:'plan-finances.html', planLabel:'Document your investments',
+        partnerUrl:'https://www.wealthsimple.com', partnerLabel:'Don\'t have one? Try Wealthsimple' });
+    } else {
+      const missingBeneficiary = invs.filter(r => !r.beneficiary);
+      if (missingBeneficiary.length > 0) {
+        gaps.push({ severity:'yellow', icon:'📈', title:'Investment beneficiaries not recorded',
+          desc: missingBeneficiary.length + ' investment account(s) have no beneficiary noted. An outdated beneficiary can override your will.',
+          planUrl:'plan-finances.html', planLabel:'Add beneficiaries' });
+      }
+    }
+
+    // ── INSURANCE ──
+    const lifeIns = ins.filter(r => r.kind === 'Life');
+    if (lifeIns.length === 0) {
+      gaps.push({ severity:'red', icon:'🛡️', title:'No life insurance documented',
+        desc:'If you have life insurance, document it here so your family knows who to call. If you don\'t have coverage, consider getting some.',
+        planUrl:'plan-insurance.html', planLabel:'Document your insurance' });
+    } else {
+      const noBeneficiary = lifeIns.filter(r => !r.beneficiary);
+      if (noBeneficiary.length > 0) {
+        gaps.push({ severity:'yellow', icon:'🛡️', title:'Life insurance beneficiary not recorded',
+          desc:'Beneficiary not noted on ' + noBeneficiary.length + ' policy. An outdated beneficiary designation can override your will.',
+          planUrl:'plan-insurance.html', planLabel:'Add beneficiary' });
+      }
+    }
+
+    // ── BILLS & ACCESS ──
+    if (billRows.length === 0) {
+      gaps.push({ severity:'yellow', icon:'🧾', title:'Recurring bills not documented',
+        desc:'Your family won\'t know what to pay or cancel if something happens to you.',
+        planUrl:'plan-bills.html', planLabel:'Document your bills' });
+    }
+    if (!S || (!S.access_manager && !S.access_master_location)) {
+      gaps.push({ severity:'yellow', icon:'🔑', title:'No account access plan',
+        desc:'Where are your passwords? Where is your master access? Your family needs to know.',
+        planUrl:'plan-bills.html', planLabel:'Document access plan',
+        learnUrl:'learn-digital.html', learnLabel:'Why this matters' });
+    }
+
+    // ── EMERGENCY CONTACTS ──
+    if (contactRows.length === 0) {
+      gaps.push({ severity:'red', icon:'📞', title:'No emergency contacts documented',
+        desc:'Who should your family call first? A lawyer, a doctor, a sibling — document them here.',
+        planUrl:'plan-emergency.html', planLabel:'Add contacts' });
+    }
+
+    // ── MASTER ACCESS / SWITCH ──
+    if (!S || (!S.master_holder && !S.master_location)) {
+      gaps.push({ severity:'yellow', icon:'🗝️', title:'No master access backup',
+        desc:'If all else fails, how does your family get in? A sealed envelope with your lawyer is the simplest solution.',
+        planUrl:'plan-emergency.html', planLabel:'Set up backup access' });
+    }
+
+    // ── DIGITAL ──
+    if (digRows.length === 0) {
+      gaps.push({ severity:'yellow', icon:'📱', title:'Digital accounts not documented',
+        desc:'Phones, Apple ID, Google account, cloud photos — years of memories locked behind one passcode.',
+        planUrl:'plan-digital.html', planLabel:'Document your devices',
+        learnUrl:'learn-digital.html', learnLabel:'What is a digital legacy?' });
+    } else {
+      const noLegacy = digRows.filter(r => r.legacy_contact === 'Not set up');
+      if (noLegacy.length > 0) {
+        gaps.push({ severity:'yellow', icon:'📱', title:'Digital legacy contacts not set up',
+          desc: noLegacy.length + ' account(s) have no legacy contact configured. Apple and Google both support this — it takes 10 minutes.',
+          planUrl:'plan-digital.html', planLabel:'Update digital accounts',
+          learnUrl:'learn-digital.html', learnLabel:'How to set it up' });
+      }
+    }
+
+    // ── RENDER ──
+    const list = document.getElementById('gapsList');
+    const card = document.getElementById('allGapsCard');
+    const empty = document.getElementById('emptyGaps');
+    const badge = document.getElementById('gapsBadge');
+
+    const critical = gaps.filter(g => g.severity === 'red').length;
+    const warnings = gaps.filter(g => g.severity === 'yellow').length;
+
+    badge.textContent = gaps.length || '0';
+
+    if (gaps.length === 0) {
+      card.classList.add('hidden');
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    card.classList.remove('hidden');
+    empty.classList.add('hidden');
+    document.getElementById('gapsHeading').textContent =
+      critical + ' critical gap' + (critical !== 1 ? 's' : '') +
+      (warnings ? ', ' + warnings + ' warning' + (warnings !== 1 ? 's' : '') : '');
+
+    list.innerHTML = '';
+
+    // Critical first, then warnings
+    const sorted = [...gaps.filter(g=>g.severity==='red'), ...gaps.filter(g=>g.severity==='yellow')];
+    let lastSeverity = null;
+
+    sorted.forEach(g => {
+      if (g.severity !== lastSeverity) {
+        const label = document.createElement('div');
+        label.className = 'gap-section-label';
+        label.textContent = g.severity === 'red' ? '🔴 Critical — fix these first' : '🟡 Incomplete — worth addressing';
+        list.appendChild(label);
+        lastSeverity = g.severity;
+      }
+
+      const row = document.createElement('div');
+      row.className = 'gap-row';
+
+      // Icon
+      const gi = document.createElement('div');
+      gi.className = 'gi ' + g.severity;
+      gi.textContent = g.icon;
+      row.appendChild(gi);
+
+      // Content
+      const gc = document.createElement('div');
+      gc.className = 'gc';
+      gc.innerHTML = '<div class="gc-title">' + g.title + '</div>' +
+        '<div class="gc-desc">' + g.desc + '</div>' +
+        (g.partnerUrl ? '<a href="' + g.partnerUrl + '" target="_blank" rel="noopener" class="partner-link">↗ ' + g.partnerLabel + '</a>' : '') +
+        (g.learnUrl ? '<a href="' + g.learnUrl + '" class="partner-link" style="margin-left:' + (g.partnerUrl?'12px':'0') + '">📖 ' + g.learnLabel + '</a>' : '');
+      row.appendChild(gc);
+
+      // Badge
+      const gp = document.createElement('div');
+      gp.className = 'gp ' + (g.severity === 'red' ? 'missing' : 'incomplete');
+      gp.textContent = g.severity === 'red' ? 'Missing' : 'Incomplete';
+      row.appendChild(gp);
+
+      // Fix This button → always links to the plan page
+      const btn = document.createElement('a');
+      btn.href = g.planUrl;
+      btn.className = 'fix-btn';
+      btn.textContent = g.planLabel + ' →';
+      row.appendChild(btn);
+
+      list.appendChild(row);
+    });
   }
 
   function showTab(tab, navEl) {
