@@ -560,26 +560,36 @@
   <div id="tab-shared" class="hidden">
     <div class="card" id="sharedCard" style="margin-bottom:16px;">
       <h3>People with access to your plan</h3>
-      <div class="access-person"><div class="avatar blue">SM</div><div><div class="ap-name">Sarah Mitchell</div><div class="ap-role">Spouse — Full household access</div></div><div class="ap-level">Full Access</div></div>
-      <div class="access-person"><div class="avatar green">RD</div><div><div class="ap-name">Robert Davies</div><div class="ap-role">Executor — Emergency access only</div></div><div class="ap-level">Emergency Only</div></div>
+      <div id="sharedPeopleList">
+        <div class="empty" style="padding:24px 0;">
+          <div class="empty-icon">👥</div>
+          <h3 style="font-size:16px; margin-bottom:8px;">Shared access coming soon</h3>
+          <p style="font-size:13px; color:var(--gray); max-width:340px; margin:0 auto;">You'll be able to invite your spouse or executor and control exactly what they can see. Your emergency access settings below are already in place.</p>
+        </div>
+      </div>
     </div>
     <div class="card" id="emergencyCard">
       <h3>Emergency Access Settings</h3>
-      <div class="plan-item"><span class="pi-label">Access method</span><span class="pi-value">24-hour notification window</span></div>
-      <div class="plan-item"><span class="pi-label">Backup method</span><span class="pi-value">Master code stored with lawyer</span></div>
-      <div class="plan-item"><span class="pi-label">Last reviewed</span><span class="pi-value">January 2025</span></div>
+      <div class="plan-item"><span class="pi-label">Dead man's switch</span><span class="pi-value missing" id="sharedSwitch">Not set up</span></div>
+      <div class="plan-item"><span class="pi-label">Master access holder</span><span class="pi-value missing" id="sharedMaster">Not documented</span></div>
+      <div class="plan-item"><span class="pi-label">Master access location</span><span class="pi-value missing" id="sharedLocation">Not documented</span></div>
+      <a href="plan-emergency.html" class="btn-primary" style="display:inline-block; margin-top:16px; font-size:13px; padding:10px 20px;">Update Emergency Settings →</a>
     </div>
-    <div class="hidden" id="emptyShared"><div class="card"><div class="empty"><div class="empty-icon">👥</div><h3>No one has access yet</h3><p>Add your spouse or executor so they can access your plan when it matters most.</p><button class="btn-primary">Add Trusted Person →</button></div></div></div>
   </div>
 
   <!-- ── SETTINGS ── -->
   <div id="tab-settings" class="hidden">
     <div class="card">
       <h3>Account Settings</h3>
-      <div class="plan-item"><span class="pi-label">Name</span><span class="pi-value">James Mitchell</span></div>
-      <div class="plan-item"><span class="pi-label">Email</span><span class="pi-value">james@mitchellfamily.ca</span></div>
-      <div class="plan-item"><span class="pi-label">Plan</span><span class="pi-value">Clarevo Pro</span></div>
-      <div class="plan-item"><span class="pi-label">Annual reminder</span><span class="pi-value">Every January</span></div>
+      <div class="plan-item"><span class="pi-label">Name</span><span class="pi-value" id="settingsName">—</span></div>
+      <div class="plan-item"><span class="pi-label">Email</span><span class="pi-value" id="settingsEmail">—</span></div>
+      <div class="plan-item"><span class="pi-label">Account created</span><span class="pi-value" id="settingsCreated">—</span></div>
+      <div class="plan-item"><span class="pi-label">Plan</span><span class="pi-value">Clarevo Free Preview</span></div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3>Danger Zone</h3>
+      <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">Sign out of your account on this device.</p>
+      <button onclick="signOut()" style="background:transparent; border:1px solid var(--red); color:var(--red); padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font);">Sign Out</button>
     </div>
   </div>
 
@@ -602,9 +612,31 @@
   });
 
   async function loadUserData(user) {
-    const name = user.user_metadata?.full_name || user.email;
+    const name = user.user_metadata?.full_name || user.email.split('@')[0];
     document.getElementById('sidebarName').textContent = name;
     document.getElementById('sidebarEmail').textContent = user.email;
+
+    // Settings tab — real data
+    const sName = document.getElementById('settingsName');
+    const sEmail = document.getElementById('settingsEmail');
+    const sCreated = document.getElementById('settingsCreated');
+    if (sName) sName.textContent = user.user_metadata?.full_name || '—';
+    if (sEmail) sEmail.textContent = user.email;
+    if (sCreated && user.created_at) {
+      sCreated.textContent = new Date(user.created_at).toLocaleDateString('en-CA', {year:'numeric', month:'long', day:'numeric'});
+    }
+
+    // Load emergency settings for shared access tab
+    db.from('emergency_settings').select('*').eq('user_id', user.id).limit(1).then(({data}) => {
+      const s = data && data[0];
+      const sw = document.getElementById('sharedSwitch');
+      const sm = document.getElementById('sharedMaster');
+      const sl = document.getElementById('sharedLocation');
+      if (sw) sw.textContent = s && s.switch_on ? 'On — ' + (s.switch_window || 'set') : 'Not set up';
+      if (sw) sw.className = s && s.switch_on ? 'pi-value' : 'pi-value missing';
+      if (sm) { sm.textContent = s && s.master_holder ? s.master_holder : 'Not documented'; sm.className = s && s.master_holder ? 'pi-value' : 'pi-value missing'; }
+      if (sl) { sl.textContent = s && s.master_location ? s.master_location : 'Not documented'; sl.className = s && s.master_location ? 'pi-value' : 'pi-value missing'; }
+    });
 
     // Show the plan grid and shared sections regardless of assessment
     ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
