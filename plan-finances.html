@@ -118,7 +118,7 @@
         {key:'institution', label:'Bank', placeholder:'e.g. RBC, Tangerine'},
         {key:'account_type', label:'Account type', placeholder:'e.g. Chequing, Savings'},
         {key:'owner', label:'Owner', type:'select', options:['Me','Spouse','Joint']},
-        {key:'identifier_hint', label:'Nickname / last 4 digits', hint:'never the full number', placeholder:'e.g. ••1234'},
+        {key:'identifier_hint', label:'Nickname / last 4 digits', hint:'never the full number', placeholder:'e.g. ••1234', weight:0},
         {key:'location', label:'Where to find details', full:true, placeholder:'e.g. Online banking + statements in home safe'}
       ]
     });
@@ -143,8 +143,8 @@
         {key:'institution', label:'Lender', placeholder:'e.g. Scotiabank, RBC'},
         {key:'account_type', label:'Type', placeholder:'e.g. Mortgage, Car loan, Credit card'},
         {key:'owner', label:'Owner', type:'select', options:['Me','Spouse','Joint']},
-        {key:'identifier_hint', label:'Nickname / last 4 digits', hint:'never the full number', placeholder:'e.g. ••5678'},
-        {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. On auto-pay from joint chequing on the 1st'}
+        {key:'identifier_hint', label:'Nickname / last 4 digits', hint:'never the full number', placeholder:'e.g. ••5678', weight:0},
+        {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. On auto-pay from joint chequing on the 1st', weight:0}
       ]
     });
     Promise.all([loadKind(bank,'bank'), loadKind(inv,'investment'), loadDebt()]);

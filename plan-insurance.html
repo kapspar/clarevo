@@ -56,12 +56,12 @@
       fields:[
         {key:'kind', label:'Type', type:'select', options:['Life','Home / Tenant','Auto','Disability','Critical illness','Other']},
         {key:'insurer', label:'Insurer', placeholder:'e.g. Sun Life, Intact'},
-        {key:'policy_number', label:'Policy number', placeholder:'e.g. SL-1234567'},
-        {key:'coverage', label:'Coverage', placeholder:'e.g. Term $500k'},
-        {key:'beneficiary', label:'Beneficiary', placeholder:'e.g. Spouse'},
+        {key:'policy_number', label:'Policy number', placeholder:'e.g. SL-1234567', weight:0},
+        {key:'coverage', label:'Coverage', placeholder:'e.g. Term $500k', weight:0},
+        {key:'beneficiary', label:'Beneficiary', placeholder:'e.g. Spouse', weight:0},
         {key:'owner', label:'Owner', type:'select', options:['Me','Spouse','Joint']},
-        {key:'contact_name', label:'Advisor / agent', placeholder:'e.g. Jane Smith'},
-        {key:'claims_phone', label:'Claims phone', placeholder:'e.g. 1-800-555-0199'}
+        {key:'contact_name', label:'Advisor / agent', placeholder:'e.g. Jane Smith', weight:0},
+        {key:'claims_phone', label:'Claims phone', placeholder:'e.g. 1-800-555-0199', weight:0}
       ]
     });
     ins.load().then(()=>setBadge(ins.score()));

@@ -190,8 +190,17 @@ class ListManager {
 
   entryCompleteness(r){
     let got=0,max=0;
-    this.cfg.fields.forEach(f=>{ const w=f.weight||1; max+=w; if(r[f.key] && (''+r[f.key]).trim()) got+=w; });
-    if(this.cfg.hasUpload){ max+=1; if(r.file_path) got+=1; }
+    this.cfg.fields.forEach(f=>{
+      const w = (f.weight === undefined ? 1 : f.weight);
+      if (w === 0) return; // skip zero-weight fields
+      max+=w;
+      if(r[f.key] && (''+r[f.key]).trim()) got+=w;
+    });
+    // Only count file_path toward score if uploadCounts is explicitly true
+    if(this.cfg.hasUpload && this.cfg.uploadCounts === true){
+      max+=1;
+      if(r.file_path) got+=1;
+    }
     return max?got/max:0;
   }
   score(){

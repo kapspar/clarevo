@@ -159,14 +159,14 @@
     guardian = new ListManager({
       table: 'kids_items', container: 'guardianList',
       emptyText: 'No guardian documented yet.',
-      uploadLabel: 'Relevant documents (optional)',
+      hasUpload: false,
       onChange,
       fields: [
         {key:'name', label:'Guardian\'s name', placeholder:'e.g. Sarah Kapoor'},
         {key:'relationship', label:'Relationship', placeholder:'e.g. Aunt, Uncle, Family friend'},
         {key:'phone', label:'Phone', placeholder:'e.g. 905-555-0100'},
-        {key:'email', label:'Email', placeholder:'e.g. sarah@email.com'},
-        {key:'notes', label:'Notes', full:true, type:'textarea',
+        {key:'email', label:'Email', placeholder:'e.g. sarah@email.com', weight:0},
+        {key:'notes', label:'Notes', full:true, type:'textarea', weight:0,
           placeholder:'e.g. They know they\'re named. Copy of their contact info is in the home safe.'}
       ]
     });
@@ -180,8 +180,8 @@
         {key:'name', label:'Name / place', placeholder:'e.g. Sunnydale Public School, Dr. Smith'},
         {key:'kind', label:'Type', type:'select', options:['School','Daycare','Pediatrician / doctor','Caregiver','Other']},
         {key:'phone', label:'Phone', placeholder:'e.g. 905-555-0200'},
-        {key:'address', label:'Address', placeholder:'e.g. 123 Main St, Pickering'},
-        {key:'notes', label:'Notes', full:true, placeholder:'e.g. Pick-up code: 1234. After-school runs Mon/Wed.'}
+        {key:'address', label:'Address', placeholder:'e.g. 123 Main St, Pickering', weight:0},
+        {key:'notes', label:'Notes', full:true, placeholder:'e.g. Pick-up code: 1234. After-school runs Mon/Wed.', weight:0}
       ]
     });
 
