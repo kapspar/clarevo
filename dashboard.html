@@ -355,7 +355,7 @@
     </div>
     <div class="nav-item" onclick="showTab('gaps', this)">
       <span class="nav-icon">⚠️</span> Gaps
-      <span class="nav-badge" id="gapsBadge">6</span>
+      <span class="nav-badge" id="gapsBadge" style="display:none;">0</span>
     </div>
     <div class="nav-item" onclick="showTab('shared', this)">
       <span class="nav-icon">👥</span> Shared Access
@@ -419,24 +419,7 @@
         <h3 style="margin:0;">Top Gaps to Fix</h3>
         <button class="fix-btn" onclick="showTab('gaps')">View All →</button>
       </div>
-      <div class="gap-row">
-        <div class="gi red">📄</div>
-        <div class="gc"><div class="gc-title">No Will on File</div><div class="gc-desc">Your estate has no legal instructions.</div></div>
-        <div class="gp missing">Missing</div>
-        <button class="fix-btn">Fix with Willful →</button>
-      </div>
-      <div class="gap-row">
-        <div class="gi red">⚖️</div>
-        <div class="gc"><div class="gc-title">No Power of Attorney</div><div class="gc-desc">No one can legally manage your affairs if incapacitated.</div></div>
-        <div class="gp missing">Missing</div>
-        <button class="fix-btn">Fix with Willful →</button>
-      </div>
-      <div class="gap-row">
-        <div class="gi red">👤</div>
-        <div class="gc"><div class="gc-title">Executor Not Briefed</div><div class="gc-desc">Your executor doesn't know they've been named.</div></div>
-        <div class="gp missing">Missing</div>
-        <button class="fix-btn">Learn More →</button>
-      </div>
+      <div id="topGapsList"><p style="font-size:13px;color:var(--gray);">Loading…</p></div>
     </div>
 
     <!-- Empty state -->
@@ -1113,11 +1096,47 @@
     const card = document.getElementById('allGapsCard');
     const empty = document.getElementById('emptyGaps');
     const badge = document.getElementById('gapsBadge');
+    const topList = document.getElementById('topGapsList');
 
     const critical = gaps.filter(g => g.severity === 'red').length;
     const warnings = gaps.filter(g => g.severity === 'yellow').length;
 
-    badge.textContent = gaps.length || '0';
+    // Badge: hide when 0, show when > 0
+    if (gaps.length === 0) {
+      badge.style.display = 'none';
+    } else {
+      badge.style.display = '';
+      badge.textContent = gaps.length;
+    }
+
+    // Populate Top Gaps (max 3, critical first)
+    const sorted = [...gaps.filter(g=>g.severity==='red'), ...gaps.filter(g=>g.severity==='yellow')];
+    if (topList) {
+      if (sorted.length === 0) {
+        topList.innerHTML = '<p style="font-size:13px;color:var(--green);font-weight:600;">🎉 No gaps — your plan looks complete.</p>';
+      } else {
+        topList.innerHTML = '';
+        sorted.slice(0, 3).forEach(g => {
+          const row = document.createElement('div');
+          row.className = 'gap-row';
+          const gi = document.createElement('div');
+          gi.className = 'gi ' + g.severity;
+          gi.textContent = g.icon;
+          const gc = document.createElement('div');
+          gc.className = 'gc';
+          gc.innerHTML = '<div class="gc-title">' + g.title + '</div><div class="gc-desc">' + g.desc + '</div>';
+          const gp = document.createElement('div');
+          gp.className = 'gp ' + (g.severity === 'red' ? 'missing' : 'incomplete');
+          gp.textContent = g.severity === 'red' ? 'Missing' : 'Incomplete';
+          const btn = document.createElement('a');
+          btn.href = g.planUrl;
+          btn.className = 'fix-btn';
+          btn.textContent = g.planLabel + ' →';
+          row.appendChild(gi); row.appendChild(gc); row.appendChild(gp); row.appendChild(btn);
+          topList.appendChild(row);
+        });
+      }
+    }
 
     if (gaps.length === 0) {
       card.classList.add('hidden');
@@ -1132,9 +1151,6 @@
       (warnings ? ', ' + warnings + ' warning' + (warnings !== 1 ? 's' : '') : '');
 
     list.innerHTML = '';
-
-    // Critical first, then warnings
-    const sorted = [...gaps.filter(g=>g.severity==='red'), ...gaps.filter(g=>g.severity==='yellow')];
     let lastSeverity = null;
 
     sorted.forEach(g => {
