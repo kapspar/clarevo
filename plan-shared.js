@@ -203,7 +203,8 @@ class ListManager {
 
   async saveAll(){
     for(const r of this.rows){
-      const rec={ user_id:currentUser.id, file_path:r.file_path||null, updated_at:new Date().toISOString() };
+      const rec={ user_id:currentUser.id, updated_at:new Date().toISOString() };
+      if(this.cfg.hasUpload !== false) rec.file_path = r.file_path||null;
       this.cfg.fields.forEach(f=>rec[f.key]=r[f.key]?r[f.key]:null);
       if(r.id){
         const {error}=await db.from(this.cfg.table).update(rec).eq('id',r.id);
