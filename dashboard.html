@@ -749,10 +749,17 @@
       setPlanItem('planDebt', realDebts.length ? realDebts.length + ' documented' : null, 'None yet');
     }
 
-    // Score: banks + investments + real debts (sentinel excluded), debt N/A counts as 100%
-    const scoreRows = [...banks, ...invs, ...(debtNa ? [] : realDebts)];
-    let score = listScore(scoreRows, ['institution','account_type','owner','location']);
-    if (debtNa && scoreRows.length === 0) score = 100; // all N/A
+    // Score each kind against its own relevant fields
+    const bankScore = listScore(banks,     ['institution','account_type','owner','location']);
+    const invScore  = listScore(invs,      ['institution','account_type','owner']);
+    const debtScore = debtNa ? 100 : listScore(realDebts, ['institution','account_type','owner']);
+
+    const parts = [];
+    if (banks.length)                parts.push(bankScore);
+    if (invs.length)                 parts.push(invScore);
+    if (debtNa || realDebts.length)  parts.push(debtScore);
+
+    const score = parts.length ? Math.round(parts.reduce((a,b)=>a+b,0) / parts.length) : 0;
     setPlanBadge('financesPlanBadge', score);
     return score;
   }
@@ -811,7 +818,7 @@
     const { data } = await db.from('kids_items').select('*').eq('user_id', user.id);
     const rows = data || [];
     const isNa = rows.some(r => r.name === '__na__');
-    const realRows = rows.filter(r => r.name !== '__na__');
+    const realRows = rows.filter(r => r.name !== '__na__' && r.kind !== 'not_applicable');
     let score;
     if (isNa) {
       setPlanItem('planGuardian', 'Not applicable', null);
@@ -819,7 +826,9 @@
       score = 100;
     } else {
       const guardian = realRows.find(r => r.kind === 'guardian');
-      const contacts = realRows.filter(r => r.kind !== 'guardian');
+      // Only count contacts with a real kind (not null, not guardian, not medical)
+      const CONTACT_KINDS = ['School','Daycare','Pediatrician / doctor','Caregiver','Other'];
+      const contacts = realRows.filter(r => r.kind !== 'guardian' && r.kind !== 'medical');
       setPlanItem('planGuardian', guardian ? (guardian.name || 'Documented') : null, 'Not set');
       setPlanItem('planKidsContacts', contacts.length ? contacts.length + ' documented' : null, 'None yet');
       score = listScore(realRows, ['name','kind','phone']);

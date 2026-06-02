@@ -126,12 +126,13 @@
     if (na) {
       el.textContent = 'Not applicable ✓'; el.className = 'card-badge badge-complete'; return;
     }
-    const scores = [
-      guardian ? guardian.score() : 0,
-      contacts ? contacts.score() : 0,
-      medical ? medical.score() : 0
-    ];
-    const avg = Math.round(scores.reduce((a,b)=>a+b,0) / scores.length);
+    // Only average sections that have entries — medical is optional
+    const parts = [];
+    if (guardian && guardian.rows.length) parts.push(guardian.score());
+    else if (guardian) parts.push(0); // guardian always counts — no guardian = gap
+    if (contacts && contacts.rows.length) parts.push(contacts.score());
+    if (medical && medical.rows.length) parts.push(medical.score());
+    const avg = parts.length ? Math.round(parts.reduce((a,b)=>a+b,0) / parts.length) : 0;
     if (avg >= 80) { el.textContent = 'Complete ✓'; el.className = 'card-badge badge-complete'; }
     else if (avg > 0) { el.textContent = avg + '%'; el.className = 'card-badge badge-partial'; }
     else { el.textContent = 'Set up'; el.className = 'card-badge badge-missing'; }
@@ -208,7 +209,6 @@
       .eq('user_id', currentUser.id).order('created_at', {ascending:true});
     const rows = data || [];
 
-    // Check N/A
     const naRow = rows.find(r => r.name === '__na__');
     if (naRow) {
       naRowId = naRow.id;
@@ -216,14 +216,15 @@
       el.dataset.on = 'true'; el.classList.add('on');
     }
 
-    // Guardian rows: kind = 'guardian' or first entry without a kind that has relationship
+    const CONTACT_KINDS = ['School','Daycare','Pediatrician / doctor','Caregiver','Other'];
     const guardianRows = rows.filter(r => r.name !== '__na__' && r.kind === 'guardian');
-    const contactRows  = rows.filter(r => r.name !== '__na__' && ['School','Daycare','Pediatrician / doctor','Caregiver','Other'].includes(r.kind));
+    // null-kind rows are old contacts saved before the kind fix — put them in contacts
+    const contactRows  = rows.filter(r => r.name !== '__na__' && r.kind !== 'guardian' && r.kind !== 'medical' && r.kind !== 'not_applicable' && r.name !== '__na__');
     const medicalRows  = rows.filter(r => r.name !== '__na__' && r.kind === 'medical');
 
     guardian.rows = guardianRows; guardian.render();
-    contacts.rows = contactRows; contacts.render();
-    medical.rows = medicalRows; medical.render();
+    contacts.rows = contactRows;  contacts.render();
+    medical.rows  = medicalRows;  medical.render();
 
     onNaToggle();
   }
