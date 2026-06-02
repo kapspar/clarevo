@@ -386,23 +386,23 @@
     <div class="score-row" id="scoreRow">
       <div class="card">
         <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Family Readiness Score</div>
-        <div class="score-big-num" id="scoreNum">43<span>/100</span></div>
-        <div class="score-sub" id="scoreSub">Your family has significant gaps to address.</div>
-        <div class="score-bar-bg"><div class="score-bar-fill" id="scoreBar" style="width:43%"></div></div>
+        <div class="score-big-num" id="scoreNum">—<span>/100</span></div>
+        <div class="score-sub" id="scoreSub">Loading your plan…</div>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="scoreBar" style="width:0%"></div></div>
       </div>
       <div class="card">
         <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Critical Gaps</div>
-        <div class="stat-num red" id="critNum">3</div>
+        <div class="stat-num red" id="critNum">—</div>
         <div class="stat-lbl">Need immediate attention</div>
       </div>
       <div class="card">
         <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Warnings</div>
-        <div class="stat-num yellow" id="warnNum">3</div>
+        <div class="stat-num yellow" id="warnNum">—</div>
         <div class="stat-lbl">Incomplete items</div>
       </div>
       <div class="card">
         <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Complete</div>
-        <div class="stat-num green" id="compNum">2</div>
+        <div class="stat-num green" id="compNum">—</div>
         <div class="stat-lbl">Sections done</div>
       </div>
     </div>
@@ -737,11 +737,22 @@
     const rows = data || [];
     const banks = rows.filter(r => r.kind === 'bank');
     const invs  = rows.filter(r => r.kind === 'investment');
-    const debts = rows.filter(r => r.kind === 'debt');
+    const allDebts = rows.filter(r => r.kind === 'debt');
+    const debtNa = allDebts.some(r => r.institution === '__na__');
+    const realDebts = allDebts.filter(r => r.institution !== '__na__');
+
     setPlanItem('planBank', banks.length ? banks.length + ' documented' : null, 'None yet');
     setPlanItem('planInv',  invs.length  ? invs.length  + ' documented' : null, 'None yet');
-    setPlanItem('planDebt', debts.length ? debts.length + ' documented' : null, 'None yet');
-    const score = listScore(rows, ['institution','account_type','owner','location']);
+    if (debtNa) {
+      setPlanItem('planDebt', 'No debts', null);
+    } else {
+      setPlanItem('planDebt', realDebts.length ? realDebts.length + ' documented' : null, 'None yet');
+    }
+
+    // Score: banks + investments + real debts (sentinel excluded), debt N/A counts as 100%
+    const scoreRows = [...banks, ...invs, ...(debtNa ? [] : realDebts)];
+    let score = listScore(scoreRows, ['institution','account_type','owner','location']);
+    if (debtNa && scoreRows.length === 0) score = 100; // all N/A
     setPlanBadge('financesPlanBadge', score);
     return score;
   }
