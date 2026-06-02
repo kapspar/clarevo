@@ -488,9 +488,8 @@
             <h3 style="margin:0;">🛡️ Insurance</h3>
             <span style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; background:#fef2f2; color:var(--red);" id="insurancePlanBadge">Set up →</span>
           </div>
-          <div class="plan-item"><span class="pi-label">Life Insurance</span><span class="pi-value missing" id="planLife">Not documented</span></div>
-          <div class="plan-item"><span class="pi-label">Home / Tenant</span><span class="pi-value missing" id="planHome">Not documented</span></div>
-          <div class="plan-item"><span class="pi-label">Auto</span><span class="pi-value missing" id="planAuto">Not documented</span></div>
+          <div class="plan-item"><span class="pi-label">Policies documented</span><span class="pi-value missing" id="planInsCount">None yet</span></div>
+          <div class="plan-item"><span class="pi-label">Coverage types</span><span class="pi-value missing" id="planInsTypes">None yet</span></div>
         </div>
       </a>
 
@@ -752,12 +751,14 @@
   async function loadInsurancePreview(user) {
     const { data } = await db.from('insurance_items').select('*').eq('user_id', user.id);
     const rows = data || [];
-    const life = rows.find(r => r.kind === 'Life');
-    const home = rows.find(r => r.kind === 'Home / Tenant');
-    const auto = rows.find(r => r.kind === 'Auto');
-    setPlanItem('planLife', life ? (life.insurer || 'Documented') : null);
-    setPlanItem('planHome', home ? (home.insurer || 'Documented') : null);
-    setPlanItem('planAuto', auto ? (auto.insurer || 'Documented') : null);
+    if (rows.length) {
+      setPlanItem('planInsCount', rows.length + ' documented', null);
+      const types = [...new Set(rows.map(r => r.kind).filter(Boolean))].join(', ');
+      setPlanItem('planInsTypes', types || 'Documented', null);
+    } else {
+      setPlanItem('planInsCount', null, 'None yet');
+      setPlanItem('planInsTypes', null, 'None yet');
+    }
     const score = listScore(rows, ['kind','insurer','coverage','beneficiary']);
     setPlanBadge('insurancePlanBadge', score);
     return score;
@@ -1014,16 +1015,15 @@
     }
 
     // ── INSURANCE ──
-    const lifeIns = ins.filter(r => r.kind === 'Life');
-    if (lifeIns.length === 0) {
-      gaps.push({ severity:'red', icon:'🛡️', title:'No life insurance documented',
-        desc:'If you have life insurance, document it here so your family knows who to call. If you don\'t have coverage, consider getting some.',
+    if (ins.length === 0) {
+      gaps.push({ severity:'yellow', icon:'🛡️', title:'No insurance documented',
+        desc:'Document your insurance policies here so your family knows who to call and what coverage exists.',
         planUrl:'plan-insurance.html', planLabel:'Document your insurance' });
     } else {
-      const noBeneficiary = lifeIns.filter(r => !r.beneficiary);
+      const noBeneficiary = ins.filter(r => !r.beneficiary && r.kind === 'Life');
       if (noBeneficiary.length > 0) {
         gaps.push({ severity:'yellow', icon:'🛡️', title:'Life insurance beneficiary not recorded',
-          desc:'Beneficiary not noted on ' + noBeneficiary.length + ' policy. An outdated beneficiary designation can override your will.',
+          desc:'Beneficiary not noted on ' + noBeneficiary.length + ' life policy. An outdated beneficiary designation can override your will.',
           planUrl:'plan-insurance.html', planLabel:'Add beneficiary' });
       }
     }

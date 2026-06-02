@@ -53,8 +53,25 @@
         <p>Mortgages, loans, credit cards — what's owed and to whom.</p></div>
       <span class="card-badge badge-missing" id="debtBadge">Set up</span>
     </div>
-    <div id="debtList"></div>
-    <button class="add-btn" type="button" onclick="debt.addBlank()">+ Add a debt</button>
+
+    <div class="toggle-row">
+      <div class="tr-text">
+        <h3>I have no debts to document</h3>
+        <p>Mark this section complete — no mortgage, loans, or credit card balances worth noting.</p>
+      </div>
+      <div class="toggle" id="noDebt" data-on="false"></div>
+    </div>
+
+    <div id="debtSection">
+      <div id="debtList"></div>
+      <button class="add-btn" type="button" onclick="debt.addBlank()">+ Add a debt</button>
+    </div>
+
+    <div id="debtNaMessage" class="hidden">
+      <div class="callout" style="margin-top:16px; background:#f0fdf4; border-left-color: var(--green);">
+        ✅ Marked as debt-free. This section is complete.
+      </div>
+    </div>
   </div>
 </div>
 
@@ -67,6 +84,7 @@
 <script src="plan-shared.js"></script>
 <script>
   let bank, inv, debt;
+  let debtNaRowId = null;
 
   function setBadge(id, score){
     const el=$(id);
@@ -74,13 +92,24 @@
     else if(score>0){ el.textContent=score+'%'; el.className='card-badge badge-partial'; }
     else { el.textContent='Set up'; el.className='card-badge badge-missing'; }
   }
+  function onNoDebtToggle() {
+    const na = toggleVal('noDebt');
+    document.getElementById('debtSection').classList.toggle('hidden', na);
+    document.getElementById('debtNaMessage').classList.toggle('hidden', !na);
+    const el = $('debtBadge');
+    if (na) { el.textContent = 'No debts ✓'; el.className = 'card-badge badge-complete'; }
+    else { setBadge('debtBadge', debt ? debt.score() : 0); }
+  }
   function refreshBadges(){
     if(bank) setBadge('bankBadge', bank.score());
     if(inv) setBadge('invBadge', inv.score());
-    if(debt) setBadge('debtBadge', debt.score());
+    if(!toggleVal('noDebt') && debt) setBadge('debtBadge', debt.score());
   }
 
   requireAuth(() => {
+    bindToggle('noDebt');
+    document.getElementById('noDebt').addEventListener('click', onNoDebtToggle);
+
     bank = new ListManager({
       table:'account_items', container:'bankList',
       emptyText:'No bank accounts added yet.', uploadLabel:'Relevant documents (optional)',
@@ -107,7 +136,8 @@
     });
     debt = new ListManager({
       table:'account_items', container:'debtList',
-      emptyText:'No debts added yet.', uploadLabel:'Relevant documents (optional)',
+      emptyText:'No debts added yet. Add one below, or toggle "I have no debts" above.',
+      uploadLabel:'Relevant documents (optional)',
       onChange:refreshBadges,
       fields:[
         {key:'institution', label:'Lender', placeholder:'e.g. Scotiabank, RBC'},
@@ -117,7 +147,7 @@
         {key:'notes', label:'Notes', full:true, type:'textarea', placeholder:'e.g. On auto-pay from joint chequing on the 1st'}
       ]
     });
-    Promise.all([loadKind(bank,'bank'), loadKind(inv,'investment'), loadKind(debt,'debt')]).then(refreshBadges);
+    Promise.all([loadKind(bank,'bank'), loadKind(inv,'investment'), loadDebt()]);
   });
 
   async function loadKind(mgr, kind){
@@ -126,15 +156,57 @@
     mgr.rows = (data && data.length) ? data : [];
     mgr._kind = kind;
     mgr.render();
+    refreshBadges();
+  }
+
+  async function loadDebt() {
+    const { data } = await db.from('account_items').select('*')
+      .eq('user_id', currentUser.id).eq('kind', 'debt').order('created_at',{ascending:true});
+    const rows = data || [];
+    const naRow = rows.find(r => r.institution === '__na__');
+    if (naRow) {
+      debtNaRowId = naRow.id;
+      debt.rows = rows.filter(r => r.institution !== '__na__');
+      const el = document.getElementById('noDebt');
+      el.dataset.on = 'true'; el.classList.add('on');
+    } else {
+      debt.rows = rows;
+    }
+    debt._kind = 'debt';
+    debt.render();
+    onNoDebtToggle();
   }
 
   async function saveData(){
     const s = saving('saveBtn','saveStatus','Save Finances');
     try {
-      for(const mgr of [bank, inv, debt]){
+      // Bank and investments save normally
+      for(const mgr of [bank, inv]){
         for(const r of mgr.rows){
           const rec = { user_id: currentUser.id, kind: mgr._kind, file_path: r.file_path || null, updated_at: new Date().toISOString() };
           mgr.cfg.fields.forEach(f => rec[f.key] = r[f.key] ? r[f.key] : null);
+          if(r.id){ const {error}=await db.from('account_items').update(rec).eq('id',r.id); if(error) throw error; }
+          else { const {data,error}=await db.from('account_items').insert([rec]).select(); if(error) throw error; if(data&&data[0]){ r.id=data[0].id; delete r._new; } }
+        }
+      }
+      // Debt: handle N/A toggle
+      const noDebt = toggleVal('noDebt');
+      if (noDebt) {
+        if (debtNaRowId) {
+          await db.from('account_items').update({ updated_at: new Date().toISOString() }).eq('id', debtNaRowId);
+        } else {
+          const { data } = await db.from('account_items')
+            .insert([{ user_id: currentUser.id, kind: 'debt', institution: '__na__', updated_at: new Date().toISOString() }]).select();
+          if (data && data[0]) debtNaRowId = data[0].id;
+        }
+      } else {
+        if (debtNaRowId) {
+          await db.from('account_items').delete().eq('id', debtNaRowId);
+          debtNaRowId = null;
+        }
+        for(const r of debt.rows){
+          const rec = { user_id: currentUser.id, kind: 'debt', file_path: r.file_path || null, updated_at: new Date().toISOString() };
+          debt.cfg.fields.forEach(f => rec[f.key] = r[f.key] ? r[f.key] : null);
           if(r.id){ const {error}=await db.from('account_items').update(rec).eq('id',r.id); if(error) throw error; }
           else { const {data,error}=await db.from('account_items').insert([rec]).select(); if(error) throw error; if(data&&data[0]){ r.id=data[0].id; delete r._new; } }
         }
