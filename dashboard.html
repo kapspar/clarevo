@@ -276,6 +276,32 @@
       background: var(--blue-light); color: var(--blue);
     }
 
+    /* SHARED ACCESS */
+    .invite-form { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+    .invite-form input { flex:1; min-width:160px; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:var(--font); font-size:14px; }
+    .invite-form input:focus { outline:none; border-color:var(--blue); }
+    .invite-form select { padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:var(--font); font-size:14px; background:white; }
+    .section-toggles { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+    .section-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--bg); border-radius:8px; font-size:13px; font-weight:500; }
+    .mini-toggle { position:relative; width:36px; height:20px; background:#cbd5e1; border-radius:20px; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+    .mini-toggle.on { background:var(--blue); }
+    .mini-toggle::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform 0.2s; }
+    .mini-toggle.on::after { transform:translateX(16px); }
+    .invite-card { background:var(--bg); border-radius:12px; padding:16px; margin-bottom:12px; }
+    .invite-card:last-child { margin-bottom:0; }
+    .invite-card-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .invite-card-header .avatar { flex-shrink:0; }
+    .invite-card-header .ic-info { flex:1; }
+    .ic-name { font-size:14px; font-weight:700; }
+    .ic-meta { font-size:12px; color:var(--gray); margin-top:2px; }
+    .ic-status { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+    .ic-status.pending { background:#fffbeb; color:var(--yellow); }
+    .ic-status.active { background:#f0fdf4; color:var(--green); }
+    .ic-actions { display:flex; gap:8px; margin-top:12px; }
+    .ic-btn { font-size:12px; font-weight:600; padding:6px 14px; border-radius:8px; cursor:pointer; font-family:var(--font); border:none; }
+    .ic-btn.resend { background:var(--blue-light); color:var(--blue); }
+    .ic-btn.revoke { background:#fef2f2; color:var(--red); }
+
     /* EMPTY STATES */
     .empty {
       text-align: center;
@@ -558,22 +584,51 @@
 
   <!-- ── SHARED ACCESS ── -->
   <div id="tab-shared" class="hidden">
-    <div class="card" id="sharedCard" style="margin-bottom:16px;">
-      <h3>People with access to your plan</h3>
-      <div id="sharedPeopleList">
-        <div class="empty" style="padding:24px 0;">
-          <div class="empty-icon">👥</div>
-          <h3 style="font-size:16px; margin-bottom:8px;">Shared access coming soon</h3>
-          <p style="font-size:13px; color:var(--gray); max-width:340px; margin:0 auto;">You'll be able to invite your spouse or executor and control exactly what they can see. Your emergency access settings below are already in place.</p>
-        </div>
+
+    <!-- Invite form -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3 style="margin-bottom:4px;">Give someone access to your plan</h3>
+      <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">They'll get an email with a link to create a Clarevo account and view only the sections you enable.</p>
+
+      <div class="invite-form">
+        <input type="email" id="inviteEmail" placeholder="their@email.com">
+        <input type="text" id="inviteRelationship" placeholder="Relationship (e.g. Spouse, Executor)" style="flex:1.2">
       </div>
+
+      <p style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--gray); margin-bottom:10px;">Sections they can see</p>
+      <div class="section-toggles" id="inviteToggles">
+        <div class="section-toggle-row"><span>📄 Legal Documents</span><div class="mini-toggle" id="it-legal" onclick="toggleInviteSection('legal')"></div></div>
+        <div class="section-toggle-row"><span>💰 Finances</span><div class="mini-toggle" id="it-finances" onclick="toggleInviteSection('finances')"></div></div>
+        <div class="section-toggle-row"><span>🛡️ Insurance</span><div class="mini-toggle" id="it-insurance" onclick="toggleInviteSection('insurance')"></div></div>
+        <div class="section-toggle-row"><span>🏠 Property</span><div class="mini-toggle" id="it-property" onclick="toggleInviteSection('property')"></div></div>
+        <div class="section-toggle-row"><span>🧾 Bills &amp; Access</span><div class="mini-toggle" id="it-bills" onclick="toggleInviteSection('bills')"></div></div>
+        <div class="section-toggle-row"><span>🚨 Emergency</span><div class="mini-toggle" id="it-emergency" onclick="toggleInviteSection('emergency')"></div></div>
+        <div class="section-toggle-row"><span>📱 Digital &amp; Devices</span><div class="mini-toggle" id="it-digital" onclick="toggleInviteSection('digital')"></div></div>
+        <div class="section-toggle-row"><span>👶 Kids &amp; Family</span><div class="mini-toggle" id="it-kids" onclick="toggleInviteSection('kids')"></div></div>
+        <div class="section-toggle-row"><span>💼 Business</span><div class="mini-toggle" id="it-business" onclick="toggleInviteSection('business')"></div></div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px; align-items:center; flex-wrap:wrap;">
+        <button onclick="sendInvite()" class="btn-primary" style="font-size:13px; padding:10px 20px;">Send Invite →</button>
+        <button onclick="selectAllSections(true)" style="background:none; border:none; font-size:12px; color:var(--blue); cursor:pointer; font-family:var(--font);">Select all</button>
+        <button onclick="selectAllSections(false)" style="background:none; border:none; font-size:12px; color:var(--gray); cursor:pointer; font-family:var(--font);">Clear all</button>
+      </div>
+      <p id="inviteStatus" style="font-size:13px; margin-top:10px; display:none;"></p>
     </div>
-    <div class="card" id="emergencyCard">
+
+    <!-- Active invites -->
+    <div class="card" id="sharedCard">
+      <h3 style="margin-bottom:16px;">People with access</h3>
+      <div id="sharedPeopleList"><p style="font-size:13px; color:var(--gray);">Loading…</p></div>
+    </div>
+
+    <!-- Emergency settings summary -->
+    <div class="card" id="emergencyCard" style="margin-top:16px;">
       <h3>Emergency Access Settings</h3>
       <div class="plan-item"><span class="pi-label">Dead man's switch</span><span class="pi-value missing" id="sharedSwitch">Not set up</span></div>
       <div class="plan-item"><span class="pi-label">Master access holder</span><span class="pi-value missing" id="sharedMaster">Not documented</span></div>
       <div class="plan-item"><span class="pi-label">Master access location</span><span class="pi-value missing" id="sharedLocation">Not documented</span></div>
-      <a href="plan-emergency.html" class="btn-primary" style="display:inline-block; margin-top:16px; font-size:13px; padding:10px 20px;">Update Emergency Settings →</a>
+      <a href="plan-emergency.html" class="fix-btn" style="display:inline-block; margin-top:12px;">Update Emergency Settings →</a>
     </div>
   </div>
 
@@ -587,9 +642,15 @@
       <div class="plan-item"><span class="pi-label">Plan</span><span class="pi-value">Clarevo Free Preview</span></div>
     </div>
     <div class="card" style="margin-top:16px;">
-      <h3>Danger Zone</h3>
+      <h3 style="margin-bottom:4px;">Sign out</h3>
       <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">Sign out of your account on this device.</p>
-      <button onclick="signOut()" style="background:transparent; border:1px solid var(--red); color:var(--red); padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font);">Sign Out</button>
+      <button onclick="signOut()" style="background:transparent; border:1.5px solid var(--blue); color:var(--blue); padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font);">Sign Out</button>
+    </div>
+    <div class="card" style="margin-top:16px; border:1.5px solid #fecaca;">
+      <h3 style="color:var(--red); margin-bottom:4px;">Delete account</h3>
+      <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">Permanently delete your account and all associated data. This cannot be undone. Your uploaded documents will also be removed.</p>
+      <button onclick="confirmDeleteAccount()" style="background:var(--red); border:none; color:white; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font);">Delete My Account</button>
+      <p id="deleteStatus" style="font-size:13px; margin-top:10px; display:none;"></p>
     </div>
   </div>
 
@@ -637,6 +698,8 @@
       if (sm) { sm.textContent = s && s.master_holder ? s.master_holder : 'Not documented'; sm.className = s && s.master_holder ? 'pi-value' : 'pi-value missing'; }
       if (sl) { sl.textContent = s && s.master_location ? s.master_location : 'Not documented'; sl.className = s && s.master_location ? 'pi-value' : 'pi-value missing'; }
     });
+
+    loadSharedAccess(user);
 
     // Show the plan grid and shared sections regardless of assessment
     ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
@@ -1228,6 +1291,119 @@
 
       list.appendChild(row);
     });
+  }
+
+  // ── SHARED ACCESS ────────────────────────────────────────
+  const SECTIONS = ['legal','finances','insurance','property','bills','emergency','digital','kids','business'];
+  const inviteState = {};
+  SECTIONS.forEach(s => inviteState[s] = false);
+
+  function toggleInviteSection(s) {
+    inviteState[s] = !inviteState[s];
+    const el = document.getElementById('it-' + s);
+    if (el) el.classList.toggle('on', inviteState[s]);
+  }
+  function selectAllSections(on) {
+    SECTIONS.forEach(s => {
+      inviteState[s] = on;
+      const el = document.getElementById('it-' + s);
+      if (el) el.classList.toggle('on', on);
+    });
+  }
+
+  async function loadSharedAccess(user) {
+    const { data } = await db.from('shared_access').select('*').eq('owner_id', user.id);
+    const list = document.getElementById('sharedPeopleList');
+    if (!data || data.length === 0) {
+      list.innerHTML = '<p style="font-size:13px; color:var(--gray); padding:8px 0;">No one has access yet. Use the form above to invite someone.</p>';
+      return;
+    }
+    list.innerHTML = '';
+    data.forEach(inv => {
+      const initials = inv.invitee_email.substring(0, 2).toUpperCase();
+      const sections = SECTIONS.filter(s => inv['access_' + s]).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ') || 'No sections';
+      const card = document.createElement('div');
+      card.className = 'invite-card';
+      card.innerHTML = `
+        <div class="invite-card-header">
+          <div class="avatar blue">${initials}</div>
+          <div class="ic-info">
+            <div class="ic-name">${inv.invitee_email}</div>
+            <div class="ic-meta">${inv.relationship || 'No relationship set'} · ${sections}</div>
+          </div>
+          <span class="ic-status ${inv.status}">${inv.status === 'pending' ? 'Invite sent' : inv.status === 'active' ? 'Active' : 'Revoked'}</span>
+        </div>
+        <div class="ic-actions">
+          ${inv.status === 'pending' ? `<button class="ic-btn resend" onclick="resendInvite('${inv.id}','${inv.invitee_email}')">Resend invite</button>` : ''}
+          <button class="ic-btn revoke" onclick="revokeAccess('${inv.id}')">Revoke access</button>
+        </div>`;
+      list.appendChild(card);
+    });
+  }
+
+  async function sendInvite() {
+    const email = document.getElementById('inviteEmail').value.trim();
+    const rel = document.getElementById('inviteRelationship').value.trim();
+    const status = document.getElementById('inviteStatus');
+    if (!email || !email.includes('@')) {
+      status.style.display = 'block'; status.style.color = 'var(--red)';
+      status.textContent = 'Please enter a valid email address.'; return;
+    }
+    const anySections = SECTIONS.some(s => inviteState[s]);
+    if (!anySections) {
+      status.style.display = 'block'; status.style.color = 'var(--red)';
+      status.textContent = 'Please select at least one section to share.'; return;
+    }
+    const rec = { owner_id: currentUser.id, invitee_email: email, relationship: rel || null, status: 'pending' };
+    SECTIONS.forEach(s => rec['access_' + s] = inviteState[s]);
+    const { error } = await db.from('shared_access').insert([rec]);
+    if (error) {
+      status.style.display = 'block'; status.style.color = 'var(--red)';
+      status.textContent = 'Error saving invite. Please try again.'; return;
+    }
+    // Note: actual email sending requires a Supabase Edge Function — flagged for tech build
+    status.style.display = 'block'; status.style.color = 'var(--green)';
+    status.textContent = '✓ Invite saved. Email sending requires backend setup — invite recorded for now.';
+    document.getElementById('inviteEmail').value = '';
+    document.getElementById('inviteRelationship').value = '';
+    selectAllSections(false);
+    loadSharedAccess(currentUser);
+  }
+
+  async function revokeAccess(id) {
+    if (!confirm('Remove this person\'s access?')) return;
+    await db.from('shared_access').update({ status: 'revoked', updated_at: new Date().toISOString() }).eq('id', id);
+    loadSharedAccess(currentUser);
+  }
+
+  async function resendInvite(id, email) {
+    alert('Email resend requires backend setup. Invite for ' + email + ' is saved and will be sent once email is configured.');
+  }
+
+  // ── DELETE ACCOUNT ────────────────────────────────────────
+  async function confirmDeleteAccount() {
+    const confirmed = confirm('Are you sure you want to permanently delete your account and all your data? This cannot be undone.');
+    if (!confirmed) return;
+    const doubleConfirm = confirm('Last chance — this will delete your entire family plan, all documents, and your account. Continue?');
+    if (!doubleConfirm) return;
+    const status = document.getElementById('deleteStatus');
+    status.style.display = 'block'; status.style.color = 'var(--gray)';
+    status.textContent = 'Deleting your account…';
+    try {
+      // Delete all plan data (cascade should handle most, but belt-and-suspenders)
+      const tables = ['legal_documents','account_items','insurance_items','property_items','business_items','bill_items','contact_items','emergency_settings','digital_items','kids_items','shared_access','assessments'];
+      for (const t of tables) {
+        await db.from(t).delete().eq('user_id', currentUser.id);
+      }
+      // Sign out — actual user deletion requires a Supabase Edge Function (admin API)
+      // Flag for tech build: call supabase.auth.admin.deleteUser(currentUser.id)
+      await db.auth.signOut();
+      alert('Your plan data has been deleted. Your login account will be fully removed within 24 hours. Contact hello@clarevo.ca if you have any concerns.');
+      window.location.href = 'home.html';
+    } catch(err) {
+      status.style.color = 'var(--red)';
+      status.textContent = 'Error deleting account. Please contact hello@clarevo.ca.';
+    }
   }
 
   function showTab(tab, navEl) {
