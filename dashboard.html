@@ -682,9 +682,10 @@
 
   // completeness 0..1 of one row across given field keys (+ file_path)
   function rowDone(r, keys) {
-    let got = 0, max = keys.length + 1;
+    let got = 0, max = keys.length;
     keys.forEach(k => { if (r[k] && ('' + r[k]).trim()) got++; });
-    if (r.file_path) got++;
+    // Only count file_path if it exists on the row (some tables don't have this column)
+    if (r.file_path !== undefined) { max += 1; if (r.file_path) got++; }
     return got / max;
   }
   function listScore(rows, keys) {
