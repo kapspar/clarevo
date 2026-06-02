@@ -654,6 +654,19 @@
     </div>
   </div>
 
+  <!-- Edit Access Modal -->
+  <div id="editModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:16px; padding:28px; max-width:520px; width:90%; max-height:85vh; overflow-y:auto;">
+      <h3 style="margin-bottom:4px;" id="editModalTitle">Edit access</h3>
+      <p style="font-size:13px; color:var(--gray); margin-bottom:16px;" id="editModalSub">Update which sections this person can see.</p>
+      <div class="section-toggles" id="editToggles"></div>
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button onclick="saveEditedInvite()" class="btn-primary" style="font-size:13px; padding:10px 20px;">Save changes</button>
+        <button onclick="closeEditModal()" style="background:none; border:1.5px solid var(--border); color:var(--gray); padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font);">Cancel</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1335,6 +1348,7 @@
         </div>
         <div class="ic-actions">
           ${inv.status === 'pending' ? `<button class="ic-btn resend" onclick="resendInvite('${inv.id}','${inv.invitee_email}')">Resend invite</button>` : ''}
+          <button class="ic-btn resend" onclick="editInvite('${inv.id}')">Edit access</button>
           <button class="ic-btn revoke" onclick="revokeAccess('${inv.id}')">Revoke access</button>
         </div>`;
       list.appendChild(card);
@@ -1367,6 +1381,53 @@
     document.getElementById('inviteEmail').value = '';
     document.getElementById('inviteRelationship').value = '';
     selectAllSections(false);
+    loadSharedAccess(currentUser);
+  }
+
+  let editingInviteId = null;
+  const editState = {};
+
+  async function editInvite(id) {
+    const { data } = await db.from('shared_access').select('*').eq('id', id).limit(1);
+    if (!data || !data[0]) return;
+    const inv = data[0];
+    editingInviteId = id;
+    SECTIONS.forEach(s => editState[s] = inv['access_' + s] || false);
+
+    document.getElementById('editModalTitle').textContent = 'Edit access for ' + inv.invitee_email;
+    document.getElementById('editModalSub').textContent = (inv.relationship || 'Shared user') + ' — toggle which sections they can see.';
+
+    const container = document.getElementById('editToggles');
+    const labels = { legal:'📄 Legal Documents', finances:'💰 Finances', insurance:'🛡️ Insurance',
+      property:'🏠 Property', bills:'🧾 Bills & Access', emergency:'🚨 Emergency',
+      digital:'📱 Digital & Devices', kids:'👶 Kids & Family', business:'💼 Business' };
+    container.innerHTML = SECTIONS.map(s => `
+      <div class="section-toggle-row">
+        <span>${labels[s]}</span>
+        <div class="mini-toggle ${editState[s] ? 'on' : ''}" id="et-${s}" onclick="toggleEditSection('${s}')"></div>
+      </div>`).join('');
+
+    const modal = document.getElementById('editModal');
+    modal.style.display = 'flex';
+  }
+
+  function toggleEditSection(s) {
+    editState[s] = !editState[s];
+    const el = document.getElementById('et-' + s);
+    if (el) el.classList.toggle('on', editState[s]);
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    editingInviteId = null;
+  }
+
+  async function saveEditedInvite() {
+    if (!editingInviteId) return;
+    const rec = { updated_at: new Date().toISOString() };
+    SECTIONS.forEach(s => rec['access_' + s] = editState[s]);
+    await db.from('shared_access').update(rec).eq('id', editingInviteId);
+    closeEditModal();
     loadSharedAccess(currentUser);
   }
 
