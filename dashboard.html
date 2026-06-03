@@ -712,9 +712,9 @@
       if (sw) sw.className = s && s.switch_on ? 'pi-value' : 'pi-value missing';
       if (sm) { sm.textContent = s && s.master_holder ? s.master_holder : 'Not documented'; sm.className = s && s.master_holder ? 'pi-value' : 'pi-value missing'; }
       if (sl) { sl.textContent = s && s.master_location ? s.master_location : 'Not documented'; sl.className = s && s.master_location ? 'pi-value' : 'pi-value missing'; }
-    });
+    }).catch(()=>{});
 
-    loadSharedAccess(user);
+    try { loadSharedAccess(user); } catch(e) { console.warn('Shared access load failed', e); }
 
     // Show the plan grid and shared sections regardless of assessment
     ['catsCard','topGapsCard','allGapsCard','planGrid','sharedCard','emergencyCard'].forEach(id => {
@@ -725,18 +725,22 @@
     });
 
     // Load all plan sections in parallel and collect their scores
-    const [legalScore, financesScore, insuranceScore, propertyScore,
-           businessScore, digitalScore, billsScore, emergencyScore, kidsScore] = await Promise.all([
-      loadLegalPreview(user),
-      loadFinancesPreview(user),
-      loadInsurancePreview(user),
-      loadPropertyPreview(user),
-      loadBusinessPreview(user),
-      loadDigitalPreview(user),
-      loadBillsPreview(user),
-      loadEmergencyPreview(user),
-      loadKidsPreview(user)
-    ]);
+    let legalScore=0, financesScore=0, insuranceScore=0, propertyScore=0,
+        businessScore=0, digitalScore=0, billsScore=0, emergencyScore=0, kidsScore=0;
+    try {
+      [legalScore, financesScore, insuranceScore, propertyScore,
+       businessScore, digitalScore, billsScore, emergencyScore, kidsScore] = await Promise.all([
+        loadLegalPreview(user),
+        loadFinancesPreview(user),
+        loadInsurancePreview(user),
+        loadPropertyPreview(user),
+        loadBusinessPreview(user),
+        loadDigitalPreview(user),
+        loadBillsPreview(user),
+        loadEmergencyPreview(user),
+        loadKidsPreview(user)
+      ]);
+    } catch(e) { console.error('Score load error:', e); }
 
     // Build plan-based score from section scores
     // Property and Business are optional — only include if user has engaged with them
@@ -1386,8 +1390,7 @@
     status.style.display = 'block'; status.style.color = 'var(--gray)';
     status.textContent = 'Sending invite…';
 
-    // Call Edge Function to send the email
-    const { data: { session } } = await db.auth.getSession();
+    // Call Edge Function to send the email (reuse session from above)
     const fnResponse = await fetch(
       'https://ulabvzjtullhsshtstnt.supabase.co/functions/v1/send-invite',
       {
