@@ -794,8 +794,8 @@
   function rowDone(r, keys) {
     let got = 0, max = keys.length;
     keys.forEach(k => { if (r[k] && ('' + r[k]).trim()) got++; });
-    // Only count file_path if it exists on the row (some tables don't have this column)
-    if (r.file_path !== undefined) { max += 1; if (r.file_path) got++; }
+    // Only add file_path to scoring if a file has actually been uploaded
+    if (r.file_path) { max += 1; got += 1; }
     return got / max;
   }
   function listScore(rows, keys) {
