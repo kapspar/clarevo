@@ -1331,7 +1331,10 @@
   }
 
   async function loadSharedAccess(user) {
-    const { data } = await db.from('shared_access').select('*').eq('owner_id', user.id);
+    const { data } = await db.from('shared_access').select('*')
+      .eq('owner_id', user.id)
+      .in('status', ['pending', 'active'])
+      .order('invited_at', { ascending: false });
     const list = document.getElementById('sharedPeopleList');
     if (!data || data.length === 0) {
       list.innerHTML = '<p style="font-size:13px; color:var(--gray); padding:8px 0;">No one has access yet. Use the form above to invite someone.</p>';
@@ -1350,7 +1353,7 @@
             <div class="ic-name">${inv.invitee_email}</div>
             <div class="ic-meta">${inv.relationship || 'No relationship set'} · ${sections}</div>
           </div>
-          <span class="ic-status ${inv.status}">${inv.status === 'pending' ? 'Invite sent' : inv.status === 'active' ? 'Active' : 'Revoked'}</span>
+          <span class="ic-status ${inv.status}">${inv.status === 'pending' ? 'Invite sent' : 'Active'}</span>
         </div>
         <div class="ic-actions">
           ${inv.status === 'pending' ? `<button class="ic-btn resend" onclick="resendInvite('${inv.id}','${inv.invitee_email}')">Resend invite</button>` : ''}
@@ -1390,29 +1393,39 @@
     status.style.display = 'block'; status.style.color = 'var(--gray)';
     status.textContent = 'Sending invite…';
 
-    // Call Edge Function to send the email (reuse session from above)
-    const fnResponse = await fetch(
-      'https://ulabvzjtullhsshtstnt.supabase.co/functions/v1/send-invite',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + session.access_token,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w'
-        },
-        body: JSON.stringify({ invite_id: data[0].id })
+    // Call Edge Function to send the email
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const fnResponse = await fetch(
+        'https://ulabvzjtullhsshtstnt.supabase.co/functions/v1/send-invite',
+        {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.access_token,
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w'
+          },
+          body: JSON.stringify({ invite_id: data[0].id })
+        }
+      );
+      clearTimeout(timeout);
+      const fnResult = await fnResponse.json();
+      if (fnResult.note) {
+        status.style.color = 'var(--yellow)';
+        status.textContent = '✓ Invite saved. ' + fnResult.note;
+      } else if (fnResult.error) {
+        status.style.color = 'var(--yellow)';
+        status.textContent = '✓ Invite saved — email error: ' + fnResult.error + '. They can still log in to accept.';
+      } else {
+        status.style.color = 'var(--green)';
+        status.textContent = '✓ Invite sent to ' + email + '. They\'ll get an email to log in.';
       }
-    );
-    const fnResult = await fnResponse.json();
-    if (fnResult.note) {
+    } catch(fnErr) {
+      // Edge Function failed but invite is saved — that's still useful
       status.style.color = 'var(--yellow)';
-      status.textContent = '✓ Invite saved. ' + fnResult.note;
-    } else if (fnResult.error) {
-      status.style.color = 'var(--yellow)';
-      status.textContent = '✓ Invite saved — email delivery failed. They can still log in to accept.';
-    } else {
-      status.style.color = 'var(--green)';
-      status.textContent = '✓ Invite sent to ' + email + '. They\'ll get an email with a link to log in.';
+      status.textContent = '✓ Invite saved — email sending failed (' + (fnErr.name === 'AbortError' ? 'timed out' : fnErr.message) + '). They can log in at clarevo.ca to accept.';
     }
     document.getElementById('inviteEmail').value = '';
     document.getElementById('inviteRelationship').value = '';
@@ -1468,8 +1481,8 @@
   }
 
   async function revokeAccess(id) {
-    if (!confirm('Remove this person\'s access?')) return;
-    await db.from('shared_access').update({ status: 'revoked', updated_at: new Date().toISOString() }).eq('id', id);
+    if (!confirm('Remove this person\'s access? They will no longer be able to view your plan.')) return;
+    await db.from('shared_access').delete().eq('id', id);
     loadSharedAccess(currentUser);
   }
 
