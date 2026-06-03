@@ -1389,15 +1389,11 @@
       status.style.display = 'block'; status.style.color = 'var(--red)';
       status.textContent = 'Error: ' + (error.message || error.code || 'Please try again.'); return;
     }
-    // Fetch the newly created invite to get its ID
+    // Fetch the new invite ID
     const { data: newInvite } = await db.from('shared_access')
-      .select('id')
-      .eq('owner_id', uid)
-      .eq('invitee_email', email)
-      .order('invited_at', { ascending: false })
-      .limit(1);
+      .select('id').eq('owner_id', uid).eq('invitee_email', email)
+      .order('invited_at', { ascending: false }).limit(1);
     const inviteId = newInvite && newInvite[0] ? newInvite[0].id : null;
-    console.log('New invite ID:', inviteId);
     status.style.display = 'block'; status.style.color = 'var(--gray)';
     status.textContent = 'Sending invite…';
 
@@ -1415,7 +1411,12 @@
             'Authorization': 'Bearer ' + session.access_token,
             'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w'
           },
-          body: JSON.stringify({ invite_id: inviteId })
+          body: JSON.stringify({
+            invite_id: inviteId,
+            invitee_email: email,
+            owner_name: session.user.user_metadata?.full_name || session.user.email,
+            sections: SECTIONS.filter(s => inviteState[s]).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')
+          })
         }
       );
       clearTimeout(timeout);
