@@ -1370,12 +1370,18 @@
       status.style.display = 'block'; status.style.color = 'var(--red)';
       status.textContent = 'Please select at least one section to share.'; return;
     }
-    const rec = { owner_id: currentUser.id, invitee_email: email, relationship: rel || null, status: 'pending' };
+    // Re-fetch session to ensure we have a fresh token
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+    const uid = session.user.id;
+    const rec = { owner_id: uid, invitee_email: email, relationship: rel || null, status: 'pending' };
     SECTIONS.forEach(s => rec['access_' + s] = inviteState[s]);
-    const { error } = await db.from('shared_access').insert([rec]);
+    console.log('Inserting invite:', JSON.stringify(rec));
+    const { data, error } = await db.from('shared_access').insert([rec]).select();
+    console.log('Result:', data, error);
     if (error) {
       status.style.display = 'block'; status.style.color = 'var(--red)';
-      status.textContent = 'Error saving invite. Please try again.'; return;
+      status.textContent = 'Error: ' + (error.message || error.code || 'Please try again.'); return;
     }
     // Note: actual email sending requires a Supabase Edge Function — flagged for tech build
     status.style.display = 'block'; status.style.color = 'var(--green)';
