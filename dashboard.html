@@ -1383,9 +1383,34 @@
       status.style.display = 'block'; status.style.color = 'var(--red)';
       status.textContent = 'Error: ' + (error.message || error.code || 'Please try again.'); return;
     }
-    // Note: actual email sending requires a Supabase Edge Function — flagged for tech build
-    status.style.display = 'block'; status.style.color = 'var(--green)';
-    status.textContent = '✓ Invite saved. Email sending requires backend setup — invite recorded for now.';
+    status.style.display = 'block'; status.style.color = 'var(--gray)';
+    status.textContent = 'Sending invite…';
+
+    // Call Edge Function to send the email
+    const { data: { session } } = await db.auth.getSession();
+    const fnResponse = await fetch(
+      'https://ulabvzjtullhsshtstnt.supabase.co/functions/v1/send-invite',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w'
+        },
+        body: JSON.stringify({ invite_id: data[0].id })
+      }
+    );
+    const fnResult = await fnResponse.json();
+    if (fnResult.note) {
+      status.style.color = 'var(--yellow)';
+      status.textContent = '✓ Invite saved. ' + fnResult.note;
+    } else if (fnResult.error) {
+      status.style.color = 'var(--yellow)';
+      status.textContent = '✓ Invite saved — email delivery failed. They can still log in to accept.';
+    } else {
+      status.style.color = 'var(--green)';
+      status.textContent = '✓ Invite sent to ' + email + '. They\'ll get an email with a link to log in.';
+    }
     document.getElementById('inviteEmail').value = '';
     document.getElementById('inviteRelationship').value = '';
     selectAllSections(false);
