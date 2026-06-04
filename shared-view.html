@@ -237,9 +237,11 @@
       const def = SECTIONS[sectionKey];
       try {
         const { data, error } = await db.from(def.table).select('*').eq('user_id', invite.owner_id);
+        console.log(sectionKey, 'data:', data, 'error:', error);
         if (error) throw error;
         container.appendChild(await renderSection(sectionKey, data || []));
       } catch(e) {
+        console.error(sectionKey, 'failed:', e.message || e);
         const card = document.createElement('div');
         card.className = 'section-card';
         card.innerHTML = `<div class="section-title">${def.label}</div><p class="empty-section">Unable to load this section.</p>`;
