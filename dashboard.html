@@ -726,13 +726,14 @@
 
     // Check for pending invites or active shared access for this email
     try {
-      const { data: invites } = await db.from('shared_access')
+      const { data: invites, error: inviteErr } = await db.from('shared_access')
         .select('*')
         .eq('invitee_email', currentUser.email)
-        .in('status', ['pending', 'active']);
+        .in('status', ['pending', 'registered', 'active']);
+
+      console.log('Invite check:', currentUser.email, invites, inviteErr);
 
       if (invites && invites.length > 0) {
-        // Link invitee_id and mark as registered if not already
         for (const inv of invites) {
           const updates = {};
           if (!inv.invitee_id) updates.invitee_id = currentUser.id;
@@ -742,8 +743,8 @@
           }
         }
         const hasOwnData = await checkHasOwnData(currentUser.id);
+        console.log('Has own data:', hasOwnData);
         if (!hasOwnData) {
-          // First-time invited user — redirect to shared welcome page
           const allShares = invites.map(i => ({
             ...i,
             status: i.status === 'pending' ? 'registered' : i.status
@@ -752,11 +753,10 @@
           window.location.href = 'shared-welcome.html';
           return;
         }
-        // Existing user with own data — show switcher
         activeShares = invites.filter(i => i.status === 'active' || i.status === 'registered');
         if (activeShares.length > 0) buildPlanSwitcher(activeShares);
       }
-    } catch(e) { console.warn('Shared access check failed', e); }
+    } catch(e) { console.error('Shared access check failed:', e); }
 
     loadUserData(session.user);
   });
