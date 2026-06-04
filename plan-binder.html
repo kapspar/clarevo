@@ -79,6 +79,11 @@ const C = {
   lgray:  [226, 232, 240],
   white:  [255, 255, 255],
   bg:     [248, 249, 251],
+  // Light tints for callout fills (real colors — jsPDF base build ignores alpha)
+  blueLt:  [239, 246, 255],
+  greenLt: [240, 253, 244],
+  redLt:   [254, 242, 242],
+  yellowLt:[254, 252, 232],
 };
 
 // ── LAYOUT CONSTANTS ─────────────────────────────────────
@@ -146,19 +151,56 @@ function drawPageFooter() {
   doc.text('PRIVATE & CONFIDENTIAL', PW / 2, PH - 12, { align: 'center' });
 }
 
-function sectionHeader(title, emoji) {
-  checkY(30);
-  // Blue left bar
-  doc.setFillColor(...C.blue);
-  doc.rect(ML, y, 3, 10, 'F');
+// Full-page section divider: large centered title on its own page.
+// Registers the TOC entry here, then starts content on a fresh page.
+function dividerPage(title, num) {
+  newPage();
+  tocEntries.push({ title: title, page: pageNum, yPos: MT });
+
+  // Centered vertically-ish on the page
+  const cy = PH / 2 - 20;
+
+  // Thin accent rule above
+  doc.setDrawColor(...C.blue);
+  doc.setLineWidth(1.2);
+  doc.line(PW / 2 - 25, cy - 16, PW / 2 + 25, cy - 16);
+
+  // Section number (subtle)
+  if (num) {
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.blue);
+    doc.text('SECTION ' + num, PW / 2, cy - 4, { align: 'center' });
+  }
+
   // Title
-  doc.setFontSize(14);
+  doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...C.dark);
-  doc.text(emoji + ' ' + title, ML + 6, y + 7);
-  y += 14;
-  // Register in TOC
-  tocEntries.push({ title: emoji + ' ' + title, page: pageNum, yPos: y - 14 });
+  doc.text(title, PW / 2, cy + 14, { align: 'center', maxWidth: CW - 20 });
+
+  // Thin accent rule below
+  doc.setDrawColor(...C.lgray);
+  doc.setLineWidth(0.4);
+  doc.line(PW / 2 - 40, cy + 26, PW / 2 + 40, cy + 26);
+
+  // Start content on the next page
+  newPage();
+}
+
+let sectionCounter = 0;
+function sectionHeader(title, emoji) {
+  // emoji arg kept for call-site compatibility but stripped at render
+  sectionCounter++;
+  dividerPage(title, sectionCounter);
+  // Small running header at top of the content page
+  doc.setFillColor(...C.blue);
+  doc.rect(ML, y, 3, 8, 'F');
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text(title, ML + 6, y + 6);
+  y += 12;
 }
 
 function fieldRow(label, value, highlight = false) {
@@ -230,7 +272,12 @@ function calloutBox(text, color = C.blue) {
   const lines = doc.splitTextToSize(text, CW - 10);
   const h = lines.length * 6 + 10;
   checkY(h);
-  doc.setFillColor(color[0], color[1], color[2], 0.08);
+  // Map border color to its light tint (fake alpha fills solid in jsPDF base build)
+  let fill = C.blueLt;
+  if (color === C.green) fill = C.greenLt;
+  else if (color === C.red) fill = C.redLt;
+  else if (color === C.yellow || color === C.amber) fill = C.yellowLt;
+  doc.setFillColor(...fill);
   doc.setDrawColor(...color);
   doc.setLineWidth(0.5);
   doc.roundedRect(ML, y, CW, h, 2, 2, 'FD');
@@ -339,10 +386,25 @@ function drawEmergencyInstructions() {
   doc.text('What to do right now', ML, y);
   y += 10;
 
+  // Pull personalization data (fall back to generic phrasing if absent)
+  const L = planData.legal || {};
+  const execName = L.executor_name && L.executor_name.trim();
+  const execPhone = L.executor_phone && L.executor_phone.trim();
+  const lawName = L.will_lawyer_name && L.will_lawyer_name.trim();
+  const lawPhone = L.will_lawyer_phone && L.will_lawyer_phone.trim();
+
+  const execStep = execName
+    ? `Your first call is to ${execName}, the executor named in the will${execPhone ? ' — ' + execPhone : ''}. They are legally responsible for managing the estate and will guide you through the process. Full details are in the Legal section.`
+    : 'The executor named in the will is your first call. They are legally responsible for managing the estate and will guide you through the process. Their contact is in the Legal section of this binder.';
+
+  const lawyerLine = lawName
+    ? ` If you need a lawyer, ${lawName}${lawPhone ? ' (' + lawPhone + ')' : ''} is named in the Legal section.`
+    : '';
+
   const steps = [
     ['1. Stay calm and safe', 'Make sure everyone in your immediate family is physically safe. If this is a medical emergency, call 911 first.'],
-    ['2. Call the executor', 'The executor named in the will is your first call. They are legally responsible for managing the estate and will guide you through the process. Their contact is in the Legal section of this binder.'],
-    ['3. Do not pay anything yet', 'Do not make any financial commitments, pay any bills, or agree to anything until you have spoken with a lawyer. Some deadlines exist but most are not as urgent as they seem.'],
+    ['2. Call the executor', execStep],
+    ['3. Do not pay anything yet', 'Do not make any financial commitments, pay any bills, or agree to anything until you have spoken with a lawyer. Some deadlines exist but most are not as urgent as they seem.' + lawyerLine],
     ['4. Notify the employer', 'If the deceased was employed, contact their HR department to stop payroll and understand any life insurance or benefits.'],
     ['5. Contact the insurance company', 'Use the script on the next section. Have the policy number ready — it is in the Insurance section of this binder.'],
     ['6. Do not cancel accounts immediately', 'Keep bank accounts and credit cards open for at least 30 days. Automatic payments may still be needed. Review the Bills & Access section first.'],
@@ -394,7 +456,7 @@ function drawEmergencyInstructions() {
     {
       title: 'Calling a lawyer',
       script: '"Hello, I am looking to speak with an estate lawyer. My [RELATIONSHIP] passed away on [DATE] and I need guidance on probating a will and managing the estate. Could someone call me back to discuss availability and fees?"',
-      tips: 'The executor named in the will can hire a lawyer and pay for it from the estate. You do not need to pay personally.'
+      tips: (lawName ? `The will names ${lawName}${lawPhone ? ' (' + lawPhone + ')' : ''} — try them first. ` : '') + 'The executor named in the will can hire a lawyer and pay for it from the estate. You do not need to pay personally.'
     },
   ];
 
@@ -432,7 +494,6 @@ function drawEmergencyInstructions() {
 
 // ── KEY CONTACTS SUMMARY ──────────────────────────────────
 function drawKeyContacts() {
-  newPage();
   sectionHeader('Key Contacts at a Glance', '👥');
   bodyText('The most important people to contact. Full details are in each section.', 9);
   y += 4;
@@ -479,7 +540,6 @@ function drawKeyContacts() {
 
 // ── LEGAL SECTION ─────────────────────────────────────────
 function drawLegal() {
-  newPage();
   sectionHeader('Legal Documents', '📄');
   const l = planData.legal;
   if (!l) { bodyText('No legal documents documented.'); return; }
@@ -520,7 +580,6 @@ function drawLegal() {
 
 // ── INSURANCE SECTION ─────────────────────────────────────
 function drawInsurance() {
-  newPage();
   sectionHeader('Insurance Policies', '🛡️');
   const policies = planData.insurance;
   if (!policies.length) { bodyText('No insurance policies documented.'); return; }
@@ -543,7 +602,6 @@ function drawInsurance() {
 
 // ── FINANCES SECTION ──────────────────────────────────────
 function drawFinances() {
-  newPage();
   sectionHeader('Financial Accounts', '💰');
 
   const accounts = planData.finances;
@@ -601,7 +659,6 @@ function drawFinances() {
 
 // ── BILLS SECTION ─────────────────────────────────────────
 function drawBills() {
-  newPage();
   sectionHeader('Bills & Account Access', '🧾');
   const bills = planData.bills;
   if (!bills.length) { bodyText('No bills documented.'); return; }
@@ -621,7 +678,6 @@ function drawBills() {
 
 // ── PROPERTY SECTION ──────────────────────────────────────
 function drawProperty() {
-  newPage();
   sectionHeader('Property', '🏠');
   const properties = planData.property;
   if (!properties.length) { bodyText('No properties documented.'); return; }
@@ -640,7 +696,6 @@ function drawProperty() {
 
 // ── DIGITAL SECTION ───────────────────────────────────────
 function drawDigital() {
-  newPage();
   sectionHeader('Digital Assets & Devices', '📱');
   const digital = planData.digital;
   if (!digital.length) { bodyText('No digital assets documented.'); return; }
@@ -661,7 +716,6 @@ function drawDigital() {
 
 // ── KIDS SECTION ──────────────────────────────────────────
 function drawKids() {
-  newPage();
   sectionHeader('Kids & Family', '👶');
   const kids = planData.kids;
   if (!kids.length) { bodyText('No kids information documented.'); return; }
@@ -699,7 +753,6 @@ function drawKids() {
 
 // ── BUSINESS SECTION ──────────────────────────────────────
 function drawBusiness() {
-  newPage();
   sectionHeader('Business Interests', '💼');
   const businesses = planData.business;
   if (!businesses.length) { bodyText('No business information documented.'); return; }
@@ -782,6 +835,137 @@ async function fetchAllData(userId) {
   };
 }
 
+// ── ATTACHMENTS ───────────────────────────────────────────
+// Collect every uploaded file across legal + list sections.
+function gatherAttachments() {
+  const out = [];
+  const L = planData.legal || {};
+  if (L.will_file_path) out.push({ label: 'Will', path: L.will_file_path });
+  if (L.poa_property_file_path) out.push({ label: 'Power of Attorney — Property', path: L.poa_property_file_path });
+  if (L.poa_care_file_path) out.push({ label: 'Power of Attorney — Personal Care', path: L.poa_care_file_path });
+
+  const listSections = [
+    ['Insurance', planData.insurance],
+    ['Finances', planData.finances],
+    ['Property', planData.property],
+    ['Business', planData.business],
+    ['Bills', planData.bills],
+    ['Digital', planData.digital],
+    ['Kids & Family', planData.kids],
+  ];
+  listSections.forEach(([name, rows]) => {
+    (rows || []).forEach(r => {
+      if (r.file_path) {
+        // Try to find a human label from common name fields on the row
+        const nm = r.name || r.label || r.institution || r.insurer || r.provider || r.business_name || r.type || '';
+        out.push({ label: name + (nm ? ' — ' + nm : ''), path: r.file_path });
+      }
+    });
+  });
+  return out;
+}
+
+// Download a stored file via signed URL → { dataUrl, mime, bytes } or null.
+async function fetchFile(path) {
+  try {
+    const { data, error } = await db.storage.from('documents').createSignedUrl(path, 120);
+    if (error || !data?.signedUrl) return null;
+    const resp = await fetch(data.signedUrl);
+    if (!resp.ok) return null;
+    const blob = await resp.blob();
+    const dataUrl = await new Promise((res, rej) => {
+      const fr = new FileReader();
+      fr.onload = () => res(fr.result);
+      fr.onerror = rej;
+      fr.readAsDataURL(blob);
+    });
+    return { dataUrl, mime: blob.type || '', size: blob.size };
+  } catch (e) {
+    console.warn('Attachment fetch failed for', path, e);
+    return null;
+  }
+}
+
+function fileExt(path) {
+  const m = String(path).toLowerCase().match(/\.([a-z0-9]+)(?:\?|$)/);
+  return m ? m[1] : '';
+}
+
+async function drawAttachments() {
+  const items = gatherAttachments();
+  if (!items.length) return;
+
+  dividerPage('Attachments', ++sectionCounter);
+
+  // Intro on the content page
+  bodyText('Copies of your uploaded documents follow. Image files are embedded directly. PDF documents are listed here as references — keep the original files with this binder.', 9);
+  y += 2;
+
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    setProgress(95, `Embedding attachment ${i + 1} of ${items.length}…`);
+    const ext = fileExt(it.path);
+    const file = await fetchFile(it.path);
+
+    // Each attachment gets its own page for clarity
+    newPage();
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.dark);
+    doc.text(it.label, ML, y);
+    y += 8;
+    doc.setDrawColor(...C.lgray);
+    doc.setLineWidth(0.3);
+    doc.line(ML, y, PW - MR, y);
+    y += 8;
+
+    const isImage = ext === 'jpg' || ext === 'jpeg' || ext === 'png' ||
+                    (file && /^image\//.test(file.mime));
+
+    if (file && isImage) {
+      try {
+        // Fit image within content area, preserving aspect ratio
+        const props = doc.getImageProperties(file.dataUrl);
+        const maxW = CW;
+        const maxH = PH - y - 28;
+        let w = props.width, h = props.height;
+        const scale = Math.min(maxW / w, maxH / h);
+        w = w * scale; h = h * scale;
+        const fmt = (props.fileType || ext).toUpperCase().includes('PNG') ? 'PNG' : 'JPEG';
+        doc.addImage(file.dataUrl, fmt, ML + (CW - w) / 2, y, w, h);
+        y += h + 4;
+      } catch (e) {
+        console.warn('addImage failed', e);
+        attachmentRef(it, ext, 'Could not embed this image — keep the original file with the binder.');
+      }
+    } else {
+      // PDF or unknown → reference note (jsPDF can't embed PDF pages)
+      attachmentRef(it, ext,
+        ext === 'pdf'
+          ? 'This is a PDF document and is stored in your Clarevo account. Keep the original file with this binder.'
+          : 'This document is stored in your Clarevo account. Keep the original file with this binder.');
+    }
+  }
+}
+
+function attachmentRef(it, ext, note) {
+  doc.setFillColor(...C.blueLt);
+  doc.setDrawColor(...C.blue);
+  doc.setLineWidth(0.5);
+  const lines = doc.splitTextToSize(note, CW - 10);
+  const h = lines.length * 6 + 22;
+  doc.roundedRect(ML, y, CW, h, 2, 2, 'FD');
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text((ext ? ext.toUpperCase() + ' document' : 'Document'), ML + 5, y + 9);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.gray);
+  doc.text(lines, ML + 5, y + 16);
+  y += h + 5;
+}
+
 // ── MAIN GENERATE FUNCTION ────────────────────────────────
 async function generateBinder() {
   const btn = document.getElementById('generateBtn');
@@ -814,6 +998,7 @@ async function generateBinder() {
       return _rawText(clean, x, yy, opts);
     };
     tocEntries = [];
+    sectionCounter = 0;
 
     // Draw cover
     setProgress(40, 'Creating cover page…');
@@ -850,6 +1035,10 @@ async function generateBinder() {
 
     setProgress(92, 'Adding business…');
     drawBusiness();
+
+    // Attachments (async — fetches files from storage)
+    setProgress(94, 'Embedding attachments…');
+    await drawAttachments();
 
     // Draw TOC on page 2
     setProgress(95, 'Building table of contents…');
