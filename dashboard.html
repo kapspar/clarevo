@@ -419,7 +419,7 @@
   <div class="topbar">
     <h1 id="pageTitle">Overview</h1>
     <div class="topbar-right">
-      <a href="plan-binder.html" style="background:var(--blue);color:white;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">📥 Download Binder</a>
+      <a href="plan-binder.html" id="binderBtn" style="background:var(--blue);color:white;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">📥 Download Binder</a>
     </div>
   </div>
 
@@ -1740,6 +1740,9 @@
     // Only show shared plans bar on Overview
     const bar = document.getElementById('sharedPlansBar');
     if (bar) bar.style.display = (tab === 'overview' && bar.dataset.hasShares === 'true') ? 'flex' : 'none';
+    // Only show Download Binder button on Overview
+    const binderBtn = document.getElementById('binderBtn');
+    if (binderBtn) binderBtn.style.display = (tab === 'overview') ? 'inline-block' : 'none';
     closeSidebar();
   }
 

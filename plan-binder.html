@@ -269,8 +269,9 @@ function bodyText(text, size = 10) {
 }
 
 function calloutBox(text, color = C.blue) {
-  const lines = doc.splitTextToSize(text, CW - 10);
-  const h = lines.length * 6 + 10;
+  const padX = 7, padTop = 9, padBot = 7, lineH = 5.5;
+  const lines = doc.splitTextToSize(text, CW - padX * 2);
+  const h = lines.length * lineH + padTop + padBot;
   checkY(h);
   // Map border color to its light tint (fake alpha fills solid in jsPDF base build)
   let fill = C.blueLt;
@@ -280,12 +281,12 @@ function calloutBox(text, color = C.blue) {
   doc.setFillColor(...fill);
   doc.setDrawColor(...color);
   doc.setLineWidth(0.5);
-  doc.roundedRect(ML, y, CW, h, 2, 2, 'FD');
+  doc.roundedRect(ML, y, CW, h, 2.5, 2.5, 'FD');
   doc.setFontSize(9.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...C.dark);
-  doc.text(lines, ML + 5, y + 7);
-  y += h + 5;
+  doc.text(lines, ML + padX, y + padTop, { lineHeightFactor: 1.35 });
+  y += h + 6;
 }
 
 // ── COVER PAGE ────────────────────────────────────────────
@@ -469,17 +470,18 @@ function drawEmergencyInstructions() {
     y += 8;
 
     // Script box
-    doc.setFillColor(240, 253, 244);
+    doc.setFillColor(...C.greenLt);
     doc.setDrawColor(...C.green);
     doc.setLineWidth(0.5);
-    const scriptLines = doc.splitTextToSize(s.script, CW - 10);
-    const scriptH = scriptLines.length * 5.5 + 10;
-    doc.roundedRect(ML, y, CW, scriptH, 2, 2, 'FD');
+    const sPadX = 7, sPadTop = 8, sPadBot = 7, sLineH = 5.5;
+    const scriptLines = doc.splitTextToSize(s.script, CW - sPadX * 2);
+    const scriptH = scriptLines.length * sLineH + sPadTop + sPadBot;
+    doc.roundedRect(ML, y, CW, scriptH, 2.5, 2.5, 'FD');
     doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(20, 80, 40);
-    doc.text(scriptLines, ML + 5, y + 7);
-    y += scriptH + 4;
+    doc.text(scriptLines, ML + sPadX, y + sPadTop, { lineHeightFactor: 1.4 });
+    y += scriptH + 5;
 
     // Tip
     const tipLines = doc.splitTextToSize('Tip: ' + s.tips, CW);
@@ -539,7 +541,7 @@ function drawKeyContacts() {
 }
 
 // ── LEGAL SECTION ─────────────────────────────────────────
-function drawLegal() {
+async function drawLegal() {
   sectionHeader('Legal Documents', '📄');
   const l = planData.legal;
   if (!l) { bodyText('No legal documents documented.'); return; }
@@ -576,10 +578,12 @@ function drawLegal() {
     ['Storage location', l.doc_storage_location],
     ['Notes', l.doc_storage_notes],
   ]);
+
+  await drawSectionAttachments(legalFiles());
 }
 
 // ── INSURANCE SECTION ─────────────────────────────────────
-function drawInsurance() {
+async function drawInsurance() {
   sectionHeader('Insurance Policies', '🛡️');
   const policies = planData.insurance;
   if (!policies.length) { bodyText('No insurance policies documented.'); return; }
@@ -598,10 +602,12 @@ function drawInsurance() {
 
   y += 4;
   calloutBox('When making a claim: have the policy number ready, ask for a claim reference number, request all communications in writing, and do not accept a verbal denial.', C.blue);
+
+  await drawSectionAttachments(sectionFiles(policies, ['insurer', 'kind', 'policy_number']));
 }
 
 // ── FINANCES SECTION ──────────────────────────────────────
-function drawFinances() {
+async function drawFinances() {
   sectionHeader('Financial Accounts', '💰');
 
   const accounts = planData.finances;
@@ -655,10 +661,12 @@ function drawFinances() {
       ]);
     });
   }
+
+  await drawSectionAttachments(sectionFiles(accounts, ['institution', 'account_type']));
 }
 
 // ── BILLS SECTION ─────────────────────────────────────────
-function drawBills() {
+async function drawBills() {
   sectionHeader('Bills & Account Access', '🧾');
   const bills = planData.bills;
   if (!bills.length) { bodyText('No bills documented.'); return; }
@@ -674,10 +682,12 @@ function drawBills() {
     ]);
     passwordBox('Account password (handwrite only)');
   });
+
+  await drawSectionAttachments(sectionFiles(bills, ['name', 'provider']));
 }
 
 // ── PROPERTY SECTION ──────────────────────────────────────
-function drawProperty() {
+async function drawProperty() {
   sectionHeader('Property', '🏠');
   const properties = planData.property;
   if (!properties.length) { bodyText('No properties documented.'); return; }
@@ -692,15 +702,19 @@ function drawProperty() {
       ['Notes', p.notes],
     ]);
   });
+
+  await drawSectionAttachments(sectionFiles(properties, ['address', 'kind']));
 }
 
 // ── DIGITAL SECTION ───────────────────────────────────────
-function drawDigital() {
+async function drawDigital() {
   sectionHeader('Digital Assets & Devices', '📱');
   const digital = planData.digital;
   if (!digital.length) { bodyText('No digital assets documented.'); return; }
 
   calloutBox('Apple ID and Google accounts may have Legacy Contact or Inactive Account Manager set up — check with Apple/Google support for access.', C.blue);
+
+  calloutBox('Two-factor authentication (2FA): many accounts send a security code to a phone or authenticator app. Do NOT cancel the deceased\'s mobile phone line until accounts are settled — doing so can permanently lock you out. If backup or recovery codes were saved, they bypass the device entirely.', C.red);
 
   digital.forEach(d => {
     entryBlock(d.label || d.kind || 'Account', [
@@ -711,11 +725,14 @@ function drawDigital() {
       ['Notes', d.notes],
     ]);
     passwordBox('Password / PIN (handwrite only)');
+    passwordBox('2FA backup / recovery codes (handwrite only)');
   });
+
+  await drawSectionAttachments(sectionFiles(digital, ['label', 'kind']));
 }
 
 // ── KIDS SECTION ──────────────────────────────────────────
-function drawKids() {
+async function drawKids() {
   sectionHeader('Kids & Family', '👶');
   const kids = planData.kids;
   if (!kids.length) { bodyText('No kids information documented.'); return; }
@@ -749,10 +766,12 @@ function drawKids() {
       ['Family doctor', m.family_doctor],
     ]));
   }
+
+  await drawSectionAttachments(sectionFiles(kids, ['name', 'kind']));
 }
 
 // ── BUSINESS SECTION ──────────────────────────────────────
-function drawBusiness() {
+async function drawBusiness() {
   sectionHeader('Business Interests', '💼');
   const businesses = planData.business;
   if (!businesses.length) { bodyText('No business information documented.'); return; }
@@ -768,6 +787,8 @@ function drawBusiness() {
       ['Notes', b.notes],
     ]);
   });
+
+  await drawSectionAttachments(sectionFiles(businesses, ['name', 'role']));
 }
 
 // ── TABLE OF CONTENTS ─────────────────────────────────────
@@ -818,8 +839,21 @@ async function fetchAllData(userId) {
     db.from('kids_items').select('*').eq('user_id', userId),
   ]);
 
+  // System/non-content fields that don't count as "real data"
+  const SYS_FIELDS = ['id', 'user_id', 'created_at', 'updated_at', 'file_path', 'kind'];
+  const hasRealData = r => Object.entries(r).some(([k, v]) => {
+    if (SYS_FIELDS.includes(k)) return false;
+    if (v === null || v === undefined) return false;
+    if (typeof v === 'boolean') return false;            // a lone Yes/No isn't a real entry
+    const s = String(v).trim();
+    return s.length > 0 && s !== '__na__';
+  });
+
+  // Drop __na__ sentinel rows AND rows with no meaningful content.
+  // Keep a row if it has an attachment even when fields are otherwise empty.
   const filterNA = arr => (arr.data || []).filter(r =>
-    !Object.values(r).some(v => ['__na__'].includes(v))
+    !Object.values(r).some(v => v === '__na__') &&
+    (hasRealData(r) || !!r.file_path)
   );
 
   return {
@@ -835,37 +869,31 @@ async function fetchAllData(userId) {
   };
 }
 
-// ── ATTACHMENTS ───────────────────────────────────────────
-// Collect every uploaded file across legal + list sections.
-function gatherAttachments() {
+// ── ATTACHMENTS (rendered per-section) ────────────────────
+// Collect files for a single list-based section (each row may have file_path).
+function sectionFiles(rows, nameFields) {
   const out = [];
-  const L = planData.legal || {};
-  if (L.will_file_path) out.push({ label: 'Will', path: L.will_file_path });
-  if (L.poa_property_file_path) out.push({ label: 'Power of Attorney — Property', path: L.poa_property_file_path });
-  if (L.poa_care_file_path) out.push({ label: 'Power of Attorney — Personal Care', path: L.poa_care_file_path });
-
-  const listSections = [
-    ['Insurance', planData.insurance],
-    ['Finances', planData.finances],
-    ['Property', planData.property],
-    ['Business', planData.business],
-    ['Bills', planData.bills],
-    ['Digital', planData.digital],
-    ['Kids & Family', planData.kids],
-  ];
-  listSections.forEach(([name, rows]) => {
-    (rows || []).forEach(r => {
-      if (r.file_path) {
-        // Try to find a human label from common name fields on the row
-        const nm = r.name || r.label || r.institution || r.insurer || r.provider || r.business_name || r.type || '';
-        out.push({ label: name + (nm ? ' — ' + nm : ''), path: r.file_path });
-      }
-    });
+  (rows || []).forEach(r => {
+    if (r.file_path) {
+      let nm = '';
+      for (const f of (nameFields || [])) { if (r[f]) { nm = r[f]; break; } }
+      out.push({ label: nm || 'Document', path: r.file_path });
+    }
   });
   return out;
 }
 
-// Download a stored file via signed URL → { dataUrl, mime, bytes } or null.
+// Collect files for the legal section (named slots).
+function legalFiles() {
+  const L = planData.legal || {};
+  const out = [];
+  if (L.will_file_path) out.push({ label: 'Will', path: L.will_file_path });
+  if (L.poa_property_file_path) out.push({ label: 'Power of Attorney — Property', path: L.poa_property_file_path });
+  if (L.poa_care_file_path) out.push({ label: 'Power of Attorney — Personal Care', path: L.poa_care_file_path });
+  return out;
+}
+
+// Download a stored file via signed URL → { dataUrl, mime, size } or null.
 async function fetchFile(path) {
   try {
     const { data, error } = await db.storage.from('documents').createSignedUrl(path, 120);
@@ -891,40 +919,44 @@ function fileExt(path) {
   return m ? m[1] : '';
 }
 
-async function drawAttachments() {
-  const items = gatherAttachments();
-  if (!items.length) return;
+// Render a set of attachments for the CURRENT section, inline after its content.
+// Each image attachment gets its own page; PDFs get a reference card.
+async function drawSectionAttachments(items, sectionLabel) {
+  if (!items || !items.length) return;
 
-  dividerPage('Attachments', ++sectionCounter);
-
-  // Intro on the content page
-  bodyText('Copies of your uploaded documents follow. Image files are embedded directly. PDF documents are listed here as references — keep the original files with this binder.', 9);
+  // Sub-heading introducing the attachments for this section
+  checkY(20);
   y += 2;
+  doc.setDrawColor(...C.lgray);
+  doc.setLineWidth(0.3);
+  doc.line(ML, y, PW - MR, y);
+  y += 7;
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text('Attached documents', ML, y);
+  y += 8;
 
   for (let i = 0; i < items.length; i++) {
     const it = items[i];
-    setProgress(95, `Embedding attachment ${i + 1} of ${items.length}…`);
     const ext = fileExt(it.path);
     const file = await fetchFile(it.path);
-
-    // Each attachment gets its own page for clarity
-    newPage();
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...C.dark);
-    doc.text(it.label, ML, y);
-    y += 8;
-    doc.setDrawColor(...C.lgray);
-    doc.setLineWidth(0.3);
-    doc.line(ML, y, PW - MR, y);
-    y += 8;
-
     const isImage = ext === 'jpg' || ext === 'jpeg' || ext === 'png' ||
                     (file && /^image\//.test(file.mime));
 
     if (file && isImage) {
+      // Image gets its own page so it can be as large as possible
+      newPage();
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...C.dark);
+      doc.text(it.label, ML, y);
+      y += 6;
+      doc.setDrawColor(...C.lgray);
+      doc.setLineWidth(0.3);
+      doc.line(ML, y, PW - MR, y);
+      y += 6;
       try {
-        // Fit image within content area, preserving aspect ratio
         const props = doc.getImageProperties(file.dataUrl);
         const maxW = CW;
         const maxH = PH - y - 28;
@@ -936,33 +968,40 @@ async function drawAttachments() {
         y += h + 4;
       } catch (e) {
         console.warn('addImage failed', e);
-        attachmentRef(it, ext, 'Could not embed this image — keep the original file with the binder.');
+        attachmentRef(it, ext, 'Could not embed this image. Keep the original file with this binder.');
       }
     } else {
-      // PDF or unknown → reference note (jsPDF can't embed PDF pages)
+      // PDF or unknown → reference card (jsPDF cannot embed PDF pages)
+      checkY(40);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...C.dark);
+      doc.text(it.label, ML, y);
+      y += 6;
       attachmentRef(it, ext,
         ext === 'pdf'
-          ? 'This is a PDF document and is stored in your Clarevo account. Keep the original file with this binder.'
-          : 'This document is stored in your Clarevo account. Keep the original file with this binder.');
+          ? 'PDF stored in your Clarevo account. Keep the original file with this binder.'
+          : 'Stored in your Clarevo account. Keep the original file with this binder.');
     }
   }
 }
 
 function attachmentRef(it, ext, note) {
+  const padX = 7;
   doc.setFillColor(...C.blueLt);
   doc.setDrawColor(...C.blue);
   doc.setLineWidth(0.5);
-  const lines = doc.splitTextToSize(note, CW - 10);
-  const h = lines.length * 6 + 22;
-  doc.roundedRect(ML, y, CW, h, 2, 2, 'FD');
+  const lines = doc.splitTextToSize(note, CW - padX * 2);
+  const h = lines.length * 5.5 + 24;
+  doc.roundedRect(ML, y, CW, h, 2.5, 2.5, 'FD');
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...C.dark);
-  doc.text((ext ? ext.toUpperCase() + ' document' : 'Document'), ML + 5, y + 9);
+  doc.text((ext ? ext.toUpperCase() + ' document' : 'Document'), ML + padX, y + 10);
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...C.gray);
-  doc.text(lines, ML + 5, y + 16);
+  doc.text(lines, ML + padX, y + 17, { lineHeightFactor: 1.35 });
   y += h + 5;
 }
 
@@ -1008,37 +1047,33 @@ async function generateBinder() {
     setProgress(50, 'Writing emergency instructions…');
     drawEmergencyInstructions();
 
-    // Draw all sections
+    // Draw all sections (each now embeds its own attachments inline)
     setProgress(60, 'Adding key contacts…');
     drawKeyContacts();
 
     setProgress(65, 'Adding legal documents…');
-    drawLegal();
+    await drawLegal();
 
     setProgress(70, 'Adding insurance…');
-    drawInsurance();
+    await drawInsurance();
 
     setProgress(75, 'Adding finances…');
-    drawFinances();
+    await drawFinances();
 
     setProgress(80, 'Adding bills & access…');
-    drawBills();
+    await drawBills();
 
     setProgress(83, 'Adding property…');
-    drawProperty();
+    await drawProperty();
 
     setProgress(86, 'Adding digital assets…');
-    drawDigital();
+    await drawDigital();
 
     setProgress(89, 'Adding kids & family…');
-    drawKids();
+    await drawKids();
 
     setProgress(92, 'Adding business…');
-    drawBusiness();
-
-    // Attachments (async — fetches files from storage)
-    setProgress(94, 'Embedding attachments…');
-    await drawAttachments();
+    await drawBusiness();
 
     // Draw TOC on page 2
     setProgress(95, 'Building table of contents…');
