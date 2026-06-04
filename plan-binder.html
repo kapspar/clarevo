@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — Download My Binder</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--bg); min-height: 100vh; }
+    .wrap { max-width: 680px; margin: 0 auto; padding: 60px 24px 80px; }
+    .back-link { font-size:13px; color:var(--blue); text-decoration:none; display:inline-flex; align-items:center; gap:6px; margin-bottom:32px; }
+    .binder-card { background:white; border-radius:20px; padding:40px; box-shadow:0 4px 24px rgba(0,0,0,0.06); }
+    .binder-icon { font-size:48px; margin-bottom:16px; }
+    .binder-title { font-size:26px; font-weight:800; color:var(--dark); margin-bottom:8px; letter-spacing:-0.3px; }
+    .binder-sub { font-size:15px; color:var(--gray); line-height:1.6; margin-bottom:28px; }
+    .binder-includes { background:var(--bg); border-radius:12px; padding:20px 24px; margin-bottom:28px; }
+    .binder-includes h3 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--gray); margin-bottom:12px; }
+    .include-item { display:flex; align-items:center; gap:10px; font-size:14px; color:var(--dark); padding:5px 0; }
+    .include-check { color:var(--green); font-weight:700; }
+    .generate-btn { width:100%; background:var(--blue); color:white; border:none; padding:16px; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; font-family:var(--font); margin-bottom:12px; }
+    .generate-btn:hover { background:#2563eb; }
+    .generate-btn:disabled { background:#94a3b8; cursor:not-allowed; }
+    .progress-area { display:none; margin-top:20px; }
+    .progress-bar-bg { background:#e2e8f0; border-radius:8px; height:8px; margin-bottom:8px; }
+    .progress-bar-fill { background:var(--blue); height:8px; border-radius:8px; transition:width 0.3s; width:0%; }
+    .progress-label { font-size:13px; color:var(--gray); text-align:center; }
+    .pro-note { font-size:12px; color:var(--gray); text-align:center; line-height:1.5; }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+  <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+
+  <div class="binder-card">
+    <div class="binder-icon">📋</div>
+    <div class="binder-title">Your Family Emergency Binder</div>
+    <div class="binder-sub">A complete, printable PDF of your family's financial plan — everything your loved ones need in a crisis, in one document.</div>
+
+    <div class="binder-includes">
+      <h3>What's included</h3>
+      <div class="include-item"><span class="include-check">✓</span> Emergency instructions & call scripts</div>
+      <div class="include-item"><span class="include-check">✓</span> Table of contents with page links</div>
+      <div class="include-item"><span class="include-check">✓</span> All plan sections with your data</div>
+      <div class="include-item"><span class="include-check">✓</span> Uploaded documents (will, POAs) embedded</div>
+      <div class="include-item"><span class="include-check">✓</span> Password fields for handwriting</div>
+      <div class="include-item"><span class="include-check">✓</span> Clarevo branding on every page</div>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generateBinder()">
+      📥 Generate & Download My Binder
+    </button>
+
+    <div class="progress-area" id="progressArea">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">Loading your plan data…</div>
+    </div>
+
+    <p class="pro-note" id="proNote">Clarevo Pro feature — unlimited downloads, always up to date.</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── COLOURS ──────────────────────────────────────────────
+const C = {
+  dark:   [26, 26, 46],
+  blue:   [59, 130, 246],
+  green:  [34, 197, 94],
+  red:    [239, 68, 68],
+  gray:   [100, 116, 139],
+  lgray:  [226, 232, 240],
+  white:  [255, 255, 255],
+  bg:     [248, 249, 251],
+};
+
+// ── LAYOUT CONSTANTS ─────────────────────────────────────
+const PW = 215.9; // Letter width mm
+const PH = 279.4; // Letter height mm
+const ML = 20;    // Margin left
+const MR = 20;    // Margin right
+const MT = 20;    // Margin top
+const CW = PW - ML - MR; // Content width
+
+let doc, y, pageNum, tocEntries, uid, userName, planData;
+
+function setProgress(pct, label) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = label;
+}
+
+// ── PAGE HELPERS ─────────────────────────────────────────
+function newPage() {
+  doc.addPage();
+  pageNum++;
+  y = MT;
+  drawPageFooter();
+}
+
+function checkY(needed = 20) {
+  if (y + needed > PH - 25) newPage();
+}
+
+function drawPageFooter() {
+  // Footer line
+  doc.setDrawColor(...C.lgray);
+  doc.setLineWidth(0.3);
+  doc.line(ML, PH - 18, PW - MR, PH - 18);
+  // Logo text
+  doc.setFontSize(8);
+  doc.setTextColor(...C.dark);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Clar', ML, PH - 12);
+  const clarW = doc.getTextWidth('Clar');
+  doc.setTextColor(...C.blue);
+  doc.text('evo', ML + clarW, PH - 12);
+  // Page number
+  doc.setTextColor(...C.gray);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Page ' + pageNum, PW - MR, PH - 12, { align: 'right' });
+  // Confidential
+  doc.text('PRIVATE & CONFIDENTIAL', PW / 2, PH - 12, { align: 'center' });
+}
+
+function sectionHeader(title, emoji) {
+  checkY(30);
+  // Blue left bar
+  doc.setFillColor(...C.blue);
+  doc.rect(ML, y, 3, 10, 'F');
+  // Title
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text(emoji + ' ' + title, ML + 6, y + 7);
+  y += 14;
+  // Register in TOC
+  tocEntries.push({ title: emoji + ' ' + title, page: pageNum, yPos: y - 14 });
+}
+
+function fieldRow(label, value, highlight = false) {
+  checkY(10);
+  if (highlight) {
+    doc.setFillColor(...C.bg);
+    doc.rect(ML, y - 1, CW, 9, 'F');
+  }
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.gray);
+  doc.text(label.toUpperCase(), ML + 2, y + 5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.dark);
+  const val = value || '—';
+  const lines = doc.splitTextToSize(val, CW * 0.55);
+  doc.text(lines, ML + CW * 0.42, y + 5);
+  y += Math.max(9, lines.length * 5.5);
+}
+
+function entryBlock(title, fields) {
+  checkY(15 + fields.length * 9);
+  // Entry title bar
+  doc.setFillColor(...C.bg);
+  doc.rect(ML, y, CW, 9, 'F');
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text(title, ML + 3, y + 6);
+  y += 11;
+  fields.forEach(([label, value], i) => fieldRow(label, value, i % 2 === 0));
+  y += 4;
+}
+
+function passwordBox(label = 'Password (handwrite only — do not type)') {
+  checkY(20);
+  doc.setDrawColor(...C.lgray);
+  doc.setLineWidth(0.5);
+  doc.rect(ML, y, CW, 14, 'S');
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'italic');
+  doc.setTextColor(...C.gray);
+  doc.text(label, ML + 3, y + 5);
+  // Writing lines
+  doc.setLineWidth(0.2);
+  doc.line(ML + 3, y + 10, ML + CW - 3, y + 10);
+  y += 18;
+}
+
+function divider() {
+  checkY(8);
+  doc.setDrawColor(...C.lgray);
+  doc.setLineWidth(0.3);
+  doc.line(ML, y, PW - MR, y);
+  y += 6;
+}
+
+function bodyText(text, size = 10) {
+  checkY(12);
+  doc.setFontSize(size);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.dark);
+  const lines = doc.splitTextToSize(text, CW);
+  doc.text(lines, ML, y);
+  y += lines.length * (size * 0.45) + 3;
+}
+
+function calloutBox(text, color = C.blue) {
+  const lines = doc.splitTextToSize(text, CW - 10);
+  const h = lines.length * 6 + 10;
+  checkY(h);
+  doc.setFillColor(color[0], color[1], color[2], 0.08);
+  doc.setDrawColor(...color);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(ML, y, CW, h, 2, 2, 'FD');
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.dark);
+  doc.text(lines, ML + 5, y + 7);
+  y += h + 5;
+}
+
+// ── COVER PAGE ────────────────────────────────────────────
+function drawCover() {
+  pageNum = 1;
+  y = 0;
+  drawPageFooter();
+
+  // Dark header band
+  doc.setFillColor(...C.dark);
+  doc.rect(0, 0, PW, 80, 'F');
+
+  // Logo
+  doc.setFontSize(32);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.white);
+  doc.text('Clar', PW / 2 - doc.getTextWidth('Clar') / 2 - doc.getTextWidth('evo') / 2, 42);
+  const clarW = doc.getTextWidth('Clar');
+  doc.setTextColor(...C.blue);
+  doc.text('evo', PW / 2 - doc.getTextWidth('Clar') / 2 - doc.getTextWidth('evo') / 2 + clarW, 42);
+
+  // Tagline
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(180, 180, 200);
+  doc.text('Clarity before crisis', PW / 2, 54, { align: 'center' });
+
+  // Title
+  y = 100;
+  doc.setFontSize(22);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text('Family Emergency Binder', PW / 2, y, { align: 'center' });
+  y += 12;
+
+  // Name
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.blue);
+  doc.text(userName || 'My Family', PW / 2, y, { align: 'center' });
+  y += 20;
+
+  // Date
+  doc.setFontSize(10);
+  doc.setTextColor(...C.gray);
+  doc.text('Generated ' + new Date().toLocaleDateString('en-CA', { year:'numeric', month:'long', day:'numeric' }), PW / 2, y, { align: 'center' });
+  y += 30;
+
+  // Confidentiality box
+  doc.setFillColor(...C.bg);
+  doc.roundedRect(ML + 20, y, CW - 40, 40, 3, 3, 'F');
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text('CONFIDENTIAL', PW / 2, y + 10, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...C.gray);
+  const confText = 'This document contains sensitive personal and financial information. Store securely — in a fireproof safe or with your lawyer. Do not leave unsecured.';
+  const confLines = doc.splitTextToSize(confText, CW - 60);
+  doc.text(confLines, PW / 2, y + 18, { align: 'center' });
+  y += 55;
+
+  // Instructions summary
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text('Copies of this binder are stored:', ML, y);
+  y += 8;
+  ['With our lawyer', 'In the home safe', 'With our executor'].forEach(loc => {
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...C.gray);
+    doc.text('□  ' + loc, ML + 5, y);
+    y += 7;
+  });
+}
+
+// ── EMERGENCY PAGE ────────────────────────────────────────
+function drawEmergencyInstructions() {
+  newPage();
+  tocEntries.push({ title: '🚨 Emergency Instructions', page: pageNum, yPos: MT });
+
+  // Red header
+  doc.setFillColor(...C.red);
+  doc.rect(0, 0, PW, 24, 'F');
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.white);
+  doc.text('🚨  IN CASE OF EMERGENCY — READ THIS FIRST', PW / 2, 15, { align: 'center' });
+  y = 34;
+
+  calloutBox("You're reading this because something has happened. Take a breath. Everything your family needs is documented in this binder. You don't need to figure this out alone — the people and numbers below are here to help you.", C.blue);
+
+  // Step by step
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text('What to do right now', ML, y);
+  y += 10;
+
+  const steps = [
+    ['1. Stay calm and safe', 'Make sure everyone in your immediate family is physically safe. If this is a medical emergency, call 911 first.'],
+    ['2. Call the executor', 'The executor named in the will is your first call. They are legally responsible for managing the estate and will guide you through the process. Their contact is in the Legal section of this binder.'],
+    ['3. Do not pay anything yet', 'Do not make any financial commitments, pay any bills, or agree to anything until you have spoken with a lawyer. Some deadlines exist but most are not as urgent as they seem.'],
+    ['4. Notify the employer', 'If the deceased was employed, contact their HR department to stop payroll and understand any life insurance or benefits.'],
+    ['5. Contact the insurance company', 'Use the script on the next section. Have the policy number ready — it is in the Insurance section of this binder.'],
+    ['6. Do not cancel accounts immediately', 'Keep bank accounts and credit cards open for at least 30 days. Automatic payments may still be needed. Review the Bills & Access section first.'],
+  ];
+
+  steps.forEach(([title, detail]) => {
+    checkY(24);
+    doc.setFillColor(...C.bg);
+    doc.rect(ML, y, CW, 5, 'F');
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.dark);
+    doc.text(title, ML + 3, y + 4);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...C.gray);
+    const lines = doc.splitTextToSize(detail, CW - 6);
+    doc.text(lines, ML + 3, y);
+    y += lines.length * 5 + 5;
+  });
+
+  // Call scripts
+  newPage();
+  tocEntries.push({ title: '📞 Call Scripts', page: pageNum, yPos: MT });
+
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text('📞 What to say when you call', ML, y);
+  y += 14;
+
+  const scripts = [
+    {
+      title: 'Calling the insurance company',
+      script: '"Hello, my name is [YOUR NAME]. I am calling to report the passing of [DECEASED NAME] on [DATE]. The policy number is [POLICY NUMBER — see Insurance section]. I would like to understand the next steps for making a claim and what documents I will need to provide. Could you please confirm who I should be speaking with and provide me with a claim reference number?"',
+      tips: 'Ask for everything in writing. Get the name of the person you spoke with. Do not accept a verbal denial — request written confirmation of any decision.'
+    },
+    {
+      title: 'Calling the bank or financial institution',
+      script: '"Hello, I am calling to notify you of the passing of [DECEASED NAME], who held accounts at your institution. I am [YOUR RELATIONSHIP — spouse, executor, etc.]. I need to understand what documentation is required to access or transfer these accounts. Could you connect me with your estate services team?"',
+      tips: 'You will typically need: a death certificate, a copy of the will, and proof of your identity. Do not close accounts immediately — ask about the process first.'
+    },
+    {
+      title: 'Calling the employer or HR department',
+      script: '"Hello, I am calling to inform you of the passing of [DECEASED NAME], who was employed at your company as [JOB TITLE]. I am [YOUR NAME AND RELATIONSHIP]. I would like to understand the process for notifying the company, receiving any outstanding pay, and understanding any life insurance or benefits that may be available."',
+      tips: 'Ask specifically about: final paycheque, group life insurance, pension or RRSP beneficiary payouts, and continuation of health benefits.'
+    },
+    {
+      title: 'Calling a lawyer',
+      script: '"Hello, I am looking to speak with an estate lawyer. My [RELATIONSHIP] passed away on [DATE] and I need guidance on probating a will and managing the estate. Could someone call me back to discuss availability and fees?"',
+      tips: 'The executor named in the will can hire a lawyer and pay for it from the estate. You do not need to pay personally.'
+    },
+  ];
+
+  scripts.forEach(s => {
+    checkY(55);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.dark);
+    doc.text(s.title, ML, y);
+    y += 8;
+
+    // Script box
+    doc.setFillColor(240, 253, 244);
+    doc.setDrawColor(...C.green);
+    doc.setLineWidth(0.5);
+    const scriptLines = doc.splitTextToSize(s.script, CW - 10);
+    const scriptH = scriptLines.length * 5.5 + 10;
+    doc.roundedRect(ML, y, CW, scriptH, 2, 2, 'FD');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(20, 80, 40);
+    doc.text(scriptLines, ML + 5, y + 7);
+    y += scriptH + 4;
+
+    // Tip
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...C.gray);
+    const tipLines = doc.splitTextToSize('💡 ' + s.tips, CW);
+    doc.text(tipLines, ML, y);
+    y += tipLines.length * 5 + 8;
+  });
+}
+
+// ── KEY CONTACTS SUMMARY ──────────────────────────────────
+function drawKeyContacts() {
+  newPage();
+  sectionHeader('Key Contacts at a Glance', '👥');
+  bodyText('The most important people to contact. Full details are in each section.', 9);
+  y += 4;
+
+  const legal = planData.legal;
+  const contacts = planData.contacts;
+
+  const rows = [
+    ['Executor', legal?.executor_name, legal?.executor_phone, legal?.executor_email],
+    ['Lawyer', legal?.will_lawyer_name, legal?.will_lawyer_phone, ''],
+    ...contacts.map(c => [c.relationship || c.name, c.name, c.phone, c.email])
+  ].filter(r => r[1]);
+
+  if (rows.length === 0) {
+    bodyText('No key contacts documented yet.', 9);
+  } else {
+    // Table header
+    doc.setFillColor(...C.dark);
+    doc.rect(ML, y, CW, 8, 'F');
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.white);
+    doc.text('ROLE', ML + 3, y + 5.5);
+    doc.text('NAME', ML + CW * 0.3, y + 5.5);
+    doc.text('PHONE', ML + CW * 0.58, y + 5.5);
+    doc.text('EMAIL', ML + CW * 0.76, y + 5.5);
+    y += 10;
+
+    rows.forEach((r, i) => {
+      checkY(9);
+      if (i % 2 === 0) { doc.setFillColor(...C.bg); doc.rect(ML, y, CW, 8, 'F'); }
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', i === 0 ? 'bold' : 'normal');
+      doc.setTextColor(...C.dark);
+      doc.text(r[0] || '—', ML + 3, y + 5.5);
+      doc.setFont('helvetica', 'normal');
+      doc.text(r[1] || '—', ML + CW * 0.3, y + 5.5);
+      doc.text(r[2] || '—', ML + CW * 0.58, y + 5.5);
+      doc.text(r[3] || '—', ML + CW * 0.76, y + 5.5);
+      y += 8;
+    });
+  }
+}
+
+// ── LEGAL SECTION ─────────────────────────────────────────
+function drawLegal() {
+  newPage();
+  sectionHeader('Legal Documents', '📄');
+  const l = planData.legal;
+  if (!l) { bodyText('No legal documents documented.'); return; }
+
+  entryBlock('Will', [
+    ['Has a will', l.has_will ? 'Yes' : 'No'],
+    ['Will stored at', l.will_location],
+    ['Last updated', l.will_last_updated],
+    ['Lawyer', l.will_lawyer_name],
+    ['Lawyer phone', l.will_lawyer_phone],
+  ]);
+
+  entryBlock('Power of Attorney — Property', [
+    ['Has POA for property', l.has_poa_property ? 'Yes' : 'No'],
+    ['POA holder', l.poa_property_person],
+    ['POA stored at', l.poa_property_location],
+  ]);
+
+  entryBlock('Power of Attorney — Personal Care', [
+    ['Has POA for personal care', l.has_poa_care ? 'Yes' : 'No'],
+    ['POA care holder', l.poa_care_person],
+    ['POA care stored at', l.poa_care_location],
+  ]);
+
+  entryBlock('Executor', [
+    ['Executor name', l.executor_name],
+    ['Executor phone', l.executor_phone],
+    ['Executor email', l.executor_email],
+    ['Alternate executor', l.executor_alt],
+    ['Executor has been briefed', l.executor_knows ? 'Yes' : 'No'],
+  ]);
+
+  entryBlock('Document Storage', [
+    ['Storage location', l.doc_storage_location],
+    ['Notes', l.doc_storage_notes],
+  ]);
+}
+
+// ── INSURANCE SECTION ─────────────────────────────────────
+function drawInsurance() {
+  newPage();
+  sectionHeader('Insurance Policies', '🛡️');
+  const policies = planData.insurance;
+  if (!policies.length) { bodyText('No insurance policies documented.'); return; }
+
+  policies.forEach(p => {
+    entryBlock((p.kind || 'Policy') + ' Insurance', [
+      ['Insurer', p.insurer],
+      ['Policy number', p.policy_number],
+      ['Coverage', p.coverage],
+      ['Beneficiary', p.beneficiary],
+      ['Owner', p.owner],
+      ['Advisor / agent', p.contact_name],
+      ['Claims phone', p.claims_phone],
+    ]);
+  });
+
+  y += 4;
+  calloutBox('When making a claim: have the policy number ready, ask for a claim reference number, request all communications in writing, and do not accept a verbal denial.', C.blue);
+}
+
+// ── FINANCES SECTION ──────────────────────────────────────
+function drawFinances() {
+  newPage();
+  sectionHeader('Financial Accounts', '💰');
+
+  const accounts = planData.finances;
+  if (!accounts.length) { bodyText('No accounts documented.'); return; }
+
+  const banks = accounts.filter(a => a.kind === 'bank');
+  const investments = accounts.filter(a => a.kind === 'investment');
+  const debts = accounts.filter(a => a.kind === 'debt');
+
+  if (banks.length) {
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+    doc.text('Bank Accounts', ML, y); y += 8;
+    banks.forEach(a => {
+      entryBlock(a.institution || 'Bank Account', [
+        ['Institution', a.institution],
+        ['Account type', a.account_type],
+        ['Owner', a.owner],
+        ['Account hint', a.identifier_hint],
+        ['Where to find details', a.location],
+      ]);
+      passwordBox('Online banking password (handwrite only)');
+    });
+  }
+
+  if (investments.length) {
+    checkY(12);
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+    doc.text('Investments', ML, y); y += 8;
+    investments.forEach(a => {
+      entryBlock(a.institution || 'Investment Account', [
+        ['Institution', a.institution],
+        ['Account type', a.account_type],
+        ['Owner', a.owner],
+        ['Beneficiary', a.beneficiary],
+        ['Where to find details', a.location],
+      ]);
+    });
+  }
+
+  if (debts.length) {
+    checkY(12);
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+    doc.text('Debts & Liabilities', ML, y); y += 8;
+    debts.forEach(a => {
+      entryBlock(a.institution || 'Debt', [
+        ['Institution', a.institution],
+        ['Account type', a.account_type],
+        ['Owner', a.owner],
+        ['Account hint', a.identifier_hint],
+        ['Notes', a.notes],
+      ]);
+    });
+  }
+}
+
+// ── BILLS SECTION ─────────────────────────────────────────
+function drawBills() {
+  newPage();
+  sectionHeader('Bills & Account Access', '🧾');
+  const bills = planData.bills;
+  if (!bills.length) { bodyText('No bills documented.'); return; }
+
+  calloutBox('Important: Do not cancel subscriptions or close accounts immediately. Review each item below and contact providers only after speaking with an estate lawyer.', C.red);
+
+  bills.forEach(b => {
+    entryBlock(b.name || 'Bill', [
+      ['Provider', b.provider],
+      ['On autopay', b.autopay ? 'Yes' : 'No'],
+      ['Paid from', b.pay_source],
+      ['Notes', b.notes],
+    ]);
+    passwordBox('Account password (handwrite only)');
+  });
+}
+
+// ── PROPERTY SECTION ──────────────────────────────────────
+function drawProperty() {
+  newPage();
+  sectionHeader('Property', '🏠');
+  const properties = planData.property;
+  if (!properties.length) { bodyText('No properties documented.'); return; }
+
+  properties.forEach(p => {
+    entryBlock(p.address || p.kind || 'Property', [
+      ['Type', p.kind],
+      ['Address', p.address],
+      ['Ownership', p.ownership],
+      ['Owner', p.owner],
+      ['Mortgage lender', p.mortgage_lender],
+      ['Notes', p.notes],
+    ]);
+  });
+}
+
+// ── DIGITAL SECTION ───────────────────────────────────────
+function drawDigital() {
+  newPage();
+  sectionHeader('Digital Assets & Devices', '📱');
+  const digital = planData.digital;
+  if (!digital.length) { bodyText('No digital assets documented.'); return; }
+
+  calloutBox('Apple ID and Google accounts may have Legacy Contact or Inactive Account Manager set up — check with Apple/Google support for access.', C.blue);
+
+  digital.forEach(d => {
+    entryBlock(d.label || d.kind || 'Account', [
+      ['Type', d.kind],
+      ['Recovery info location', d.recovery_location],
+      ['Legacy contact set up', d.legacy_contact],
+      ['Owner', d.owner],
+      ['Notes', d.notes],
+    ]);
+    passwordBox('Password / PIN (handwrite only)');
+  });
+}
+
+// ── KIDS SECTION ──────────────────────────────────────────
+function drawKids() {
+  newPage();
+  sectionHeader('Kids & Family', '👶');
+  const kids = planData.kids;
+  if (!kids.length) { bodyText('No kids information documented.'); return; }
+
+  const guardians = kids.filter(k => k.kind === 'guardian');
+  const contacts = kids.filter(k => k.kind !== 'guardian' && k.kind !== 'medical');
+  const medical = kids.filter(k => k.kind === 'medical');
+
+  if (guardians.length) {
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+    doc.text('Guardian', ML, y); y += 8;
+    guardians.forEach(g => entryBlock(g.name || 'Guardian', [
+      ['Name', g.name], ['Relationship', g.relationship],
+      ['Phone', g.phone], ['Email', g.email], ['Notes', g.notes],
+    ]));
+  }
+  if (contacts.length) {
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+    doc.text('Key Contacts', ML, y); y += 8;
+    contacts.forEach(c => entryBlock(c.name || c.kind || 'Contact', [
+      ['Name', c.name], ['Type', c.kind],
+      ['Phone', c.phone], ['Address', c.address], ['Notes', c.notes],
+    ]));
+  }
+  if (medical.length) {
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+    doc.text('Medical & Essentials', ML, y); y += 8;
+    medical.forEach(m => entryBlock(m.name || 'Child', [
+      ["Child's name", m.name], ['Allergies / medications', m.allergies],
+      ['Health card location', m.health_card_number_location],
+      ['Family doctor', m.family_doctor],
+    ]));
+  }
+}
+
+// ── BUSINESS SECTION ──────────────────────────────────────
+function drawBusiness() {
+  newPage();
+  sectionHeader('Business Interests', '💼');
+  const businesses = planData.business;
+  if (!businesses.length) { bodyText('No business information documented.'); return; }
+
+  businesses.forEach(b => {
+    entryBlock(b.name || 'Business', [
+      ['Business name', b.name],
+      ['Role', b.role],
+      ['Succession plan', b.succession_plan],
+      ['Key contact', b.key_contact],
+      ['Key contact phone', b.key_contact_phone],
+      ['Finances separate', b.finances_separate ? 'Yes' : 'No'],
+      ['Notes', b.notes],
+    ]);
+  });
+}
+
+// ── TABLE OF CONTENTS ─────────────────────────────────────
+function drawTOC() {
+  // Insert TOC after cover — we'll add it as page 2
+  // jsPDF doesn't support page insertion, so we draw it and note page numbers
+  // TOC is drawn on page 2 (added right after cover)
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text('Table of Contents', ML, y);
+  y += 14;
+
+  tocEntries.forEach((entry, i) => {
+    checkY(9);
+    const dots = '.'.repeat(Math.max(2, 80 - entry.title.length - String(entry.page).length));
+    doc.setFontSize(10);
+    doc.setFont('helvetica', i === 0 ? 'bold' : 'normal');
+    doc.setTextColor(...C.dark);
+    doc.text(entry.title, ML, y);
+    doc.setTextColor(...C.gray);
+    doc.text(dots, ML + doc.getTextWidth(entry.title) + 2, y);
+    doc.setTextColor(...C.blue);
+    doc.text(String(entry.page), PW - MR, y, { align: 'right' });
+    y += 9;
+  });
+}
+
+// ── FETCH ALL DATA ─────────────────────────────────────────
+async function fetchAllData(userId) {
+  const [legal, finances, insurance, property, business, bills, contacts, digital, kids] = await Promise.all([
+    db.from('legal_documents').select('*').eq('user_id', userId).limit(1),
+    db.from('account_items').select('*').eq('user_id', userId),
+    db.from('insurance_items').select('*').eq('user_id', userId),
+    db.from('property_items').select('*').eq('user_id', userId),
+    db.from('business_items').select('*').eq('user_id', userId),
+    db.from('bill_items').select('*').eq('user_id', userId),
+    db.from('contact_items').select('*').eq('user_id', userId),
+    db.from('digital_items').select('*').eq('user_id', userId),
+    db.from('kids_items').select('*').eq('user_id', userId),
+  ]);
+
+  const filterNA = arr => (arr.data || []).filter(r =>
+    !Object.values(r).some(v => ['__na__'].includes(v))
+  );
+
+  return {
+    legal: legal.data && legal.data[0],
+    finances: filterNA(finances),
+    insurance: filterNA(insurance),
+    property: filterNA(property),
+    business: filterNA(business),
+    bills: filterNA(bills),
+    contacts: filterNA(contacts),
+    digital: filterNA(digital),
+    kids: filterNA(kids),
+  };
+}
+
+// ── MAIN GENERATE FUNCTION ────────────────────────────────
+async function generateBinder() {
+  const btn = document.getElementById('generateBtn');
+  const progressArea = document.getElementById('progressArea');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating your binder…';
+  progressArea.style.display = 'block';
+
+  try {
+    // Auth check
+    setProgress(5, 'Checking your account…');
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+    uid = session.user.id;
+    userName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+
+    // Fetch data
+    setProgress(20, 'Loading your plan data…');
+    planData = await fetchAllData(uid);
+
+    // Init PDF
+    setProgress(35, 'Building your binder…');
+    const { jsPDF } = window.jspdf;
+    doc = new jsPDF({ unit: 'mm', format: 'letter', orientation: 'portrait' });
+    tocEntries = [];
+
+    // Draw cover
+    setProgress(40, 'Creating cover page…');
+    drawCover();
+
+    // Draw emergency page (sets up TOC entries)
+    setProgress(50, 'Writing emergency instructions…');
+    drawEmergencyInstructions();
+
+    // Draw all sections
+    setProgress(60, 'Adding key contacts…');
+    drawKeyContacts();
+
+    setProgress(65, 'Adding legal documents…');
+    drawLegal();
+
+    setProgress(70, 'Adding insurance…');
+    drawInsurance();
+
+    setProgress(75, 'Adding finances…');
+    drawFinances();
+
+    setProgress(80, 'Adding bills & access…');
+    drawBills();
+
+    setProgress(83, 'Adding property…');
+    drawProperty();
+
+    setProgress(86, 'Adding digital assets…');
+    drawDigital();
+
+    setProgress(89, 'Adding kids & family…');
+    drawKids();
+
+    setProgress(92, 'Adding business…');
+    drawBusiness();
+
+    // Draw TOC on page 2
+    setProgress(95, 'Building table of contents…');
+    doc.insertPage(2);
+    pageNum = 2;
+    // Re-increment all TOC page numbers since we inserted page 2
+    tocEntries = tocEntries.map(e => ({ ...e, page: e.page + 1 }));
+    doc.setPage(2);
+    drawPageFooter();
+    y = MT;
+    drawTOC();
+
+    // Save
+    setProgress(99, 'Saving your PDF…');
+    const filename = 'Clarevo-Family-Binder-' + new Date().toISOString().split('T')[0] + '.pdf';
+    doc.save(filename);
+
+    setProgress(100, '✓ Your binder is ready! Check your downloads.');
+    btn.textContent = '✓ Binder downloaded!';
+    btn.style.background = 'var(--green)';
+    btn.disabled = false;
+
+  } catch(err) {
+    console.error('Binder error:', err);
+    setProgress(0, 'Error generating binder: ' + err.message);
+    btn.textContent = '📥 Try Again';
+    btn.disabled = false;
+  }
+}
+
+// Auth check on load
+db.auth.getSession().then(({ data: { session } }) => {
+  if (!session) window.location.href = 'login.html';
+});
+</script>
+</body>
+</html>
