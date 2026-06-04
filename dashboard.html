@@ -1534,7 +1534,7 @@
           </span>
         </div>
         <div class="ic-actions">
-          ${inv.status === 'pending' ? `<button class="ic-btn resend" onclick="resendInvite('${inv.id}','${inv.invitee_email}')">Resend invite</button>` : ''}
+          ${(inv.status === 'pending' || inv.status === 'registered') ? `<button class="ic-btn resend" onclick="resendInvite('${inv.id}','${inv.invitee_email}')">Resend invite</button>` : ''}
           <button class="ic-btn resend" onclick="editInvite('${inv.id}')">Edit access</button>
           <button class="ic-btn revoke" onclick="revokeAccess('${inv.id}')">Revoke access</button>
         </div>`;
@@ -1674,7 +1674,36 @@
   }
 
   async function resendInvite(id, email) {
-    alert('Email resend requires backend setup. Invite for ' + email + ' is saved and will be sent once email is configured.');
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) return;
+    const sections = SECTIONS.filter(s => {
+      // Get sections from the invite card — fetch fresh
+      return true;
+    });
+    try {
+      const res = await fetch('https://ulabvzjtullhsshtstnt.supabase.co/functions/v1/send-invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token,
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w'
+        },
+        body: JSON.stringify({
+          invite_id: id,
+          invitee_email: email,
+          owner_name: session.user.user_metadata?.full_name || session.user.email,
+          sections: 'your shared plan'
+        })
+      });
+      const result = await res.json();
+      if (result.success || result.note) {
+        alert('✓ Invite resent to ' + email + (result.note ? '\n\nNote: ' + result.note : ''));
+      } else {
+        alert('Error resending: ' + (result.error || 'Please try again.'));
+      }
+    } catch(e) {
+      alert('Error resending invite. Please try again.');
+    }
   }
 
   // ── DELETE ACCOUNT ────────────────────────────────────────
