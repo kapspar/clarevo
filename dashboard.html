@@ -619,6 +619,13 @@
   <!-- ── SHARED ACCESS ── -->
   <div id="tab-shared" class="hidden">
 
+    <!-- Plans shared WITH me (from others) -->
+    <div class="card" id="sharedWithMeCard" style="margin-bottom:16px; display:none;">
+      <h3 style="margin-bottom:4px;">Plans shared with you</h3>
+      <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">People who have given you access to their family plan.</p>
+      <div id="sharedWithMeList"></div>
+    </div>
+
     <!-- Invite form -->
     <div class="card" style="margin-bottom:16px;">
       <h3 style="margin-bottom:4px;">Give someone access to your plan</h3>
@@ -1418,17 +1425,50 @@
 
   // ── PLAN SWITCHER ────────────────────────────────────────
   async function buildPlanSwitcher(shares) {
+    // Show the switcher in the top bar
     const switcher = document.getElementById('planSwitcher');
     const btns = document.getElementById('psSharedBtns');
     btns.innerHTML = '';
+
+    // Also populate the "Plans shared with me" section
+    const sharedCard = document.getElementById('sharedWithMeCard');
+    const sharedList = document.getElementById('sharedWithMeList');
+    if (sharedCard) sharedCard.style.display = 'block';
+    if (sharedList) sharedList.innerHTML = '';
+
     for (const share of shares) {
       const { data: op } = await db.from('profiles').select('full_name, email').eq('id', share.owner_id).limit(1);
       const name = op && op[0] ? (op[0].full_name || op[0].email.split('@')[0]) : 'Shared Plan';
+      const sections = SECTIONS.filter(s => share['access_' + s])
+        .map(s => ({legal:'Legal',finances:'Finances',insurance:'Insurance',property:'Property',
+          bills:'Bills',emergency:'Emergency',digital:'Digital',kids:'Kids',business:'Business'})[s])
+        .join(', ');
+
+      // Top bar switcher button
       const btn = document.createElement('button');
       btn.className = 'ps-btn inactive';
       btn.textContent = name + '\'s Plan';
       btn.onclick = () => switchToSharedPlan(share, name, btn);
       btns.appendChild(btn);
+
+      // Shared Access tab card
+      if (sharedList) {
+        const card = document.createElement('div');
+        card.className = 'invite-card';
+        card.innerHTML = `
+          <div class="invite-card-header">
+            <div class="avatar blue">${name.substring(0,2).toUpperCase()}</div>
+            <div class="ic-info">
+              <div class="ic-name">${name}'s Family Plan</div>
+              <div class="ic-meta">${sections}</div>
+            </div>
+            <span class="ic-status active">Active ✓</span>
+          </div>
+          <div class="ic-actions">
+            <button class="ic-btn resend" onclick="switchToSharedPlan(${JSON.stringify(share).replace(/"/g,'&quot;')}, '${name}', this)">View plan →</button>
+          </div>`;
+        sharedList.appendChild(card);
+      }
     }
     switcher.style.display = 'flex';
   }
