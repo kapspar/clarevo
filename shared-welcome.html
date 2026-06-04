@@ -41,6 +41,33 @@
 
   <div id="loadingState" class="loading">Loading your access…</div>
 
+  <!-- Step 1: Create account -->
+  <div id="setupAccount" style="display:none;">
+    <div class="access-card">
+      <div class="access-icon">👋</div>
+      <div class="access-title" id="setupTitle">You've been invited to Clarevo</div>
+      <div class="access-sub" id="setupSub">Create your free account to view the shared plan and optionally start your own.</div>
+
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px; font-weight:600; color:var(--dark); display:block; margin-bottom:6px;">Your full name</label>
+        <input type="text" id="setupName" placeholder="Jane Smith"
+          style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; font-family:var(--font); box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:24px;">
+        <label style="font-size:13px; font-weight:600; color:var(--dark); display:block; margin-bottom:6px;">Create a password</label>
+        <input type="password" id="setupPassword" placeholder="At least 8 characters"
+          style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; font-family:var(--font); box-sizing:border-box;">
+        <p style="font-size:12px; color:var(--gray); margin-top:6px;">You'll use this to log in to Clarevo in the future.</p>
+      </div>
+      <p id="setupError" style="color:var(--red); font-size:13px; margin-bottom:12px; display:none;"></p>
+      <button onclick="completeSetup()" id="setupBtn"
+        style="width:100%; background:var(--blue); color:white; border:none; padding:14px; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; font-family:var(--font);">
+        Create Account & Continue →
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: View plan / start own -->
   <div id="welcomeContent" style="display:none;">
     <!-- Single plan access -->
     <div id="singlePlanView">
@@ -101,11 +128,46 @@
     window.location.href = 'shared-view.html';
   }
 
+  let currentInvites = [];
+  let currentSession = null;
+
+  async function completeSetup() {
+    const name = document.getElementById('setupName').value.trim();
+    const password = document.getElementById('setupPassword').value;
+    const errorEl = document.getElementById('setupError');
+    const btn = document.getElementById('setupBtn');
+
+    if (!name) { errorEl.textContent = 'Please enter your name.'; errorEl.style.display = 'block'; return; }
+    if (password.length < 8) { errorEl.textContent = 'Password must be at least 8 characters.'; errorEl.style.display = 'block'; return; }
+
+    btn.textContent = 'Setting up your account…';
+    btn.disabled = true;
+    errorEl.style.display = 'none';
+
+    const { error } = await db.auth.updateUser({
+      password: password,
+      data: { full_name: name }
+    });
+
+    if (error) {
+      errorEl.textContent = 'Error: ' + error.message;
+      errorEl.style.display = 'block';
+      btn.textContent = 'Create Account & Continue →';
+      btn.disabled = false;
+      return;
+    }
+
+    // Account set up — show the welcome content
+    document.getElementById('setupAccount').style.display = 'none';
+    showWelcomeContent(currentInvites);
+  }
+
   async function init() {
     const { data: { session } } = await db.auth.getSession();
     if (!session) { window.location.href = 'login.html'; return; }
+    currentSession = session;
 
-    // Get invites from sessionStorage (set by dashboard) or fetch fresh
+    // Get invites
     let invites = [];
     const stored = sessionStorage.getItem('sharedInvites');
     if (stored) {
@@ -119,19 +181,40 @@
       invites = data || [];
     }
 
-    if (!invites.length) {
-      window.location.href = 'dashboard.html';
-      return;
-    }
+    if (!invites.length) { window.location.href = 'dashboard.html'; return; }
 
-    // Mark as registered
+    // Mark as registered and link invitee_id
     for (const inv of invites) {
       if (inv.status === 'pending') {
-        await db.from('shared_access').update({ status: 'registered', invitee_id: session.user.id }).eq('id', inv.id);
+        await db.from('shared_access').update({
+          status: 'registered',
+          invitee_id: session.user.id
+        }).eq('id', inv.id);
+        inv.status = 'registered';
       }
     }
 
+    currentInvites = invites;
     document.getElementById('loadingState').style.display = 'none';
+
+    // Check if they've set a password yet
+    // If they logged in via magic link they won't have app_metadata.provider = 'email' with password
+    const hasPassword = session.user.app_metadata?.providers?.includes('email') &&
+                        session.user.user_metadata?.full_name;
+
+    if (!hasPassword) {
+      // Show account setup step first
+      const ownerName = await getOwnerName(invites[0].owner_id);
+      document.getElementById('setupTitle').textContent = ownerName + ' has shared their Clarevo plan with you';
+      document.getElementById('setupSub').textContent =
+        'Create your free Clarevo account to view their plan. You can also start your own family plan anytime.';
+      document.getElementById('setupAccount').style.display = 'block';
+    } else {
+      showWelcomeContent(invites);
+    }
+  }
+
+  async function showWelcomeContent(invites) {
     document.getElementById('welcomeContent').style.display = 'block';
 
     if (invites.length === 1) {
