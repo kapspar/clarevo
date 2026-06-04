@@ -1445,17 +1445,20 @@
 
     for (const share of shares) {
       const { data: op } = await db.from('profiles').select('full_name, email').eq('id', share.owner_id).limit(1);
-      const name = op && op[0] ? (op[0].full_name || op[0].email.split('@')[0]) : 'Shared Plan';
+      const name = share.owner_name || (op && op[0] ? (op[0].full_name || op[0].email.split('@')[0]) : 'Shared Plan');
       const sections = SECTIONS.filter(s => share['access_' + s])
         .map(s => ({legal:'Legal',finances:'Finances',insurance:'Insurance',property:'Property',
           bills:'Bills',emergency:'Emergency',digital:'Digital',kids:'Kids',business:'Business'})[s])
         .join(', ');
 
-      // Top bar switcher button
+      // Top bar switcher button — goes to shared-view.html
       const btn = document.createElement('button');
       btn.className = 'ps-btn inactive';
       btn.textContent = name + '\'s Plan';
-      btn.onclick = () => switchToSharedPlan(share, name, btn);
+      btn.onclick = () => {
+        sessionStorage.setItem('viewSharedPlan', JSON.stringify({ invite: share, ownerName: name }));
+        window.location.href = 'shared-view.html';
+      };
       btns.appendChild(btn);
 
       // Shared Access tab card
@@ -1472,7 +1475,7 @@
             <span class="ic-status active">Active ✓</span>
           </div>
           <div class="ic-actions">
-            <button class="ic-btn resend" onclick="switchToSharedPlan(${JSON.stringify(share).replace(/"/g,'&quot;')}, '${name}', this)">View plan →</button>
+            <button class="ic-btn resend" onclick="(function(){ sessionStorage.setItem('viewSharedPlan', JSON.stringify({invite: ${JSON.stringify(share).replace(/"/g,"'")}, ownerName: '${name}'})); window.location.href='shared-view.html'; })()">View plan →</button>
           </div>`;
         sharedList.appendChild(card);
       }
