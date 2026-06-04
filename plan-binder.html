@@ -64,6 +64,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+// Point pdf.js at its worker (required for rendering)
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+</script>
 <script>
 const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
@@ -114,8 +122,12 @@ function S(s) {
 }
 
 function setProgress(pct, label) {
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = label;
+  if (pct !== null && pct !== undefined) {
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+  if (label !== undefined) {
+    document.getElementById('progressLabel').textContent = label;
+  }
 }
 
 // ── PAGE HELPERS ─────────────────────────────────────────
@@ -893,7 +905,8 @@ function legalFiles() {
   return out;
 }
 
-// Download a stored file via signed URL → { dataUrl, mime, size } or null.
+// Download a stored file via signed URL.
+// Returns { dataUrl, bytes, mime, size } or null.
 async function fetchFile(path) {
   try {
     const { data, error } = await db.storage.from('documents').createSignedUrl(path, 120);
@@ -901,13 +914,14 @@ async function fetchFile(path) {
     const resp = await fetch(data.signedUrl);
     if (!resp.ok) return null;
     const blob = await resp.blob();
+    const bytes = await blob.arrayBuffer();
     const dataUrl = await new Promise((res, rej) => {
       const fr = new FileReader();
       fr.onload = () => res(fr.result);
       fr.onerror = rej;
       fr.readAsDataURL(blob);
     });
-    return { dataUrl, mime: blob.type || '', size: blob.size };
+    return { dataUrl, bytes, mime: blob.type || '', size: blob.size };
   } catch (e) {
     console.warn('Attachment fetch failed for', path, e);
     return null;
@@ -919,8 +933,63 @@ function fileExt(path) {
   return m ? m[1] : '';
 }
 
+// Render every page of a PDF (given as ArrayBuffer) to an array of PNG data URLs.
+// Scale chosen for ~150 DPI on a Letter page — sharp enough to read, not enormous.
+async function renderPdfToImages(bytes) {
+  if (!window.pdfjsLib) throw new Error('pdf.js not loaded');
+  const pages = [];
+  const pdf = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+  const MAX_PAGES = 30; // safety cap
+  const count = Math.min(pdf.numPages, MAX_PAGES);
+  for (let p = 1; p <= count; p++) {
+    const page = await pdf.getPage(p);
+    // Base viewport at scale 1, then scale up toward ~150 DPI relative to content width
+    const base = page.getViewport({ scale: 1 });
+    // Letter content width ≈ 175mm ≈ 6.9in; 150 DPI → ~1035px target width
+    const targetPx = 1035;
+    const scale = Math.min(3, Math.max(1.2, targetPx / base.width));
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.ceil(viewport.width);
+    canvas.height = Math.ceil(viewport.height);
+    const ctx = canvas.getContext('2d');
+    // White background (PDFs can be transparent)
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    // JPEG keeps file size far smaller than PNG for scanned/photographic pages
+    pages.push({ dataUrl: canvas.toDataURL('image/jpeg', 0.82), w: canvas.width, h: canvas.height });
+    canvas.width = 0; canvas.height = 0; // free memory
+  }
+  await pdf.destroy();
+  return pages;
+}
+
+// Embed a single image (data URL) on its own page, with a heading.
+function embedImagePage(label, dataUrl, fmtHint) {
+  newPage();
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...C.dark);
+  doc.text(label, ML, y);
+  y += 6;
+  doc.setDrawColor(...C.lgray);
+  doc.setLineWidth(0.3);
+  doc.line(ML, y, PW - MR, y);
+  y += 6;
+  const props = doc.getImageProperties(dataUrl);
+  const maxW = CW;
+  const maxH = PH - y - 28;
+  let w = props.width, h = props.height;
+  const scale = Math.min(maxW / w, maxH / h);
+  w = w * scale; h = h * scale;
+  const fmt = (fmtHint || props.fileType || 'PNG').toUpperCase().includes('PNG') ? 'PNG' : 'JPEG';
+  doc.addImage(dataUrl, fmt, ML + (CW - w) / 2, y, w, h);
+  y += h + 4;
+}
+
 // Render a set of attachments for the CURRENT section, inline after its content.
-// Each image attachment gets its own page; PDFs get a reference card.
+// Images embed directly; PDFs are rasterized page-by-page and embedded as images.
 async function drawSectionAttachments(items, sectionLabel) {
   if (!items || !items.length) return;
 
@@ -943,35 +1012,41 @@ async function drawSectionAttachments(items, sectionLabel) {
     const file = await fetchFile(it.path);
     const isImage = ext === 'jpg' || ext === 'jpeg' || ext === 'png' ||
                     (file && /^image\//.test(file.mime));
+    const isPdf = ext === 'pdf' || (file && /pdf/.test(file.mime));
 
     if (file && isImage) {
-      // Image gets its own page so it can be as large as possible
-      newPage();
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(...C.dark);
-      doc.text(it.label, ML, y);
-      y += 6;
-      doc.setDrawColor(...C.lgray);
-      doc.setLineWidth(0.3);
-      doc.line(ML, y, PW - MR, y);
-      y += 6;
       try {
-        const props = doc.getImageProperties(file.dataUrl);
-        const maxW = CW;
-        const maxH = PH - y - 28;
-        let w = props.width, h = props.height;
-        const scale = Math.min(maxW / w, maxH / h);
-        w = w * scale; h = h * scale;
-        const fmt = (props.fileType || ext).toUpperCase().includes('PNG') ? 'PNG' : 'JPEG';
-        doc.addImage(file.dataUrl, fmt, ML + (CW - w) / 2, y, w, h);
-        y += h + 4;
+        embedImagePage(it.label, file.dataUrl, ext);
       } catch (e) {
         console.warn('addImage failed', e);
+        checkY(40);
+        doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+        doc.text(it.label, ML, y); y += 6;
         attachmentRef(it, ext, 'Could not embed this image. Keep the original file with this binder.');
       }
+    } else if (file && isPdf) {
+      // Rasterize each PDF page and embed as an image (one binder page per PDF page)
+      try {
+        if (typeof setProgress === 'function') {
+          setProgress(null, `Embedding "${it.label}" (this can take a moment)…`);
+        }
+        const imgs = await renderPdfToImages(file.bytes);
+        if (!imgs.length) throw new Error('no pages rendered');
+        imgs.forEach((img, idx) => {
+          const pageLabel = imgs.length > 1
+            ? `${it.label} (page ${idx + 1} of ${imgs.length})`
+            : it.label;
+          embedImagePage(pageLabel, img.dataUrl, 'JPEG');
+        });
+      } catch (e) {
+        console.warn('PDF rasterization failed for', it.path, e);
+        checkY(40);
+        doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(...C.dark);
+        doc.text(it.label, ML, y); y += 6;
+        attachmentRef(it, 'pdf', 'This PDF could not be embedded automatically. It is stored in your Clarevo account — keep the original file with this binder.');
+      }
     } else {
-      // PDF or unknown → reference card (jsPDF cannot embed PDF pages)
+      // Unknown / unsupported type, or download failed → reference card
       checkY(40);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
@@ -979,9 +1054,7 @@ async function drawSectionAttachments(items, sectionLabel) {
       doc.text(it.label, ML, y);
       y += 6;
       attachmentRef(it, ext,
-        ext === 'pdf'
-          ? 'PDF stored in your Clarevo account. Keep the original file with this binder.'
-          : 'Stored in your Clarevo account. Keep the original file with this binder.');
+        'Stored in your Clarevo account. Keep the original file with this binder.');
     }
   }
 }
