@@ -213,11 +213,12 @@
       ownerName = parsed.ownerName;
     } else {
       // Fetch fresh from DB using current user's email
-      const { data: invites } = await db.from('shared_access')
+      const { data: invites, error: fetchErr } = await db.from('shared_access')
         .select('*')
         .eq('invitee_email', session.user.email)
-        .in('status', ['registered', 'active'])
+        .in('status', ['pending', 'registered', 'active'])
         .limit(1);
+      console.log('shared-view fetch:', session.user.email, invites, fetchErr);
       if (!invites || !invites.length) {
         window.location.href = 'shared-welcome.html';
         return;
@@ -232,6 +233,8 @@
 
     const container = document.getElementById('planSections');
     const permittedSections = Object.keys(SECTIONS).filter(s => invite['access_' + s]);
+    console.log('invite:', invite);
+    console.log('permittedSections:', permittedSections);
 
     for (const sectionKey of permittedSections) {
       const def = SECTIONS[sectionKey];
