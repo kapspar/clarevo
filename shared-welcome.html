@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — You've been given access</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; }
+    .welcome-wrap { flex: 1; max-width: 600px; margin: 0 auto; padding: 60px 24px 80px; width: 100%; }
+    .welcome-logo { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 48px; display: inline-block; text-decoration: none; }
+    .welcome-logo span { color: var(--blue); }
+    .access-card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); margin-bottom: 20px; }
+    .access-icon { font-size: 48px; margin-bottom: 20px; }
+    .access-title { font-size: 26px; font-weight: 800; color: var(--dark); margin-bottom: 8px; letter-spacing: -0.3px; }
+    .access-sub { font-size: 15px; color: var(--gray); line-height: 1.6; margin-bottom: 28px; }
+    .section-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+    .section-chip { background: var(--blue-light); color: var(--blue); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; }
+    .view-btn { display: block; width: 100%; background: var(--blue); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: var(--font); text-align: center; text-decoration: none; margin-bottom: 12px; }
+    .view-btn:hover { background: #2563eb; }
+    .own-plan-card { background: white; border-radius: 20px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); text-align: center; }
+    .own-plan-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .own-plan-card p { font-size: 14px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
+    .own-plan-btn { display: inline-block; background: white; border: 1.5px solid var(--border); color: var(--dark); padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font); text-decoration: none; }
+    .own-plan-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .loading { text-align: center; padding: 80px 24px; color: var(--gray); font-size: 15px; }
+    .multiple-plans { margin-bottom: 16px; }
+    .plan-btn { display: block; width: 100%; background: white; border: 1.5px solid var(--border); color: var(--dark); padding: 16px 20px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: var(--font); text-align: left; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+    .plan-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .plan-btn-icon { font-size: 28px; }
+    .plan-btn-text .pbt-name { font-size: 15px; font-weight: 700; }
+    .plan-btn-text .pbt-sections { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="welcome-wrap">
+  <a href="home.html" class="welcome-logo">Clar<span>evo</span></a>
+
+  <div id="loadingState" class="loading">Loading your access…</div>
+
+  <div id="welcomeContent" style="display:none;">
+    <!-- Single plan access -->
+    <div id="singlePlanView">
+      <div class="access-card">
+        <div class="access-icon">🔐</div>
+        <div class="access-title" id="welcomeTitle">You have access to someone's plan</div>
+        <div class="access-sub" id="welcomeSub">They've given you access to view their family plan. You'll be able to see their emergency contacts, legal documents, and everything they've shared with you.</div>
+        <div class="section-chips" id="sectionChips"></div>
+        <a href="#" class="view-btn" id="viewPlanBtn">View their plan →</a>
+      </div>
+    </div>
+
+    <!-- Multiple plans -->
+    <div id="multiplePlansView" style="display:none;">
+      <div class="access-card">
+        <div class="access-icon">🔐</div>
+        <div class="access-title">You have access to multiple plans</div>
+        <div class="access-sub">Choose whose plan you'd like to view.</div>
+        <div class="multiple-plans" id="planBtns"></div>
+      </div>
+    </div>
+
+    <!-- Start own plan -->
+    <div class="own-plan-card">
+      <h3>Want your own family plan?</h3>
+      <p>Clarevo helps you document your financial life so your family is prepared for anything. It takes about 15 minutes to get started.</p>
+      <a href="dashboard.html" class="own-plan-btn">Start my own plan →</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const SECTION_LABELS = {
+    legal: '📄 Legal', finances: '💰 Finances', insurance: '🛡️ Insurance',
+    property: '🏠 Property', bills: '🧾 Bills', emergency: '🚨 Emergency',
+    digital: '📱 Digital', kids: '👶 Kids', business: '💼 Business'
+  };
+
+  async function getOwnerName(ownerId) {
+    const { data } = await db.from('profiles').select('full_name, email').eq('id', ownerId).limit(1);
+    if (data && data[0]) return data[0].full_name || data[0].email.split('@')[0];
+    // Fallback: get from auth
+    return 'your contact';
+  }
+
+  function getSections(invite) {
+    return Object.keys(SECTION_LABELS).filter(s => invite['access_' + s]);
+  }
+
+  function goToSharedView(invite, ownerName) {
+    // Store in sessionStorage and redirect to dashboard in shared view mode
+    sessionStorage.setItem('viewSharedPlan', JSON.stringify({ invite, ownerName }));
+    window.location.href = 'shared-view.html';
+  }
+
+  async function init() {
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    // Get invites from sessionStorage (set by dashboard) or fetch fresh
+    let invites = [];
+    const stored = sessionStorage.getItem('sharedInvites');
+    if (stored) {
+      invites = JSON.parse(stored);
+      sessionStorage.removeItem('sharedInvites');
+    } else {
+      const { data } = await db.from('shared_access')
+        .select('*')
+        .eq('invitee_email', session.user.email)
+        .in('status', ['pending', 'registered', 'active']);
+      invites = data || [];
+    }
+
+    if (!invites.length) {
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    // Mark as registered
+    for (const inv of invites) {
+      if (inv.status === 'pending') {
+        await db.from('shared_access').update({ status: 'registered', invitee_id: session.user.id }).eq('id', inv.id);
+      }
+    }
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('welcomeContent').style.display = 'block';
+
+    if (invites.length === 1) {
+      // Single plan
+      const inv = invites[0];
+      const ownerName = await getOwnerName(inv.owner_id);
+      const sections = getSections(inv);
+
+      document.getElementById('welcomeTitle').textContent = ownerName + ' has shared their plan with you';
+      document.getElementById('welcomeSub').textContent =
+        'They\'ve given you access to view their family plan. In a crisis, everything you need to know is here.';
+
+      const chips = document.getElementById('sectionChips');
+      sections.forEach(s => {
+        const chip = document.createElement('span');
+        chip.className = 'section-chip';
+        chip.textContent = SECTION_LABELS[s];
+        chips.appendChild(chip);
+      });
+
+      document.getElementById('viewPlanBtn').onclick = (e) => {
+        e.preventDefault();
+        goToSharedView(inv, ownerName);
+      };
+
+    } else {
+      // Multiple plans
+      document.getElementById('singlePlanView').style.display = 'none';
+      document.getElementById('multiplePlansView').style.display = 'block';
+      const btns = document.getElementById('planBtns');
+
+      for (const inv of invites) {
+        const ownerName = await getOwnerName(inv.owner_id);
+        const sections = getSections(inv);
+        const btn = document.createElement('button');
+        btn.className = 'plan-btn';
+        btn.innerHTML = `<span class="plan-btn-icon">👤</span>
+          <span class="plan-btn-text">
+            <div class="pbt-name">${ownerName}'s Plan</div>
+            <div class="pbt-sections">${sections.map(s => SECTION_LABELS[s]).join(' · ')}</div>
+          </span>`;
+        btn.onclick = () => goToSharedView(inv, ownerName);
+        btns.appendChild(btn);
+      }
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clarevo — Shared Plan</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--bg); }
+    .top-bar {
+      background: var(--dark);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .top-bar-logo { font-size: 20px; font-weight: 800; color: white; text-decoration: none; }
+    .top-bar-logo span { color: var(--blue); }
+    .top-bar-right { display: flex; align-items: center; gap: 16px; }
+    .viewing-badge { background: rgba(59,130,246,0.2); color: #93c5fd; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; }
+    .top-bar-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: #aaa; padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font); text-decoration: none; }
+    .top-bar-btn:hover { color: white; border-color: rgba(255,255,255,0.4); }
+
+    .wrap { max-width: 800px; margin: 0 auto; padding: 40px 24px 80px; }
+    .plan-header { margin-bottom: 32px; }
+    .plan-header h1 { font-size: 28px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+    .plan-header p { font-size: 14px; color: var(--gray); }
+    .readonly-badge { display: inline-flex; align-items: center; gap: 6px; background: #fffbeb; color: #92400e; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px; margin-bottom: 24px; }
+
+    .section-card { background: white; border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+    .section-title { font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .entry-block { background: var(--bg); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+    .entry-block:last-child { margin-bottom: 0; }
+    .entry-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; gap: 16px; }
+    .entry-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .entry-label { color: var(--gray); font-weight: 500; text-transform: capitalize; flex-shrink: 0; }
+    .entry-value { color: var(--dark); font-weight: 600; text-align: right; }
+    .empty-section { font-size: 13px; color: var(--gray); font-style: italic; }
+
+    .own-plan-banner { background: var(--blue-light); border: 1.5px solid var(--blue); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .own-plan-banner p { font-size: 14px; color: var(--dark); margin: 0; }
+    .own-plan-banner a { background: var(--blue); color: white; padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+
+    @media (max-width: 600px) {
+      .top-bar { padding: 12px 16px; }
+      .viewing-badge { display: none; }
+      .wrap { padding: 24px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="home.html" class="top-bar-logo">Clar<span>evo</span></a>
+  <div class="top-bar-right">
+    <span class="viewing-badge" id="viewingBadge">Viewing shared plan</span>
+    <a href="shared-welcome.html" class="top-bar-btn">← Back</a>
+    <a href="dashboard.html" class="top-bar-btn">My Plan</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="own-plan-banner">
+    <p>📋 This is a read-only view of a shared plan. Want to set up your own?</p>
+    <a href="dashboard.html">Start my plan →</a>
+  </div>
+
+  <div class="plan-header">
+    <h1 id="planTitle">Loading plan…</h1>
+    <p id="planSub"></p>
+  </div>
+  <div class="readonly-badge">🔒 Read-only — you can view but not edit this plan</div>
+
+  <div id="planSections"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const SECTIONS = {
+    legal:     { label: '📄 Legal Documents',   table: 'legal_documents',  key: 'access_legal' },
+    finances:  { label: '💰 Finances',           table: 'account_items',    key: 'access_finances' },
+    insurance: { label: '🛡️ Insurance',          table: 'insurance_items',  key: 'access_insurance' },
+    property:  { label: '🏠 Property',           table: 'property_items',   key: 'access_property' },
+    bills:     { label: '🧾 Bills & Access',     table: 'bill_items',       key: 'access_bills' },
+    emergency: { label: '🚨 Emergency',          table: 'contact_items',    key: 'access_emergency' },
+    digital:   { label: '📱 Digital & Devices', table: 'digital_items',    key: 'access_digital' },
+    kids:      { label: '👶 Kids & Family',      table: 'kids_items',       key: 'access_kids' },
+    business:  { label: '💼 Business',           table: 'business_items',   key: 'access_business' }
+  };
+
+  const HIDDEN_FIELDS = ['id','user_id','created_at','updated_at','file_path'];
+  const NA_VALUES = ['__na__'];
+
+  function formatKey(key) {
+    return key.replace(/_/g, ' ');
+  }
+
+  function renderSection(sectionKey, rows) {
+    const def = SECTIONS[sectionKey];
+    const card = document.createElement('div');
+    card.className = 'section-card';
+
+    const title = document.createElement('div');
+    title.className = 'section-title';
+    title.textContent = def.label;
+    card.appendChild(title);
+
+    const realRows = rows.filter(r => {
+      const vals = Object.values(r);
+      return !NA_VALUES.some(na => vals.includes(na));
+    });
+
+    if (realRows.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'empty-section';
+      empty.textContent = 'Nothing documented in this section.';
+      card.appendChild(empty);
+      return card;
+    }
+
+    realRows.forEach(row => {
+      const block = document.createElement('div');
+      block.className = 'entry-block';
+      Object.entries(row)
+        .filter(([k, v]) => !HIDDEN_FIELDS.includes(k) && v !== null && v !== '' && v !== undefined)
+        .forEach(([k, v]) => {
+          const rowEl = document.createElement('div');
+          rowEl.className = 'entry-row';
+          rowEl.innerHTML = `<span class="entry-label">${formatKey(k)}</span><span class="entry-value">${v}</span>`;
+          block.appendChild(rowEl);
+        });
+      if (block.children.length) card.appendChild(block);
+    });
+
+    return card;
+  }
+
+  async function init() {
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    // Get the shared plan data from sessionStorage
+    const stored = sessionStorage.getItem('viewSharedPlan');
+    if (!stored) { window.location.href = 'shared-welcome.html'; return; }
+
+    const { invite, ownerName } = JSON.parse(stored);
+
+    document.getElementById('planTitle').textContent = ownerName + '\'s Family Plan';
+    document.getElementById('planSub').textContent = 'Shared with you by ' + ownerName + '. This information is private and confidential.';
+    document.getElementById('viewingBadge').textContent = 'Viewing ' + ownerName + '\'s plan';
+
+    const container = document.getElementById('planSections');
+    const permittedSections = Object.keys(SECTIONS).filter(s => invite['access_' + s]);
+
+    for (const sectionKey of permittedSections) {
+      const def = SECTIONS[sectionKey];
+      try {
+        const { data, error } = await db.from(def.table).select('*').eq('user_id', invite.owner_id);
+        if (error) throw error;
+        container.appendChild(renderSection(sectionKey, data || []));
+      } catch(e) {
+        const card = document.createElement('div');
+        card.className = 'section-card';
+        card.innerHTML = `<div class="section-title">${def.label}</div><p class="empty-section">Unable to load this section.</p>`;
+        container.appendChild(card);
+      }
+    }
+
+    // Mark as active once they've actually viewed the plan
+    if (invite.status === 'registered') {
+      await db.from('shared_access').update({ status: 'active' }).eq('id', invite.id);
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>

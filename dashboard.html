@@ -312,6 +312,7 @@
     .ic-meta { font-size:12px; color:var(--gray); margin-top:2px; }
     .ic-status { font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
     .ic-status.pending { background:#fffbeb; color:var(--yellow); }
+    .ic-status.registered { background:#eff6ff; color:var(--blue); }
     .ic-status.active { background:#f0fdf4; color:var(--green); }
     .ic-actions { display:flex; gap:8px; margin-top:12px; }
     .ic-btn { font-size:12px; font-weight:600; padding:6px 14px; border-radius:8px; cursor:pointer; font-family:var(--font); border:none; }
@@ -724,16 +725,29 @@
         .in('status', ['pending', 'active']);
 
       if (invites && invites.length > 0) {
-        // Link invitee_id if not set
+        // Link invitee_id and mark as registered if not already
         for (const inv of invites) {
-          if (!inv.invitee_id) {
-            await db.from('shared_access').update({ invitee_id: currentUser.id }).eq('id', inv.id);
+          const updates = {};
+          if (!inv.invitee_id) updates.invitee_id = currentUser.id;
+          if (inv.status === 'pending') updates.status = 'registered';
+          if (Object.keys(updates).length) {
+            await db.from('shared_access').update(updates).eq('id', inv.id);
           }
         }
-        const pending = invites.filter(i => i.status === 'pending');
-        activeShares = invites.filter(i => i.status === 'active');
-        if (pending.length > 0) { pendingInvite = pending[0]; showInviteBanner(pendingInvite); }
-        if (activeShares.length > 0) { buildPlanSwitcher(activeShares); }
+        const hasOwnData = await checkHasOwnData(currentUser.id);
+        if (!hasOwnData) {
+          // First-time invited user — redirect to shared welcome page
+          const allShares = invites.map(i => ({
+            ...i,
+            status: i.status === 'pending' ? 'registered' : i.status
+          }));
+          sessionStorage.setItem('sharedInvites', JSON.stringify(allShares));
+          window.location.href = 'shared-welcome.html';
+          return;
+        }
+        // Existing user with own data — show switcher
+        activeShares = invites.filter(i => i.status === 'active' || i.status === 'registered');
+        if (activeShares.length > 0) buildPlanSwitcher(activeShares);
       }
     } catch(e) { console.warn('Shared access check failed', e); }
 
@@ -1365,6 +1379,12 @@
     });
   }
 
+  async function checkHasOwnData(userId) {
+    // Check if user has any of their own plan data
+    const { data } = await db.from('legal_documents').select('id').eq('user_id', userId).limit(1);
+    return data && data.length > 0;
+  }
+
   // ── INVITE BANNER ────────────────────────────────────────
   async function showInviteBanner(invite) {
     const banner = document.getElementById('inviteBanner');
@@ -1487,7 +1507,7 @@
   async function loadSharedAccess(user) {
     const { data } = await db.from('shared_access').select('*')
       .eq('owner_id', user.id)
-      .in('status', ['pending', 'active'])
+      .in('status', ['pending', 'registered', 'active'])
       .order('invited_at', { ascending: false });
     const list = document.getElementById('sharedPeopleList');
     if (!data || data.length === 0) {
@@ -1507,7 +1527,11 @@
             <div class="ic-name">${inv.invitee_email}</div>
             <div class="ic-meta">${inv.relationship || 'No relationship set'} · ${sections}</div>
           </div>
-          <span class="ic-status ${inv.status}">${inv.status === 'pending' ? 'Invite sent' : 'Active'}</span>
+          <span class="ic-status ${inv.status}">
+            ${inv.status === 'pending' ? 'Invite sent' :
+              inv.status === 'registered' ? 'Registered ✓' :
+              inv.status === 'active' ? 'Active ✓' : inv.status}
+          </span>
         </div>
         <div class="ic-actions">
           ${inv.status === 'pending' ? `<button class="ic-btn resend" onclick="resendInvite('${inv.id}','${inv.invitee_email}')">Resend invite</button>` : ''}
