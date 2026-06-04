@@ -742,9 +742,14 @@
             await db.from('shared_access').update(updates).eq('id', inv.id);
           }
         }
+
         const hasOwnData = await checkHasOwnData(currentUser.id);
-        console.log('Has own data:', hasOwnData);
-        if (!hasOwnData) {
+        const unviewedInvites = invites.filter(i => i.status === 'pending' || i.status === 'registered');
+        const activeInvites = invites.filter(i => i.status === 'active');
+
+        // Only redirect to shared-welcome if they haven't viewed the plan yet
+        // AND they have no own plan data
+        if (!hasOwnData && unviewedInvites.length > 0 && activeInvites.length === 0) {
           const allShares = invites.map(i => ({
             ...i,
             status: i.status === 'pending' ? 'registered' : i.status
@@ -753,6 +758,8 @@
           window.location.href = 'shared-welcome.html';
           return;
         }
+
+        // Show plan switcher for all active/registered shares
         activeShares = invites.filter(i => i.status === 'active' || i.status === 'registered');
         if (activeShares.length > 0) buildPlanSwitcher(activeShares);
       }
