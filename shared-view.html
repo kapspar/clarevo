@@ -92,27 +92,78 @@
     business:  { label: '💼 Business',           table: 'business_items',   key: 'access_business' }
   };
 
-  const HIDDEN_FIELDS = ['id','user_id','created_at','updated_at','file_path'];
+  const HIDDEN_FIELDS = ['id','user_id','created_at','updated_at','kind'];
   const NA_VALUES = ['__na__'];
+  const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
+
+  // Friendly field label map
+  const FIELD_LABELS = {
+    has_will: 'Has a will', will_location: 'Will stored at', will_lawyer_name: 'Lawyer',
+    will_lawyer_phone: 'Lawyer phone', will_last_updated: 'Last updated',
+    has_poa_property: 'Has POA for property', poa_property_person: 'POA holder',
+    poa_property_location: 'POA stored at', has_poa_care: 'Has POA for personal care',
+    poa_care_person: 'POA care holder', poa_care_location: 'POA care stored at',
+    executor_name: 'Executor', executor_phone: 'Executor phone',
+    executor_email: 'Executor email', executor_knows: 'Executor briefed',
+    executor_alt: 'Alternate executor', doc_storage_location: 'Documents stored at',
+    doc_storage_notes: 'Storage notes', institution: 'Institution',
+    account_type: 'Account type', owner: 'Owner', identifier_hint: 'Account hint',
+    location: 'Where to find details', beneficiary: 'Beneficiary',
+    insurer: 'Insurer', policy_number: 'Policy number', coverage: 'Coverage',
+    contact_name: 'Advisor / agent', claims_phone: 'Claims phone',
+    address: 'Address', ownership: 'Ownership', mortgage_lender: 'Mortgage lender',
+    name: 'Name', provider: 'Provider', autopay: 'On autopay', pay_source: 'Paid from',
+    relationship: 'Relationship', phone: 'Phone', email: 'Email',
+    label: 'Device / account', recovery_location: 'Recovery info location',
+    legacy_contact: 'Legacy contact', role: 'Role',
+    succession_plan: 'Succession plan', key_contact: 'Key contact',
+    key_contact_phone: 'Key contact phone', finances_separate: 'Finances separate',
+    notes: 'Notes', will_file_path: 'Will document',
+    poa_property_file_path: 'POA property document', poa_care_file_path: 'POA care document'
+  };
+
+  // Fields that are file paths — render as links
+  const FILE_FIELDS = ['will_file_path','poa_property_file_path','poa_care_file_path','file_path'];
+
+  // Fields to always hide
+  const ALWAYS_HIDE = ['id','user_id','created_at','updated_at','kind',
+    'completion_score','created_with_willful'];
 
   function formatKey(key) {
-    return key.replace(/_/g, ' ');
+    return FIELD_LABELS[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 
-  function renderSection(sectionKey, rows) {
+  function formatValue(key, val) {
+    if (val === true || val === 'true') return 'Yes';
+    if (val === false || val === 'false') return 'No';
+    return val;
+  }
+
+  async function getFileUrl(path) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/storage/v1/object/sign/documents/${path}`,
+        { method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${(await db.auth.getSession()).data.session.access_token}` },
+          body: JSON.stringify({ expiresIn: 3600 }) }
+      );
+      const { signedURL } = await res.json();
+      return signedURL;
+    } catch(e) { return null; }
+  }
+
+  async function renderSection(sectionKey, rows) {
     const def = SECTIONS[sectionKey];
     const card = document.createElement('div');
     card.className = 'section-card';
-
     const title = document.createElement('div');
     title.className = 'section-title';
     title.textContent = def.label;
     card.appendChild(title);
 
-    const realRows = rows.filter(r => {
-      const vals = Object.values(r);
-      return !NA_VALUES.some(na => vals.includes(na));
-    });
+    const realRows = rows.filter(r => !Object.values(r).some(v => NA_VALUES.includes(v)));
 
     if (realRows.length === 0) {
       const empty = document.createElement('p');
@@ -122,20 +173,30 @@
       return card;
     }
 
-    realRows.forEach(row => {
+    for (const row of realRows) {
       const block = document.createElement('div');
       block.className = 'entry-block';
-      Object.entries(row)
-        .filter(([k, v]) => !HIDDEN_FIELDS.includes(k) && v !== null && v !== '' && v !== undefined)
-        .forEach(([k, v]) => {
-          const rowEl = document.createElement('div');
-          rowEl.className = 'entry-row';
-          rowEl.innerHTML = `<span class="entry-label">${formatKey(k)}</span><span class="entry-value">${v}</span>`;
-          block.appendChild(rowEl);
-        });
-      if (block.children.length) card.appendChild(block);
-    });
 
+      const entries = Object.entries(row)
+        .filter(([k, v]) => !ALWAYS_HIDE.includes(k) && v !== null && v !== '' && v !== undefined && v !== false);
+
+      for (const [k, v] of entries) {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'entry-row';
+
+        if (FILE_FIELDS.includes(k) && v && !v.includes('__na__')) {
+          const url = await getFileUrl(v);
+          const linkHtml = url
+            ? `<a href="${url}" target="_blank" style="color:var(--blue);font-weight:600;">View document →</a>`
+            : `<span style="color:var(--gray);">Document on file</span>`;
+          rowEl.innerHTML = `<span class="entry-label">${formatKey(k)}</span><span class="entry-value">${linkHtml}</span>`;
+        } else {
+          rowEl.innerHTML = `<span class="entry-label">${formatKey(k)}</span><span class="entry-value">${formatValue(k, v)}</span>`;
+        }
+        block.appendChild(rowEl);
+      }
+      if (block.children.length) card.appendChild(block);
+    }
     return card;
   }
 
@@ -161,7 +222,7 @@
       try {
         const { data, error } = await db.from(def.table).select('*').eq('user_id', invite.owner_id);
         if (error) throw error;
-        container.appendChild(renderSection(sectionKey, data || []));
+        container.appendChild(await renderSection(sectionKey, data || []));
       } catch(e) {
         const card = document.createElement('div');
         card.className = 'section-card';
