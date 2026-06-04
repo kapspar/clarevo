@@ -1599,7 +1599,8 @@
     const { data: { session } } = await db.auth.getSession();
     if (!session) { window.location.href = 'login.html'; return; }
     const uid = session.user.id;
-    const rec = { owner_id: uid, invitee_email: email, relationship: rel || null, status: 'pending' };
+    const ownerDisplayName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+    const rec = { owner_id: uid, invitee_email: email, relationship: rel || null, status: 'pending', owner_name: ownerDisplayName };
     SECTIONS.forEach(s => rec['access_' + s] = inviteState[s]);
     console.log('Inserting invite:', JSON.stringify(rec));
     const { error } = await db.from('shared_access').insert([rec]);

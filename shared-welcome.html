@@ -111,10 +111,11 @@
     digital: '📱 Digital', kids: '👶 Kids', business: '💼 Business'
   };
 
-  async function getOwnerName(ownerId) {
+  async function getOwnerName(ownerId, invite) {
+    // Use owner_name stored in the invite row first
+    if (invite && invite.owner_name) return invite.owner_name;
     const { data } = await db.from('profiles').select('full_name, email').eq('id', ownerId).limit(1);
     if (data && data[0]) return data[0].full_name || data[0].email.split('@')[0];
-    // Fallback: get from auth
     return 'your contact';
   }
 
@@ -204,7 +205,7 @@
 
     if (!hasPassword) {
       // Show account setup step first
-      const ownerName = await getOwnerName(invites[0].owner_id);
+      const ownerName = await getOwnerName(invites[0].owner_id, invites[0]);
       document.getElementById('setupTitle').textContent = ownerName + ' has shared their Clarevo plan with you';
       document.getElementById('setupSub').textContent =
         'Create your free Clarevo account to view their plan. You can also start your own family plan anytime.';
@@ -220,7 +221,7 @@
     if (invites.length === 1) {
       // Single plan
       const inv = invites[0];
-      const ownerName = await getOwnerName(inv.owner_id);
+      const ownerName = await getOwnerName(inv.owner_id, inv);
       const sections = getSections(inv);
 
       document.getElementById('welcomeTitle').textContent = ownerName + ' has shared their plan with you';
@@ -247,7 +248,7 @@
       const btns = document.getElementById('planBtns');
 
       for (const inv of invites) {
-        const ownerName = await getOwnerName(inv.owner_id);
+        const ownerName = await getOwnerName(inv.owner_id, inv);
         const sections = getSections(inv);
         const btn = document.createElement('button');
         btn.className = 'plan-btn';
