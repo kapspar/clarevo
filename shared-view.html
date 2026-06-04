@@ -204,11 +204,27 @@
     const { data: { session } } = await db.auth.getSession();
     if (!session) { window.location.href = 'login.html'; return; }
 
-    // Get the shared plan data from sessionStorage
+    // Try sessionStorage first, then fall back to fetching from DB
+    let invite, ownerName;
     const stored = sessionStorage.getItem('viewSharedPlan');
-    if (!stored) { window.location.href = 'shared-welcome.html'; return; }
-
-    const { invite, ownerName } = JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      invite = parsed.invite;
+      ownerName = parsed.ownerName;
+    } else {
+      // Fetch fresh from DB using current user's email
+      const { data: invites } = await db.from('shared_access')
+        .select('*')
+        .eq('invitee_email', session.user.email)
+        .in('status', ['registered', 'active'])
+        .limit(1);
+      if (!invites || !invites.length) {
+        window.location.href = 'shared-welcome.html';
+        return;
+      }
+      invite = invites[0];
+      ownerName = invite.owner_name || 'your contact';
+    }
 
     document.getElementById('planTitle').textContent = ownerName + '\'s Family Plan';
     document.getElementById('planSub').textContent = 'Shared with you by ' + ownerName + '. This information is private and confidential.';
