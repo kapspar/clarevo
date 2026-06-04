@@ -91,6 +91,23 @@ const CW = PW - ML - MR; // Content width
 
 let doc, y, pageNum, tocEntries, uid, userName, planData;
 
+// Strip characters the built-in PDF font (WinAnsi Helvetica) cannot render —
+// emoji, symbols, smart punctuation — so they don't spill as garbage bytes.
+function S(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'")     // smart single quotes
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"')     // smart double quotes
+    .replace(/[\u2013\u2014\u2015]/g, '-')           // en/em dashes
+    .replace(/\u2026/g, '...')                        // ellipsis
+    .replace(/[\u2022\u25A0\u25AA\u25CF]/g, '-')     // bullets
+    // Remove emoji & pictographs (covers the corrupted icons)
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\uFE0F\u20E3]/gu, '')
+    .replace(/[^\x00-\xFF]/g, '')                     // any remaining non-Latin1
+    .replace(/\s{2,}/g, ' ')                          // collapse doubled spaces from removals
+    .trim();
+}
+
 function setProgress(pct, label) {
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressLabel').textContent = label;
@@ -105,7 +122,7 @@ function newPage() {
 }
 
 function checkY(needed = 20) {
-  if (y + needed > PH - 25) newPage();
+  if (y + needed > PH - 24) newPage();
 }
 
 function drawPageFooter() {
@@ -294,7 +311,7 @@ function drawCover() {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...C.gray);
-    doc.text('□  ' + loc, ML + 5, y);
+    doc.text('[  ]  ' + loc, ML + 5, y);
     y += 7;
   });
 }
@@ -403,10 +420,11 @@ function drawEmergencyInstructions() {
     y += scriptH + 4;
 
     // Tip
+    const tipLines = doc.splitTextToSize('Tip: ' + s.tips, CW);
+    checkY(tipLines.length * 5 + 8);
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...C.gray);
-    const tipLines = doc.splitTextToSize('💡 ' + s.tips, CW);
     doc.text(tipLines, ML, y);
     y += tipLines.length * 5 + 8;
   });
@@ -712,15 +730,23 @@ function drawTOC() {
 
   tocEntries.forEach((entry, i) => {
     checkY(9);
-    const dots = '.'.repeat(Math.max(2, 80 - entry.title.length - String(entry.page).length));
+    const title = S(entry.title);
     doc.setFontSize(10);
     doc.setFont('helvetica', i === 0 ? 'bold' : 'normal');
     doc.setTextColor(...C.dark);
-    doc.text(entry.title, ML, y);
+    doc.text(title, ML, y);
+    // Width-based dot leader: fill the gap between title and page-number column
+    const pageStr = String(entry.page);
+    const titleW = doc.getTextWidth(title);
+    const pageW = doc.getTextWidth(pageStr);
+    const leaderStart = ML + titleW + 2;
+    const leaderEnd = PW - MR - pageW - 2;
+    const dotW = doc.getTextWidth('.');
+    const dotCount = Math.max(0, Math.floor((leaderEnd - leaderStart) / dotW));
     doc.setTextColor(...C.gray);
-    doc.text(dots, ML + doc.getTextWidth(entry.title) + 2, y);
+    if (dotCount > 0) doc.text('.'.repeat(dotCount), leaderStart, y);
     doc.setTextColor(...C.blue);
-    doc.text(String(entry.page), PW - MR, y, { align: 'right' });
+    doc.text(pageStr, PW - MR, y, { align: 'right' });
     y += 9;
   });
 }
@@ -780,6 +806,13 @@ async function generateBinder() {
     setProgress(35, 'Building your binder…');
     const { jsPDF } = window.jspdf;
     doc = new jsPDF({ unit: 'mm', format: 'letter', orientation: 'portrait' });
+    // Wrap doc.text so ALL rendered strings are sanitized for the WinAnsi font.
+    // Covers single strings and arrays (from splitTextToSize).
+    const _rawText = doc.text.bind(doc);
+    doc.text = function(txt, x, yy, opts) {
+      const clean = Array.isArray(txt) ? txt.map(S) : S(txt);
+      return _rawText(clean, x, yy, opts);
+    };
     tocEntries = [];
 
     // Draw cover
@@ -821,13 +854,27 @@ async function generateBinder() {
     // Draw TOC on page 2
     setProgress(95, 'Building table of contents…');
     doc.insertPage(2);
-    pageNum = 2;
-    // Re-increment all TOC page numbers since we inserted page 2
+    // Every section was drawn before this insert, so their TOC page refs
+    // (and their printed footers) are now off by one. Shift refs:
     tocEntries = tocEntries.map(e => ({ ...e, page: e.page + 1 }));
     doc.setPage(2);
     drawPageFooter();
     y = MT;
     drawTOC();
+
+    // Re-stamp the page-number footer on EVERY page so numbering is
+    // contiguous and matches the TOC (fixes the duplicate "Page 2").
+    const total = doc.getNumberOfPages();
+    for (let p = 1; p <= total; p++) {
+      doc.setPage(p);
+      // White-out the old page-number area, then redraw it
+      doc.setFillColor(...C.white);
+      doc.rect(PW - MR - 20, PH - 17, 22, 7, 'F');
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...C.gray);
+      doc.text('Page ' + p, PW - MR, PH - 12, { align: 'right' });
+    }
 
     // Save
     setProgress(99, 'Saving your PDF…');
