@@ -123,15 +123,15 @@ class ListManager {
 
     const uploaded = document.createElement('div');
     uploaded.className='uploaded-section'+(r.file_path?'':' hidden');
-    const ut=document.createElement('div'); ut.className='us-title'; ut.textContent='Uploaded documents';
+    const ut=document.createElement('div'); ut.className='us-title'; ut.textContent='Uploaded file';
     const ulist=document.createElement('div');
     uploaded.appendChild(ut); uploaded.appendChild(ulist);
     wrap.appendChild(uploaded);
 
     const dz=document.createElement('div'); dz.className='dropzone';
     dz.innerHTML='<div class="dz-icon">📎</div><div class="dz-main">'+
-      (r.file_path?'Click to upload another':'Click to upload or drag and drop')+
-      '</div><div class="dz-sub">PDF, JPG, PNG up to 10MB</div>';
+      (r.file_path?'Click to replace this file':'Click to upload or drag and drop')+
+      '</div><div class="dz-sub">One file per entry · PDF, JPG, PNG up to 10MB</div>';
     wrap.appendChild(dz);
 
     const input=document.createElement('input'); input.type='file'; input.accept='.pdf,.jpg,.jpeg,.png'; input.className='hidden';
@@ -153,7 +153,7 @@ class ListManager {
         if(this.cfg.onChange) this.cfg.onChange(); };
       pill.appendChild(view); pill.appendChild(rem);
       ulist.appendChild(pill); uploaded.classList.remove('hidden');
-      dz.querySelector('.dz-main').textContent='Click to upload another';
+      dz.querySelector('.dz-main').textContent='Click to replace this file';
     };
     if(r.file_path) renderPill(r.file_path.split('/').pop());
 
@@ -162,10 +162,13 @@ class ListManager {
       if(!ok.includes(file.type)){ alert('Please upload a PDF, JPG, or PNG.'); return; }
       if(file.size>10*1024*1024){ alert('File must be under 10MB.'); return; }
       dz.querySelector('.dz-main').textContent='Uploading…';
+      const oldPath=r.file_path; // remember existing file so we can clean it up
       const ext=file.name.split('.').pop();
       const path=currentUser.id+'/'+this.cfg.table+'-'+Date.now()+'.'+ext;
       const {error}=await db.storage.from(BUCKET).upload(path,file,{upsert:true});
-      if(error){ console.error('Upload error',error); alert('Upload failed.'); dz.querySelector('.dz-main').textContent='Click to upload or drag and drop'; return; }
+      if(error){ console.error('Upload error',error); alert('Upload failed.'); dz.querySelector('.dz-main').textContent=(oldPath?'Click to replace this file':'Click to upload or drag and drop'); return; }
+      // New upload succeeded — remove the previous file so it doesn't orphan in storage
+      if(oldPath && oldPath!==path){ try{ await db.storage.from(BUCKET).remove([oldPath]); }catch(e){ console.warn('Old file cleanup failed',e); } }
       r.file_path=path; renderPill(file.name);
       if(this.cfg.onChange) this.cfg.onChange();
     };
@@ -275,11 +278,13 @@ async function _slotFile(slot,bucket,labelText,file){
   if(file.size>10*1024*1024){ alert('File must be under 10MB.'); return; }
   const zone=$('dz-'+slot), orig=zone.querySelector('.dz-main').textContent;
   zone.querySelector('.dz-main').textContent='Uploading…';
+  const oldPath=uploadedFiles[slot]; // remember existing file for cleanup
   const ext=file.name.split('.').pop();
   const path=currentUser.id+'/'+slot+'-'+Date.now()+'.'+ext;
   const {error}=await db.storage.from(bucket).upload(path,file,{upsert:true});
   zone.querySelector('.dz-main').textContent=orig;
   if(error){ console.error('Upload error',error); alert('Upload failed.'); return; }
+  if(oldPath && oldPath!==path){ try{ await db.storage.from(bucket).remove([oldPath]); }catch(e){ console.warn('Old file cleanup failed',e); } }
   uploadedFiles[slot]=path; _slotRender(slot,bucket,labelText,file.name);
 }
 function _slotRender(slot,bucket,labelText,fileName){
@@ -290,7 +295,7 @@ function _slotRender(slot,bucket,labelText,fileName){
     '<a class="fp-view" href="#" onclick="viewSlotFile(\''+bucket+'\',\''+slot+'\');return false;">View</a>'+
     '<button class="fp-remove" onclick="removeSlotFile(\''+bucket+'\',\''+slot+'\')">Remove</button></div>';
   section.classList.remove('hidden');
-  if(zone) zone.querySelector('.dz-main').textContent='Click to upload another';
+  if(zone) zone.querySelector('.dz-main').textContent='Click to replace this file';
 }
 async function viewSlotFile(bucket,slot){
   const path=uploadedFiles[slot]; if(!path) return;
