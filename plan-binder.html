@@ -85,6 +85,8 @@ const C = {
   red:    [239, 68, 68],
   gray:   [100, 116, 139],
   lgray:  [226, 232, 240],
+  amber:  [245, 158, 11],
+  yellow: [245, 158, 11],
   white:  [255, 255, 255],
   bg:     [248, 249, 251],
   // Light tints for callout fills (real colors — jsPDF base build ignores alpha)
@@ -281,7 +283,10 @@ function bodyText(text, size = 10) {
 }
 
 function calloutBox(text, color = C.blue) {
-  const padX = 7, padTop = 9, padBot = 7, lineH = 5.5;
+  const fontSize = 9.5;
+  const lhFactor = 1.32;
+  const lineH = fontSize * 0.3528 * lhFactor; // mm per line, matches render
+  const padX = 7, padTop = 6.5, padBot = 6;
   const lines = doc.splitTextToSize(text, CW - padX * 2);
   const h = lines.length * lineH + padTop + padBot;
   checkY(h);
@@ -294,10 +299,11 @@ function calloutBox(text, color = C.blue) {
   doc.setDrawColor(...color);
   doc.setLineWidth(0.5);
   doc.roundedRect(ML, y, CW, h, 2.5, 2.5, 'FD');
-  doc.setFontSize(9.5);
+  doc.setFontSize(fontSize);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...C.dark);
-  doc.text(lines, ML + padX, y + padTop, { lineHeightFactor: 1.35 });
+  // baseline of first line one cap-height below top padding
+  doc.text(lines, ML + padX, y + padTop + fontSize * 0.3528, { lineHeightFactor: lhFactor });
   y += h + 6;
 }
 
@@ -425,19 +431,24 @@ function drawEmergencyInstructions() {
 
   steps.forEach(([title, detail]) => {
     checkY(24);
+    // Title band — sized to enclose the title with even padding
+    const bandH = 7;
     doc.setFillColor(...C.bg);
-    doc.rect(ML, y, CW, 5, 'F');
+    doc.rect(ML, y, CW, bandH, 'F');
+    // Accent bar on the left of the band
+    doc.setFillColor(...C.blue);
+    doc.rect(ML, y, 1.5, bandH, 'F');
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...C.dark);
-    doc.text(title, ML + 3, y + 4);
-    y += 7;
+    doc.text(title, ML + 5, y + bandH / 2, { baseline: 'middle' });
+    y += bandH + 2.5;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(...C.gray);
-    const lines = doc.splitTextToSize(detail, CW - 6);
-    doc.text(lines, ML + 3, y);
-    y += lines.length * 5 + 5;
+    const lines = doc.splitTextToSize(detail, CW - 10);
+    doc.text(lines, ML + 5, y, { lineHeightFactor: 1.3 });
+    y += lines.length * 5 + 6;
   });
 
   // Call scripts
@@ -485,24 +496,40 @@ function drawEmergencyInstructions() {
     doc.setFillColor(...C.greenLt);
     doc.setDrawColor(...C.green);
     doc.setLineWidth(0.5);
-    const sPadX = 7, sPadTop = 8, sPadBot = 7, sLineH = 5.5;
+    const sFont = 9, sLh = 1.4;
+    const sLineH = sFont * 0.3528 * sLh;
+    const sPadX = 7, sPadTop = 5.5, sPadBot = 5.5;
     const scriptLines = doc.splitTextToSize(s.script, CW - sPadX * 2);
     const scriptH = scriptLines.length * sLineH + sPadTop + sPadBot;
     doc.roundedRect(ML, y, CW, scriptH, 2.5, 2.5, 'FD');
-    doc.setFontSize(9);
+    doc.setFontSize(sFont);
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(20, 80, 40);
-    doc.text(scriptLines, ML + sPadX, y + sPadTop, { lineHeightFactor: 1.4 });
-    y += scriptH + 5;
+    doc.text(scriptLines, ML + sPadX, y + sPadTop + sFont * 0.3528, { lineHeightFactor: sLh });
+    y += scriptH + 4;
 
-    // Tip
-    const tipLines = doc.splitTextToSize('Tip: ' + s.tips, CW);
-    checkY(tipLines.length * 5 + 8);
-    doc.setFontSize(8.5);
+    // Tip — visually distinct: amber accent bar + bold "TIP" label
+    const tFont = 8.5, tLh = 1.3;
+    const tLineH = tFont * 0.3528 * tLh;
+    const labelW = 11; // space reserved for the "TIP" label column
+    const tipLines = doc.splitTextToSize(s.tips, CW - labelW - 4);
+    const tPadV = 3.5;
+    const tipH = tipLines.length * tLineH + tPadV * 2;
+    checkY(tipH + 6);
+    // accent bar
+    doc.setFillColor(...C.amber);
+    doc.rect(ML, y, 1.5, tipH, 'F');
+    // label
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...C.amber);
+    doc.text('TIP', ML + 4, y + tPadV + tFont * 0.3528);
+    // tip text
+    doc.setFontSize(tFont);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...C.gray);
-    doc.text(tipLines, ML, y);
-    y += tipLines.length * 5 + 8;
+    doc.setTextColor(...C.dark);
+    doc.text(tipLines, ML + labelW, y + tPadV + tFont * 0.3528, { lineHeightFactor: tLh });
+    y += tipH + 8;
   });
 }
 
