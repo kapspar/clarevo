@@ -555,7 +555,7 @@
         <input type="email" class="email-input" id="emailInput" placeholder="your@email.com">
         <button class="email-btn" onclick="saveEmail()">Save My Results</button>
       </div>
-      <div class="email-success" id="emailSuccess">✅ Saved! Redirecting...</div>
+      <div class="email-success" id="emailSuccess">Saved. Redirecting...</div>
     </div>
 
   </div>
@@ -875,9 +875,16 @@
       guardian_plan:         getVal('q23'),
       raw_answers:           answers
     };
-    try { await db.from('assessments').insert([record]); } catch(e) { console.error(e); }
+    const { error } = await db.from('assessments').insert([record]);
     document.getElementById('emailSuccess').style.display = 'block';
-    document.getElementById('emailSuccess').textContent = '✅ Saved! Taking you to your dashboard...';
+    if (error) {
+      console.error('Assessment save failed:', error);
+      document.getElementById('emailSuccess').style.color = 'var(--yellow)';
+      document.getElementById('emailSuccess').textContent = 'We couldn\u2019t save your results, but you can still continue. Taking you to your dashboard...';
+    } else {
+      document.getElementById('emailSuccess').style.color = 'var(--green)';
+      document.getElementById('emailSuccess').textContent = 'Saved. Taking you to your dashboard...';
+    }
     setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
   }
 
@@ -905,10 +912,24 @@
       guardian_plan:         getVal('q23'),
       raw_answers:           answers
     };
-    try { await db.from('assessments').insert([record]); } catch(e) { console.error(e); }
+
+    // Only claim success if the save actually succeeded.
+    const { error } = await db.from('assessments').insert([record]);
+    if (error) {
+      console.error('Assessment save failed:', error);
+      btn.textContent = 'Save My Results'; btn.disabled = false;
+      const errEl = document.getElementById('emailSuccess');
+      errEl.style.display = 'block';
+      errEl.style.color = 'var(--red)';
+      errEl.textContent = 'Something went wrong saving your results. Please try again.';
+      return;
+    }
+
     document.getElementById('emailWrap').style.display = 'none';
-    document.getElementById('emailSuccess').style.display = 'block';
-    document.getElementById('emailSuccess').textContent = '✅ Saved! Create your account to see your full dashboard.';
+    const okEl = document.getElementById('emailSuccess');
+    okEl.style.display = 'block';
+    okEl.style.color = 'var(--green)';
+    okEl.textContent = 'Saved. Create your free account to start fixing your gaps...';
     setTimeout(() => {
       window.location.href = 'login.html?from=assessment&email=' + encodeURIComponent(email);
     }, 2000);
