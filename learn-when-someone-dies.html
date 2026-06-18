@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <title>What to Do When Someone Dies in Canada — Clarevo</title>
+  <meta name="description" content="A plain-English guide to the administrative and legal steps after a death in Canada. What to do in the first 24 hours, first week, and first few months.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .article-hero {
+      background: var(--dark);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .article-hero .eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #f87171;
+      margin-bottom: 14px;
+    }
+    .article-hero h1 {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      line-height: 1.2;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .article-hero .subtitle {
+      font-size: 17px;
+      color: #aaa;
+      max-width: 540px;
+      margin: 0 auto 28px;
+      line-height: 1.7;
+    }
+    .article-hero .compassion-note {
+      display: inline-block;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 14px;
+      color: #ccc;
+      max-width: 500px;
+      line-height: 1.6;
+    }
+
+    .article-body {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 56px 48px;
+    }
+
+    /* Phase blocks */
+    .phase {
+      margin-bottom: 52px;
+    }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+    .phase-badge {
+      background: var(--dark);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .phase-badge.urgent { background: #dc2626; }
+    .phase-badge.soon { background: #d97706; }
+    .phase-badge.ongoing { background: #2563eb; }
+    .phase-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+    }
+
+    /* Steps */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .step {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      background: var(--blue-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-num.urgent { background: #fee2e2; color: #dc2626; }
+    .step-num.soon { background: #fef3c7; color: #d97706; }
+    .step-content h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .step-content p {
+      font-size: 14px;
+      color: var(--gray);
+      line-height: 1.65;
+      margin-bottom: 0;
+    }
+    .step-content .tip {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--blue);
+      background: var(--blue-light);
+      border-radius: 8px;
+      padding: 10px 14px;
+      line-height: 1.5;
+    }
+
+    /* Admin checklist */
+    .checklist-section {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 32px;
+    }
+    .checklist-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--dark);
+    }
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: #444;
+      line-height: 1.5;
+    }
+    .checklist-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .checklist-sub {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    /* Info callout */
+    .callout {
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .callout.info {
+      background: var(--blue-light);
+      border: 1px solid var(--blue-mid);
+      color: #1e3a5f;
+    }
+    .callout.warning {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #78350f;
+    }
+    .callout.province {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #14532d;
+    }
+    .callout strong { font-weight: 700; }
+
+    /* Cost summary */
+    .cost-card {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 32px;
+    }
+    .cost-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 14px;
+    }
+    .cost-row:last-of-type { border-bottom: none; }
+    .cost-label { color: #ccc; }
+    .cost-amount { color: var(--white); font-weight: 700; }
+    .cost-amount.highlight { color: #fbbf24; }
+    .cost-note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 12px;
+    }
+
+    /* Section dividers */
+    .section-label-inline {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--blue);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin-bottom: 16px;
+      margin-top: 40px;
+      color: var(--dark);
+    }
+    p {
+      font-size: 15px;
+      line-height: 1.75;
+      color: #333;
+      margin-bottom: 18px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      margin-bottom: 32px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .article-cta {
+      background: var(--blue-light);
+      border: 1px solid var(--blue-mid);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      text-align: center;
+      margin-top: 48px;
+    }
+    .article-cta h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+    .article-cta p { font-size: 14px; color: var(--gray); margin-bottom: 20px; }
+
+    /* Timeline connector */
+    .timeline-connector {
+      text-align: center;
+      color: #ccc;
+      font-size: 20px;
+      margin: 8px 0;
+    }
+
+    @media (max-width: 700px) {
+      .article-hero { padding: 48px 20px; }
+      .article-hero h1 { font-size: 26px; }
+      .article-body { padding: 36px 20px; }
+      .checklist-grid { grid-template-columns: 1fr; }
+      .phase-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="login.html" id="authLink">Log In</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="learn.html" onclick="toggleMenu()">Learn</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="login.html" id="authLinkMobile">Log In</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="article-hero">
+  <div class="eyebrow">Crisis Guide</div>
+  <h1>What to do when someone dies in Canada</h1>
+  <p class="subtitle">A plain-English walkthrough of every step — from the first phone call to closing the estate. No jargon, no overwhelm.</p>
+  <div class="compassion-note">
+    If you're reading this right now because someone you love has just died, we're sorry. This guide exists to make an impossibly hard time a little less chaotic.
+  </div>
+</div>
+
+<div class="article-body">
+
+  <a href="learn.html" class="back-link">← Back to all guides</a>
+
+  <p>Settling an estate in Canada is not a single phone call. It's a sequence of steps that unfolds over days, weeks, and months — involving doctors, funeral homes, courts, banks, the CRA, and more. Most families figure this out in real time while grieving. This guide lays it out in order so you don't have to.</p>
+
+  <div class="callout info">
+    <strong>Who this guide is for:</strong> Anyone who has just lost a family member, or is helping someone navigate a loss. It's also useful reading before a death happens — knowing the process is one of the most practical things you can do for your family.
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-badge urgent">Within 24–48 hours</div>
+      <div class="phase-title">Immediate steps</div>
+    </div>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num urgent">1</div>
+        <div class="step-content">
+          <h3>A doctor confirms the death</h3>
+          <p>A physician (or in some cases a paramedic or coroner) must confirm and register the death. If the person died at home, call 911. If in hospital, the attending physician handles this. This confirmation is what sets the entire legal process in motion.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num urgent">2</div>
+        <div class="step-content">
+          <h3>Contact a funeral home</h3>
+          <p>The funeral home takes custody of the body, arranges burial or cremation, and — crucially — issues the <strong>Death Certificate</strong>. You'll need multiple certified copies (typically 5–10) because every institution requires an original. The funeral home can order these for you, or you can request them from the provincial vital statistics office.</p>
+          <div class="tip">💡 Get at least 10 certified copies of the death certificate. Banks, insurance companies, and government agencies each require originals — they won't accept photocopies.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num urgent">3</div>
+        <div class="step-content">
+          <h3>Locate the will and identify the executor</h3>
+          <p>The will names the executor — the person legally responsible for managing the estate. Common places to look: a home filing cabinet, a safety deposit box, with the deceased's lawyer, or in a digital document vault. If there's no will, the estate is settled according to provincial law (called intestate succession), and a court appoints an administrator.</p>
+          <div class="tip">💡 This is exactly the problem Clarevo solves while people are still alive — documenting where the will is, who the executor is, and what accounts exist so families aren't searching in a crisis.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="timeline-connector">↓</div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-badge soon">First week</div>
+      <div class="phase-title">Notifications and accounts</div>
+    </div>
+
+    <p style="font-size:14px; color: var(--gray); margin-bottom: 20px;">With death certificates in hand, the executor begins notifying institutions. This is often the most time-consuming part — every institution has its own process.</p>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Notify the federal government</h3>
+          <p>Contact Service Canada (1-800-277-9914) to cancel CPP/OAS payments, apply for the CPP Death Benefit (a one-time $2,500 payment to the estate), and begin survivor's pension applications if applicable. Also notify the CRA by filing a notification of death.</p>
+          <div class="tip">💡 CPP/OAS payments deposited after the date of death must be returned. Do this promptly to avoid a repayment demand later.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h3>Cancel provincial ID and benefits</h3>
+          <p>Contact the provincial health authority to cancel the health card (OHIP in Ontario, CareCard in BC, etc.). Also cancel the driver's licence with the provincial Ministry of Transportation, and the passport with Immigration, Refugees and Citizenship Canada (1-800-567-6868).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h3>Notify banks and financial institutions</h3>
+          <p>Contact each bank where the deceased held accounts. Bring a certified death certificate. Joint accounts typically remain accessible to the surviving account holder. Sole accounts are frozen until the estate is settled. The executor will be granted access once they have legal authority (the Certificate of Appointment).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <h3>Notify insurance companies</h3>
+          <p>File claims with all life insurance providers. If beneficiaries are named, those funds pay out directly — bypassing the estate entirely. Also cancel health, dental, auto, and home insurance (or transfer coverage as needed). Check for any workplace group benefits that may include life insurance.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">8</div>
+        <div class="step-content">
+          <h3>Notify the employer</h3>
+          <p>If the deceased was employed, notify HR immediately. You may be entitled to unpaid wages, accrued vacation pay, group insurance proceeds, or pension plan benefits. Ask for a Record of Employment if applicable.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">9</div>
+        <div class="step-content">
+          <h3>Cancel subscriptions and digital accounts</h3>
+          <p>Cancel recurring payments (credit cards, streaming, utilities, phone plan) to stop charges. For digital accounts, most platforms (Apple, Google, Facebook) have legacy contact or memorialization processes. Accessing email and phones often requires passwords — this is why documenting digital access while alive matters so much.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="timeline-connector">↓</div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-badge ongoing">Weeks to months</div>
+      <div class="phase-title">The estate process</div>
+    </div>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">10</div>
+        <div class="step-content">
+          <h3>Apply for probate (if required)</h3>
+          <p>Probate is the court process that validates the will and grants the executor legal authority to act. It's required before banks and land registries will transfer assets held solely in the deceased's name. The executor applies to the provincial court, and the court charges a fee based on the estate's value.</p>
+          <div class="tip">💡 Registered accounts (RRSP, TFSA, RRIF) and jointly owned assets can bypass probate entirely if beneficiaries are properly named — one of the biggest reasons to set up beneficiary designations while you're alive.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">11</div>
+        <div class="step-content">
+          <h3>File the final tax return</h3>
+          <p>The executor must file a final T1 income tax return for the year of death, due by April 30 of the following year (or 6 months after the date of death, whichever is later). This is where the deemed disposition tax is triggered — the CRA treats all assets as if they were sold the day before death, creating a tax bill on any unrealized gains. The RRSP/RRIF balance is also fully taxed as income in the year of death.</p>
+          <div class="tip">💡 On a $300,000 RRSP at a 53% marginal rate, the tax bill can exceed $129,000 in the year of death alone. This is often the biggest surprise families face.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">12</div>
+        <div class="step-content">
+          <h3>Pay debts and liabilities</h3>
+          <p>Before distributing any assets to beneficiaries, the executor must settle all debts: mortgages, credit cards, loans, and outstanding bills. The estate is responsible — beneficiaries cannot be personally forced to pay the deceased's debts (except in rare cases), but the inheritance they receive is reduced by whatever the estate owes.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">13</div>
+        <div class="step-content">
+          <h3>Distribute assets to beneficiaries</h3>
+          <p>Once taxes are paid, debts settled, and the estate is cleared by the CRA (via a clearance certificate), the executor distributes the remaining assets according to the will. If there's no will, distribution follows provincial intestate succession rules — which may not match what the deceased would have wanted.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin checklist -->
+  <h2>Full administrative checklist</h2>
+  <p>A complete list of who to contact and what to cancel. The executor works through most of these, but family members often help.</p>
+
+  <div class="checklist-section">
+    <h3>🏛️ Government & ID</h3>
+    <div class="checklist-grid">
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Service Canada — cancel CPP/OAS</div>
+          <div class="checklist-sub">1-800-277-9914 · Apply for CPP Death Benefit</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Canada Revenue Agency — notify of death</div>
+          <div class="checklist-sub">File final T1 return · Request clearance certificate</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Provincial health card (OHIP, CareCard, etc.)</div>
+          <div class="checklist-sub">Cancel health number with provincial authority</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Driver's licence</div>
+          <div class="checklist-sub">Cancel with provincial Ministry of Transportation</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Passport</div>
+          <div class="checklist-sub">Cancel with IRCC · 1-800-567-6868</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Social Insurance Number</div>
+          <div class="checklist-sub">Notify Service Canada — SIN is cancelled on death</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Elections Canada</div>
+          <div class="checklist-sub">Remove from voters list · 1-800-463-6868</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Veterans Affairs (if applicable)</div>
+          <div class="checklist-sub">Cancel benefits, notify of death</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checklist-section">
+    <h3>🏦 Financial institutions</h3>
+    <div class="checklist-grid">
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Bank accounts (chequing, savings)</div>
+          <div class="checklist-sub">Freeze sole accounts · Transfer joint accounts</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Investment accounts (RRSP, TFSA, RRIF)</div>
+          <div class="checklist-sub">Notify institution · Trigger beneficiary payout</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Life insurance policies</div>
+          <div class="checklist-sub">File claims with each insurer</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Credit cards</div>
+          <div class="checklist-sub">Cancel all cards · Settle outstanding balances from estate</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Mortgage lender</div>
+          <div class="checklist-sub">Notify lender · Mortgage insurance may apply</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Pension plans (employer or private)</div>
+          <div class="checklist-sub">Apply for survivor benefits if applicable</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checklist-section">
+    <h3>📱 Subscriptions & services</h3>
+    <div class="checklist-grid">
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Cell phone plan</div>
+          <div class="checklist-sub">Cancel or transfer number</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Internet & cable</div>
+          <div class="checklist-sub">Cancel or transfer service</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Streaming services (Netflix, Spotify, etc.)</div>
+          <div class="checklist-sub">Cancel recurring subscriptions</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Home & auto insurance</div>
+          <div class="checklist-sub">Cancel or transfer policies</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Utilities (hydro, gas, water)</div>
+          <div class="checklist-sub">Transfer or cancel accounts</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Professional memberships / clubs</div>
+          <div class="checklist-sub">Cancel and request any prepaid refunds</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Email & digital accounts</div>
+          <div class="checklist-sub">Apply legacy contact or memorialization settings</div>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <div class="checklist-icon">□</div>
+        <div>
+          <div>Canada Post — mail forwarding</div>
+          <div class="checklist-sub">Redirect mail to executor's address</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What the costs actually look like -->
+  <h2>What the costs actually look like</h2>
+  <p>Most families are surprised by the size of the tax bill. In Canada, when someone dies, the government treats it as if they sold all their assets the day before — triggering capital gains tax and income tax on registered accounts. Then probate fees are layered on top.</p>
+
+  <div class="cost-card">
+    <h3>Example: Jamie's estate (Ontario) — $2.3M total</h3>
+    <div class="cost-row">
+      <span class="cost-label">RRSP ($300K) — taxed as income at ~53%</span>
+      <span class="cost-amount">$129,990</span>
+    </div>
+    <div class="cost-row">
+      <span class="cost-label">Non-registered account — capital gains on $50K</span>
+      <span class="cost-amount">$10,833</span>
+    </div>
+    <div class="cost-row">
+      <span class="cost-label">Cottage — capital gains on $200K gain</span>
+      <span class="cost-amount">$43,330</span>
+    </div>
+    <div class="cost-row">
+      <span class="cost-label">Probate fees (Ontario, ~1.5% on eligible assets)</span>
+      <span class="cost-amount">$28,500</span>
+    </div>
+    <div class="cost-row">
+      <span class="cost-label" style="font-weight:700; color: #fff;">Total cost of dying</span>
+      <span class="cost-amount highlight">$212,653</span>
+    </div>
+    <div class="cost-note">Source: Wealthsimple Wealth Management webinar. Assumptions: Ontario probate at 1.5%, marginal tax rate 53.53%. TFSA and principal residence are tax-free and not included in the taxable calculation.</div>
+  </div>
+
+  <div class="callout warning">
+    <strong>The RRSP surprise:</strong> The RRSP is often the biggest shock. Unlike other assets where only the gains are taxed, the entire RRSP balance is treated as income in the year of death — at the top marginal rate. A $300,000 RRSP can trigger a tax bill of nearly $130,000, all due in a single year.
+  </div>
+
+  <div class="callout province">
+    <strong>Probate fees vary dramatically by province.</strong> In Alberta, the fee is capped at $525 regardless of estate size. In BC, Nova Scotia, or Ontario, the same estate can owe over $150,000 in probate fees alone. See the province-by-province breakdown on our <a href="learn.html#probate-widget" style="color: #166534; font-weight: 600;">Learn hub</a>.
+  </div>
+
+  <!-- With vs without a will -->
+  <h2>With a will vs. without one</h2>
+  <p>Having a will doesn't just decide who gets what — it determines how hard the entire process is for the people you leave behind.</p>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;">
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px;">
+      <div style="font-size: 13px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">✓ With a will</div>
+      <ul style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #333; line-height: 1.7;">
+        <li style="padding: 4px 0;">Executor named and ready to act</li>
+        <li style="padding: 4px 0;">Distribution follows your wishes</li>
+        <li style="padding: 4px 0;">Estate typically settled in 6–12 months</li>
+        <li style="padding: 4px 0;">Tax and probate planning is possible</li>
+        <li style="padding: 4px 0;">Reduces family conflict significantly</li>
+      </ul>
+    </div>
+    <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 12px; padding: 20px;">
+      <div style="font-size: 13px; font-weight: 700; color: #9a3412; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">✗ Without a will</div>
+      <ul style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #333; line-height: 1.7;">
+        <li style="padding: 4px 0;">Court appoints an administrator</li>
+        <li style="padding: 4px 0;">Province decides who gets what</li>
+        <li style="padding: 4px 0;">Settlement can take years</li>
+        <li style="padding: 4px 0;">Higher probate costs, more red tape</li>
+        <li style="padding: 4px 0;">Family conflict is far more common</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <strong>The Ontario intestate formula:</strong> If you die without a will in Ontario and have a spouse and children, your spouse receives the first $350,000, and the remainder is divided equally between the spouse and children. This may not reflect what you intended — and it creates friction at the worst possible time.
+  </div>
+
+  <!-- The one thing -->
+  <h2>The one thing that makes all of this easier</h2>
+  <p>Everything in this guide becomes significantly harder when the executor doesn't know where to look. No one documents their accounts, passwords, insurance policies, and legal documents in one accessible place — until they're forced to.</p>
+
+  <p>According to a 2023 Angus Reid Institute study, <strong>50% of Canadians don't have a will</strong> — including 1 in 5 Canadians aged 55 or older. The administrative burden of an undocumented estate falls entirely on the people already dealing with grief.</p>
+
+  <p>Clarevo exists to change that. It's a free tool that helps Canadian families document their financial picture, identify gaps, and give a surviving spouse or executor exactly what they need to start — not a 3-month scavenger hunt.</p>
+
+  <div class="article-cta">
+    <h3>See where your family's readiness stands</h3>
+    <p>The free Clarevo assessment takes 5 minutes and shows you exactly what gaps exist — before your family needs to find out the hard way.</p>
+    <a href="form.html" class="btn-primary">Check Your Family's Score →</a>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2026 Clarevo. Built for Canadian families. Articles are for general information only and are not legal or financial advice.</p>
+  <div style="margin-top: 10px;">
+    <a href="privacy.html" style="color: #666; font-size: 12px; text-decoration: none; margin-right: 16px;">Privacy Policy</a>
+    <a href="terms.html" style="color: #666; font-size: 12px; text-decoration: none;">Terms of Use</a>
+  </div>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (function(){
+    const SB_URL="https://ulabvzjtullhsshtstnt.supabase.co";
+    const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w";
+    if(!window.supabase) return;
+    const c=window.supabase.createClient(SB_URL,SB_KEY);
+    c.auth.getSession().then(function(res){
+      if(res.data.session){
+        ["authLink","authLinkMobile"].forEach(function(id){
+          var el=document.getElementById(id);
+          if(el){ el.textContent="Dashboard"; el.href="dashboard.html"; }
+        });
+      }
+    });
+  })();
+</script>
+</body>
+</html>
