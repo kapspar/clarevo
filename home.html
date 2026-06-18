@@ -284,6 +284,8 @@
       .gap-card { padding: 18px; }
       .cta-section { padding: 48px 20px; }
       .cta-section h2 { font-size: 28px; }
+      .compare-table { grid-template-columns: 1fr 1fr !important; }
+      .compare-table .row-label { display: none; }
     }
   </style>
 </head>
@@ -386,8 +388,8 @@
 <div class="stats">
   <div class="stats-inner">
     <div>
-      <div class="stat-num">53%</div>
-      <div class="stat-label">of Canadians have no will</div>
+      <div class="stat-num">50%</div>
+      <div class="stat-label">of Canadians have no will — including 1 in 5 over age 55</div>
     </div>
     <div>
       <div class="stat-num">65%</div>
@@ -402,7 +404,7 @@
       <div class="stat-label">to check your readiness</div>
     </div>
   </div>
-  <div class="stats-sources">Sources: Narrative Research (2024); Investors Group / IG Wealth; Ipsos for RBC Insurance (2024).</div>
+  <div class="stats-sources">Sources: Angus Reid Institute (2023); Investors Group / IG Wealth; Ipsos for RBC Insurance (2024).</div>
 </div>
 
 <!-- HOW IT WORKS -->
@@ -430,6 +432,64 @@
   </div>
 </section>
 
+<!-- WITHOUT VS WITH -->
+<section style="padding: 80px 48px; background: var(--bg);">
+  <div style="max-width: 860px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 48px;">
+      <h2 style="font-size: 36px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 12px;">A little preparation makes all the difference.</h2>
+      <p style="font-size: 16px; color: var(--gray); max-width: 420px; margin: 0 auto; line-height: 1.6;">For the people you leave behind.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 200px 1fr 1fr; gap: 0; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg);">
+
+      <!-- Header row -->
+      <div style="background: #f8f9fb; padding: 20px 24px; border-bottom: 1px solid var(--border);"></div>
+      <div style="background: #f8f9fb; padding: 20px 24px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border);">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray);">Without Clarevo</div>
+      </div>
+      <div style="background: var(--dark); padding: 20px 24px; border-bottom: 1px solid #333;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #60a5fa;">With Clarevo</div>
+        <div style="display: inline-block; background: var(--blue); color: white; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; margin-top: 6px; letter-spacing: 0.5px;">Recommended</div>
+      </div>
+
+      <!-- Row 1 -->
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-style: italic; color: var(--dark); font-weight: 500;">Important documents</div>
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); font-size: 13px; color: var(--gray); line-height: 1.5;">Scattered across drawers, emails, and old filing cabinets</div>
+      <div style="background: #1e2240; padding: 20px 24px; border-bottom: 1px solid #2a2f52; font-size: 13px; color: #e2e8f0; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;"><span style="color: #22c55e; font-weight: 700; flex-shrink:0;">✓</span> Organized in one secure place, accessible when needed</div>
+
+      <!-- Row 2 -->
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-style: italic; color: var(--dark); font-weight: 500;">Final wishes</div>
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); font-size: 13px; color: var(--gray); line-height: 1.5;">Assumed, never written down — family left guessing or arguing</div>
+      <div style="background: #1e2240; padding: 20px 24px; border-bottom: 1px solid #2a2f52; font-size: 13px; color: #e2e8f0; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;"><span style="color: #22c55e; font-weight: 700; flex-shrink:0;">✓</span> Clearly documented and shared with the right people</div>
+
+      <!-- Row 3 -->
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-style: italic; color: var(--dark); font-weight: 500;">Account information</div>
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); font-size: 13px; color: var(--gray); line-height: 1.5;">Passwords lost, accounts unknown — executor starts from zero</div>
+      <div style="background: #1e2240; padding: 20px 24px; border-bottom: 1px solid #2a2f52; font-size: 13px; color: #e2e8f0; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;"><span style="color: #22c55e; font-weight: 700; flex-shrink:0;">✓</span> All accounts catalogued and accessible when needed</div>
+
+      <!-- Row 4 -->
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-style: italic; color: var(--dark); font-weight: 500;">Executor readiness</div>
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); font-size: 13px; color: var(--gray); line-height: 1.5;">Has no idea where to start — months of stress and guesswork</div>
+      <div style="background: #1e2240; padding: 20px 24px; border-bottom: 1px solid #2a2f52; font-size: 13px; color: #e2e8f0; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;"><span style="color: #22c55e; font-weight: 700; flex-shrink:0;">✓</span> Shared dashboard gives them everything in one handoff</div>
+
+      <!-- Row 5 -->
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-style: italic; color: var(--dark); font-weight: 500;">The gaps</div>
+      <div style="background: white; padding: 20px 24px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); font-size: 13px; color: var(--gray); line-height: 1.5;">Nobody knows what's missing until it's too late to fix it</div>
+      <div style="background: #1e2240; padding: 20px 24px; border-bottom: 1px solid #2a2f52; font-size: 13px; color: #e2e8f0; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;"><span style="color: #22c55e; font-weight: 700; flex-shrink:0;">✓</span> Gaps detected and routed to the right fix while there's still time</div>
+
+      <!-- Row 6 -->
+      <div style="background: white; padding: 20px 24px; font-size: 14px; font-style: italic; color: var(--dark); font-weight: 500;">Peace of mind</div>
+      <div style="background: white; padding: 20px 24px; border-left: 1px solid var(--border); font-size: 13px; color: var(--gray); line-height: 1.5;">Lingering anxiety about what's left undone</div>
+      <div style="background: #1e2240; padding: 20px 24px; font-size: 13px; color: #e2e8f0; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px;"><span style="color: #22c55e; font-weight: 700; flex-shrink:0;">✓</span> Confidence that your family is prepared</div>
+
+    </div>
+
+    <div style="text-align: center; margin-top: 36px;">
+      <a href="form.html" class="btn-primary">Check Your Readiness Score — Free</a>
+    </div>
+  </div>
+</section>
+
 <!-- LEARN SECTION -->
 <section style="background: var(--white); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 80px 48px;">
   <div style="max-width: 1100px; margin: 0 auto;">
@@ -439,6 +499,12 @@
       <p style="font-size: 16px; color: var(--gray); max-width: 440px; margin: 0 auto; line-height: 1.6;">Plain-English guides that explain everything — no jargon, no legal speak.</p>
     </div>
     <div class="learn-carousel">
+      <a href="learn-when-someone-dies.html" class="learn-c-card" style="background: #1a0a0a; border: 1px solid #3f1010;">
+        <div style="font-size: 28px; margin-bottom: 12px;">🕯️</div>
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #f87171; margin-bottom: 6px;">Crisis Guide</div>
+        <div style="font-size: 15px; font-weight: 700; color: white; line-height: 1.4; margin-bottom: 10px;">What to do when someone dies in Canada</div>
+        <div style="font-size: 12px; color: #f87171; font-weight: 600;">Read the guide →</div>
+      </a>
       <a href="learn-emergency.html" class="learn-c-card" style="background: var(--dark);">
         <div style="font-size: 28px; margin-bottom: 12px;">🚨</div>
         <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #f87171; margin-bottom: 6px;">Most Important</div>
