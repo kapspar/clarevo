@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <title>What is an Executor? — Clarevo</title>
+  <title>What is an Executor in Canada? Complete Guide — Clarevo</title>
+  <meta name="description" content="A complete guide to executor duties in Canada. What you're legally responsible for, the step-by-step process, probate explained, and what happens if there's no will.">
   <link rel="stylesheet" href="style.css">
   <style>
     .learn-hero {
@@ -18,17 +19,18 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
-      color: var(--blue);
+      color: #60a5fa;
       margin-bottom: 14px;
     }
     .learn-hero h1 {
-      font-size: 40px;
+      font-size: 38px;
       font-weight: 800;
       letter-spacing: -1px;
       margin-bottom: 16px;
-      max-width: 600px;
+      max-width: 660px;
       margin-left: auto;
       margin-right: auto;
+      line-height: 1.2;
     }
     .learn-hero p {
       font-size: 17px;
@@ -48,57 +50,164 @@
       font-size: 24px;
       font-weight: 800;
       letter-spacing: -0.3px;
-      margin: 48px 0 16px;
+      margin: 52px 0 16px;
       color: var(--dark);
     }
-    .learn-body h2:first-child { margin-top: 0; }
-
+    .learn-body h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 28px 0 12px;
+      color: var(--dark);
+    }
     .learn-body p {
       font-size: 16px;
       color: #444;
       line-height: 1.8;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
+    /* Table of contents */
+    .toc {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 40px;
+    }
+    .toc-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gray);
+      margin-bottom: 14px;
+    }
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 24px;
+    }
+    .toc-list li a {
+      font-size: 14px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .toc-list li a:hover { text-decoration: underline; }
+
+    /* Callouts */
     .callout {
-      background: var(--blue-light);
-      border-left: 4px solid var(--blue);
-      border-radius: 0 var(--radius) var(--radius) 0;
+      border-radius: var(--radius-lg);
       padding: 20px 24px;
       margin: 28px 0;
+    }
+    .callout.blue {
+      background: var(--blue-light);
+      border-left: 4px solid var(--blue);
+    }
+    .callout.yellow {
+      background: #fffbeb;
+      border-left: 4px solid var(--yellow);
+    }
+    .callout.red {
+      background: #fef2f2;
+      border-left: 4px solid var(--red);
+    }
+    .callout.green {
+      background: #f0fdf4;
+      border-left: 4px solid var(--green);
     }
     .callout p {
       font-size: 15px;
-      color: var(--dark);
       margin: 0;
       line-height: 1.7;
       font-weight: 500;
+      color: var(--dark);
     }
+    .callout.yellow p { color: #78350f; }
+    .callout.red p { color: #991b1b; }
+    .callout.green p { color: #14532d; }
 
-    .warning-callout {
-      background: #fffbeb;
-      border-left: 4px solid var(--yellow);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      padding: 20px 24px;
-      margin: 28px 0;
+    /* Phase timeline */
+    .phase-block {
+      margin-bottom: 36px;
     }
-    .warning-callout p {
+    .phase-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .phase-tag.immediate { background: #fee2e2; color: #dc2626; }
+    .phase-tag.weeks { background: #fef3c7; color: #d97706; }
+    .phase-tag.months { background: var(--blue-light); color: var(--blue); }
+    .phase-tag.closing { background: #f0fdf4; color: #16a34a; }
+
+    /* Step list */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .step-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 14px;
+      align-items: start;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-num.red { background: #fee2e2; color: #dc2626; }
+    .step-num.yellow { background: #fef3c7; color: #d97706; }
+    .step-num.blue { background: var(--blue-light); color: var(--blue); }
+    .step-num.green { background: #f0fdf4; color: #16a34a; }
+    .step-content strong {
       font-size: 15px;
-      color: #78350f;
-      margin: 0;
-      line-height: 1.7;
+      font-weight: 700;
+      color: var(--dark);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .step-content span {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.55;
     }
 
+    /* Quality checklist */
     .checklist {
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 28px;
-      margin: 28px 0;
+      margin: 24px 0;
       box-shadow: var(--shadow);
     }
     .checklist h3 {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       margin-bottom: 16px;
       color: var(--dark);
@@ -125,14 +234,54 @@
       margin-top: 1px;
     }
 
-    .scenario {
-      background: var(--gray-light);
+    /* Comparison table */
+    .compare-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .compare-col {
       border-radius: var(--radius-lg);
-      padding: 28px;
+      padding: 20px 24px;
+    }
+    .compare-col.bad {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+    }
+    .compare-col.good {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+    .compare-col-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .compare-col.bad .compare-col-label { color: #9a3412; }
+    .compare-col.good .compare-col-label { color: #166534; }
+    .compare-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.7;
+    }
+    .compare-col ul li { padding: 3px 0; }
+
+    /* Scenario */
+    .scenario {
+      background: #fafafa;
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
       margin: 28px 0;
       border: 1px solid var(--border);
+      border-left: 4px solid var(--gray);
     }
-    .scenario .scenario-label {
+    .scenario-label {
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
@@ -144,21 +293,71 @@
       font-size: 15px;
       color: var(--dark);
       margin: 0;
-      line-height: 1.7;
+      line-height: 1.75;
       font-style: italic;
     }
 
+    /* Fee table */
+    .fee-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+    .fee-table th {
+      background: var(--dark);
+      color: var(--white);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .fee-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #444;
+      line-height: 1.5;
+    }
+    .fee-table tr:last-child td { border-bottom: none; }
+    .fee-table tr:nth-child(even) td { background: #fafafa; }
+
+    /* CTA */
     .cta-box {
       background: var(--dark);
       border-radius: var(--radius-lg);
-      padding: 36px;
+      padding: 40px;
       text-align: center;
       color: var(--white);
-      margin-top: 48px;
+      margin-top: 52px;
     }
-    .cta-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
-    .cta-box p { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.6; }
+    .cta-box .cta-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #60a5fa;
+      margin-bottom: 12px;
+    }
+    .cta-box h3 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+    .cta-box p {
+      font-size: 15px;
+      color: #aaa;
+      margin-bottom: 28px;
+      line-height: 1.7;
+      max-width: 460px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
+    /* Article nav */
     .learn-nav {
       display: flex;
       gap: 16px;
@@ -182,11 +381,25 @@
     .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
     .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
 
-    @media (max-width: 600px) {
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      margin-bottom: 32px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    @media (max-width: 700px) {
       .learn-hero { padding: 48px 20px; }
-      .learn-hero h1 { font-size: 28px; }
+      .learn-hero h1 { font-size: 26px; }
       .learn-body { padding: 40px 20px; }
       .learn-body h2 { font-size: 20px; }
+      .toc-list { grid-template-columns: 1fr; }
+      .compare-block { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -195,99 +408,408 @@
 <nav>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
   <ul class="nav-links">
-    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="learn.html">Learn</a></li>
     <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="login.html" id="authLink">Log In</a></li>
     <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
   </ul>
   <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="learn.html" onclick="toggleMenu()">Learn</a>
   <a href="pricing.html">Pricing</a>
+  <a href="login.html" id="authLinkMobile">Log In</a>
   <a href="form.html" class="mob-cta">Check Your Score →</a>
 </div>
 
 <div class="learn-hero">
-  <div class="category">Understanding Estates</div>
-  <h1>What is an executor — and why does it matter?</h1>
-  <p>Most people have never thought about this. Here's everything you need to know, explained simply.</p>
+  <div class="category">Role Guide — Executor</div>
+  <h1>What is an executor in Canada — and what do you actually have to do?</h1>
+  <p>Whether you've just been named executor or you're choosing one, this is everything you need to know — the responsibilities, the process, and the liability.</p>
 </div>
 
 <div class="learn-body">
 
-  <h2>Let's start with the simple version</h2>
-  <p>When you die, someone has to deal with everything you leave behind. Your bank accounts need to be closed. Your bills need to be paid. Your belongings need to go to the right people. Your taxes need to be filed one final time.</p>
-  <p>That person is called your <strong>executor</strong>. They're the one who wraps up your life on your behalf.</p>
+  <a href="learn.html" class="back-link">← Back to all guides</a>
 
-  <div class="callout">
-    <p>💡 Think of an executor like a project manager for your estate. They don't necessarily get anything — they just make sure everything gets handled properly and goes to the right people.</p>
+  <div class="toc">
+    <div class="toc-label">In this guide</div>
+    <ul class="toc-list">
+      <li><a href="#what-is">What an executor actually is</a></li>
+      <li><a href="#responsibilities">Your legal responsibilities</a></li>
+      <li><a href="#liability">Your personal liability</a></li>
+      <li><a href="#process">The step-by-step process</a></li>
+      <li><a href="#probate">Probate explained</a></li>
+      <li><a href="#taxes">The final tax return</a></li>
+      <li><a href="#no-will">When there's no will</a></li>
+      <li><a href="#choosing">How to choose an executor</a></li>
+      <li><a href="#compensation">Executor compensation</a></li>
+      <li><a href="#lawyer">When to hire a lawyer</a></li>
+    </ul>
   </div>
 
-  <h2>What does an executor actually do?</h2>
-  <p>It's more work than most people realize. An executor typically needs to:</p>
+  <!-- WHAT IS -->
+  <h2 id="what-is">What an executor actually is</h2>
+  <p>When you die, every loose end in your financial life needs to be tied up — bank accounts closed, taxes filed, debts paid, belongings distributed. Someone has to do all of that. That person is your executor.</p>
+
+  <p>In most of Canada the role is called an executor, though Quebec uses the term <strong>liquidator</strong> and some provinces say <strong>estate trustee</strong>. The function is identical: they are the legal representative of your estate after you die.</p>
+
+  <p>The executor's job is not to inherit anything — it's to manage the process. They act as a fiduciary, meaning they're legally obligated to act in the best interests of the estate and its beneficiaries, not their own.</p>
+
+  <div class="callout blue">
+    <p>Think of an executor like the project manager of your estate. Their job is to make sure everything gets handled in the right order, paid to the right people, and closed out properly — usually over 6 to 18 months.</p>
+  </div>
+
+  <!-- RESPONSIBILITIES -->
+  <h2 id="responsibilities">Your legal responsibilities as executor</h2>
+  <p>If you've been named executor, here is what you are legally responsible for. This list is more involved than most people expect.</p>
 
   <div class="checklist">
-    <h3>The executor's to-do list</h3>
-    <div class="check-item"><div class="check-dot">1</div>Locate your will and file it with the court if required (this is called probate)</div>
-    <div class="check-item"><div class="check-dot">2</div>Notify your bank, employer, insurance company, and government agencies like CRA and Service Canada</div>
-    <div class="check-item"><div class="check-dot">3</div>Pay any outstanding debts and final bills</div>
-    <div class="check-item"><div class="check-dot">4</div>File your final tax return — yes, even after death you owe taxes</div>
-    <div class="check-item"><div class="check-dot">5</div>Distribute your belongings and money according to your will</div>
-    <div class="check-item"><div class="check-dot">6</div>Cancel subscriptions, accounts, memberships, and digital services</div>
-    <div class="check-item"><div class="check-dot">7</div>Handle any real estate — selling a home or transferring ownership</div>
+    <h3>Core executor duties</h3>
+    <div class="check-item"><div class="check-dot">1</div>Locate the will and confirm you are named executor</div>
+    <div class="check-item"><div class="check-dot">2</div>Apply for probate if required (court validation of the will)</div>
+    <div class="check-item"><div class="check-dot">3</div>Obtain death certificates — you will need multiple certified copies</div>
+    <div class="check-item"><div class="check-dot">4</div>Notify all relevant institutions — banks, CRA, Service Canada, insurance companies, employer</div>
+    <div class="check-item"><div class="check-dot">5</div>Create a complete inventory of the deceased's assets and liabilities</div>
+    <div class="check-item"><div class="check-dot">6</div>Open an estate bank account to collect estate funds and pay expenses</div>
+    <div class="check-item"><div class="check-dot">7</div>Pay all outstanding debts — credit cards, loans, mortgages, bills</div>
+    <div class="check-item"><div class="check-dot">8</div>File the final T1 income tax return for the year of death</div>
+    <div class="check-item"><div class="check-dot">9</div>Obtain a CRA clearance certificate before distributing any assets</div>
+    <div class="check-item"><div class="check-dot">10</div>Distribute assets to beneficiaries according to the will</div>
+    <div class="check-item"><div class="check-dot">11</div>Cancel subscriptions, memberships, and digital accounts</div>
+    <div class="check-item"><div class="check-dot">12</div>Handle any real estate — transfer or sell property</div>
+    <div class="check-item"><div class="check-dot">13</div>Keep detailed records of every transaction and decision you make</div>
   </div>
 
-  <p>This process usually takes <strong>6 to 18 months</strong>. It's not a quick job. It requires paperwork, phone calls, patience, and dealing with bureaucracy — all while grieving.</p>
+  <p>This is not a weekend project. For a moderately complex estate, expect to spend 100–200 hours over 12–18 months. For estates with real property, a business, or complicated family dynamics, it can be significantly more.</p>
 
-  <h2>Who should you choose?</h2>
-  <p>Most people name a spouse, an adult child, or a close trusted friend. There's no perfect answer — but there are some good questions to ask yourself:</p>
+  <!-- LIABILITY -->
+  <h2 id="liability">Your personal liability — the part most people don't know</h2>
+  <p>This is the section most executor guides skip, and it's the most important one to understand before you accept the role.</p>
+
+  <p>As executor, <strong>you can be held personally liable</strong> for mistakes. This is not theoretical. Common situations where executors face personal liability:</p>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num red">!</div>
+      <div class="step-content">
+        <strong>Distributing assets before taxes are paid</strong>
+        <span>If you pay out to beneficiaries and then discover the estate owes more tax than is left, you — not the beneficiaries — may be on the hook to the CRA for the shortfall.</span>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num red">!</div>
+      <div class="step-content">
+        <strong>Missing the CRA clearance certificate</strong>
+        <span>The clearance certificate is the CRA's sign-off that all taxes are paid. Distributing the estate before receiving it is one of the most common and costly executor mistakes.</span>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num red">!</div>
+      <div class="step-content">
+        <strong>Failing to notify creditors properly</strong>
+        <span>Most provinces require executors to publish a notice to creditors. If a creditor surfaces after you've distributed the estate, you may be personally responsible.</span>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num red">!</div>
+      <div class="step-content">
+        <strong>Acting in your own interest</strong>
+        <span>If you benefit personally from a decision you make as executor — buying estate property at below market value, for example — beneficiaries can sue you for breach of fiduciary duty.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout red">
+    <p>You can decline the role of executor. If you're named in a will but don't want to take it on, you can formally renounce the executorship before taking any action. Once you start acting as executor, renouncing becomes much more complicated.</p>
+  </div>
+
+  <!-- PROCESS -->
+  <h2 id="process">The step-by-step process</h2>
+  <p>Here's how the executor process typically unfolds in Canada, broken into phases. Every estate is different, but this is the general sequence.</p>
+
+  <div class="phase-block">
+    <div class="phase-tag immediate">First 48–72 hours</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num red">1</div>
+        <div class="step-content">
+          <strong>Confirm the death and obtain the death certificate</strong>
+          <span>The funeral home issues the death certificate. Order at least 10 certified copies — every institution requires an original. You cannot substitute a photocopy.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num red">2</div>
+        <div class="step-content">
+          <strong>Locate the will</strong>
+          <span>Check the deceased's filing cabinet, safety deposit box, with their lawyer, or in any digital vault they maintained. If you can't find a will, the estate is treated as intestate.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num red">3</div>
+        <div class="step-content">
+          <strong>Secure the assets</strong>
+          <span>Make sure the home is locked, vehicles are secured, and nothing is removed from the estate until you have legal authority to act. Keep a record of the estate's condition.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-tag weeks">First 1–4 weeks</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num yellow">4</div>
+        <div class="step-content">
+          <strong>Notify institutions and government</strong>
+          <span>Contact banks, investment firms, insurance companies, Service Canada (to cancel CPP/OAS and apply for the $2,500 CPP Death Benefit), the employer, and the CRA.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num yellow">5</div>
+        <div class="step-content">
+          <strong>Apply for probate if required</strong>
+          <span>Probate validates the will and grants you legal authority to act on the estate. Most banks and land registries require it before transferring assets held solely in the deceased's name.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num yellow">6</div>
+        <div class="step-content">
+          <strong>Open an estate bank account</strong>
+          <span>All estate funds should flow through a dedicated account. This keeps estate money separate from your personal funds and makes record-keeping clean and defensible.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num yellow">7</div>
+        <div class="step-content">
+          <strong>Create a complete asset and liability inventory</strong>
+          <span>List every bank account, investment, property, vehicle, and valuable asset. List every debt. This becomes the foundation for everything that follows.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-tag months">Months 1–6</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num blue">8</div>
+        <div class="step-content">
+          <strong>Pay all debts and liabilities</strong>
+          <span>Publish a notice to creditors (required in most provinces), then settle credit cards, loans, mortgages, and outstanding bills from the estate account. Do not distribute to beneficiaries yet.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num blue">9</div>
+        <div class="step-content">
+          <strong>File the final T1 income tax return</strong>
+          <span>Due April 30 of the following year, or 6 months after the date of death — whichever is later. This is where the deemed disposition tax is calculated on the estate's assets.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num blue">10</div>
+        <div class="step-content">
+          <strong>Request a CRA clearance certificate</strong>
+          <span>This is the CRA's confirmation that all taxes have been paid. Do not distribute the estate without it. Processing typically takes 6–8 weeks after filing.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-tag closing">Final phase</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num green">11</div>
+        <div class="step-content">
+          <strong>Distribute assets to beneficiaries</strong>
+          <span>Once the clearance certificate is received and all debts paid, you can distribute assets according to the will. Get signed receipts from each beneficiary.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num green">12</div>
+        <div class="step-content">
+          <strong>Prepare a final accounting</strong>
+          <span>Document every transaction, payment, and distribution. Beneficiaries are entitled to a full accounting. Keep all records for at least 6 years after the estate is closed.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num green">13</div>
+        <div class="step-content">
+          <strong>Close the estate account and wind up the estate</strong>
+          <span>Once everything is settled and beneficiaries have signed off, close the estate bank account. The estate is now formally wound up.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBATE -->
+  <h2 id="probate">Probate explained</h2>
+  <p>Probate is the court process that validates the will and gives the executor legal authority to act on behalf of the estate. Without it, banks and land registries will often refuse to transfer assets.</p>
+
+  <p>Not all assets require probate. Assets that typically bypass probate entirely:</p>
 
   <div class="checklist">
-    <h3>Good qualities in an executor</h3>
-    <div class="check-item"><div class="check-dot">✓</div>Organized and detail-oriented — they'll be dealing with a lot of paperwork</div>
-    <div class="check-item"><div class="check-dot">✓</div>Calm under pressure — this is an emotionally difficult job</div>
-    <div class="check-item"><div class="check-dot">✓</div>Trustworthy — they'll have access to your finances and assets</div>
-    <div class="check-item"><div class="check-dot">✓</div>Available — they need time to actually do this properly</div>
-    <div class="check-item"><div class="check-dot">✓</div>Lives in Canada — dealing with foreign executors adds complexity</div>
+    <h3>What bypasses probate</h3>
+    <div class="check-item"><div class="check-dot">✓</div>Registered accounts (RRSP, TFSA, RRIF, LIRA) with a named beneficiary</div>
+    <div class="check-item"><div class="check-dot">✓</div>Life insurance policies with a named beneficiary</div>
+    <div class="check-item"><div class="check-dot">✓</div>Jointly owned property (passes directly to the surviving owner)</div>
+    <div class="check-item"><div class="check-dot">✓</div>Joint bank accounts with right of survivorship</div>
+    <div class="check-item"><div class="check-dot">✓</div>In Quebec — a notarial will does not require probate</div>
   </div>
 
-  <div class="warning-callout">
-    <p>⚠️ <strong>One important thing:</strong> You can name anyone as your executor — but you should tell them first. Finding out you're someone's executor after they've died, with no preparation, is overwhelming. Have the conversation while you can.</p>
+  <p>Probate fees are charged on the value of the estate that passes through probate and vary enormously by province. Ontario charges roughly 1.5% of the estate value. Alberta caps fees at $525 regardless of estate size. For a $2 million estate in Ontario, the probate fee alone is approximately $30,000.</p>
+
+  <div class="callout yellow">
+    <p>Probate can take 4 to 8 weeks in straightforward cases. Contested wills or complex estates can take significantly longer — sometimes years. This is why the estate process often stretches well past 12 months.</p>
   </div>
 
-  <h2>What if you don't name one?</h2>
-  <p>If you die without a will — or without naming an executor — the court will appoint one for you. That person is called an <strong>administrator</strong> and it's usually a family member who applies for the role.</p>
-  <p>The problem is this process takes time, can cause family conflict, and the person who ends up in charge might not be who you would have chosen. It also costs more money and creates more stress for your family during an already difficult time.</p>
+  <!-- TAXES -->
+  <h2 id="taxes">The final tax return — and why it surprises people</h2>
+  <p>As executor, you must file a final T1 income tax return on behalf of the deceased. This is not optional. And it's often more complex than a regular tax return.</p>
+
+  <p>In Canada, the tax rules treat death as a deemed disposition — meaning the government considers the deceased to have sold all of their assets the day before they died. Any unrealized capital gains are triggered and taxable in the year of death.</p>
+
+  <p>The RRSP is the biggest shock. Unlike other assets where only the gain is taxed, <strong>the entire RRSP balance is treated as income</strong> in the year of death and taxed at the top marginal rate. A $300,000 RRSP can generate a tax bill of over $129,000 — all due from the estate before any distribution to beneficiaries.</p>
+
+  <table class="fee-table">
+    <thead>
+      <tr>
+        <th>Asset type</th>
+        <th>How it's taxed on death</th>
+        <th>Can bypass probate?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>RRSP / RRIF</td>
+        <td>Full balance taxed as income at marginal rate</td>
+        <td>Yes, with named beneficiary</td>
+      </tr>
+      <tr>
+        <td>TFSA</td>
+        <td>Tax-free — no tax on death</td>
+        <td>Yes, with named beneficiary</td>
+      </tr>
+      <tr>
+        <td>Non-registered investments</td>
+        <td>Capital gains on unrealized gains only</td>
+        <td>No — goes through probate</td>
+      </tr>
+      <tr>
+        <td>Principal residence</td>
+        <td>Tax-free — principal residence exemption applies</td>
+        <td>No — goes through probate</td>
+      </tr>
+      <tr>
+        <td>Cottage / second property</td>
+        <td>Capital gains on full unrealized gain</td>
+        <td>No — goes through probate</td>
+      </tr>
+      <tr>
+        <td>Life insurance</td>
+        <td>Tax-free to named beneficiary</td>
+        <td>Yes, with named beneficiary</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>After filing the final return, you must apply to the CRA for a <strong>clearance certificate</strong>. This document confirms that all taxes have been paid and the CRA has no further claim against the estate. Do not distribute assets without it — if taxes are subsequently assessed, you are personally on the hook.</p>
+
+  <!-- NO WILL -->
+  <h2 id="no-will">When there's no will</h2>
+  <p>If the deceased died without a will — called dying intestate — there is no named executor. Someone must apply to the court to become the estate administrator. This is usually a surviving spouse or adult child, but it requires a court application and approval.</p>
+
+  <div class="compare-block">
+    <div class="compare-col bad">
+      <div class="compare-col-label">Without a will</div>
+      <ul>
+        <li>Court appoints an administrator</li>
+        <li>Province decides who inherits</li>
+        <li>Higher probate costs</li>
+        <li>Settlement takes significantly longer</li>
+        <li>Family conflict is far more common</li>
+        <li>No executor prep or documented plan</li>
+      </ul>
+    </div>
+    <div class="compare-col good">
+      <div class="compare-col-label">With a will</div>
+      <ul>
+        <li>Named executor has immediate authority</li>
+        <li>Distribution follows deceased's wishes</li>
+        <li>Tax planning was possible in advance</li>
+        <li>Typically settled in 6–12 months</li>
+        <li>Clearer process, less family friction</li>
+        <li>Executor was prepared and briefed</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>In Ontario, if you die intestate with a spouse and children, your spouse receives the first $350,000 and the remainder is divided equally between the spouse and children. This formula may not reflect your actual wishes — and it creates real conflict when families don't agree.</p>
+
+  <!-- CHOOSING -->
+  <h2 id="choosing">How to choose an executor</h2>
+  <p>Most people name a spouse, an adult child, or a close trusted friend. There's no perfect choice — but there are qualities that matter more than most people realize.</p>
+
+  <div class="checklist">
+    <h3>What to look for in an executor</h3>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Organized</strong> — they'll be managing paperwork, deadlines, and institutions simultaneously</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Financially literate</strong> — they need to understand tax returns, probate, and asset distribution</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Available</strong> — this role takes significant time over 12–18 months. Don't name someone whose life circumstances make this impractical</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Lives in Canada</strong> — foreign executors create significant legal and tax complications</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Can handle family dynamics</strong> — if beneficiaries disagree, the executor must navigate that without taking sides</div>
+    <div class="check-item"><div class="check-dot">✓</div><strong>Has agreed to do it</strong> — this is the one people skip most often. Tell them while you can.</div>
+  </div>
+
+  <p>Always name an alternate executor in your will. If your primary executor predeceases you, is incapacitated, or declines the role, a named alternate ensures the estate doesn't end up in court to appoint someone.</p>
 
   <div class="scenario">
-    <div class="scenario-label">Real scenario</div>
-    <p>"My dad died without telling anyone where his will was. We knew he had one but couldn't find it for three weeks. During that time nobody could touch his accounts, his mortgage payments almost lapsed, and my sister and I had our first real fight in 20 years. All of that could have been avoided."</p>
+    <div class="scenario-label">A common situation</div>
+    <p>"My brother named me executor of his estate. I found out when the lawyer called me, three days after he died. I had no idea where his accounts were, whether he had insurance, or what passwords he used. It took me four months just to figure out what he owned. He could have told me any of this in a single conversation."</p>
   </div>
 
-  <h2>Can an executor be paid?</h2>
-  <p>Yes. In Canada, executors are entitled to reasonable compensation — typically around 2.5% to 5% of the estate's value. Most family members waive this, but it's important to know it's an option, especially if you're asking someone to take on a complex estate.</p>
+  <!-- COMPENSATION -->
+  <h2 id="compensation">Executor compensation</h2>
+  <p>Executors are entitled to reasonable compensation in Canada — this is not charity work. The generally accepted range is <strong>2.5% to 5% of the estate's gross value</strong>, depending on the complexity of the work. For a $1 million estate, that's $25,000 to $50,000.</p>
 
-  <h2>What about a backup executor?</h2>
-  <p>It's smart to name an alternate executor in your will — someone who steps in if your first choice can't or won't do it. Life is unpredictable, and having a backup means your estate won't be left in limbo if something happens to your executor too.</p>
+  <p>Most executors who are close family members waive this. But if the estate is complex, the process lengthy, or the executor is not a direct beneficiary, compensation is not only appropriate — it's fair.</p>
 
-  <h2>The conversation you need to have</h2>
-  <p>Once you've chosen someone, sit down with them and go through the basics. Tell them where your will is, where your key documents are, what financial accounts exist, and what you'd want them to know. It doesn't have to be a long conversation — but it needs to happen.</p>
-  <p>That's exactly what Clarevo helps you prepare: a clear, organized plan that your executor can actually use.</p>
+  <p>Executor compensation is taxable income to the executor. The estate can deduct it as an administration expense. If you're also a beneficiary, there may be tax reasons to take the compensation as an inheritance instead — talk to an accountant.</p>
 
+  <!-- LAWYER -->
+  <h2 id="lawyer">When to hire a lawyer</h2>
+  <p>Not every estate requires a lawyer. A simple estate — clear will, no real property, cooperative family — can often be handled without one. But there are situations where professional help is worth every dollar.</p>
+
+  <div class="checklist">
+    <h3>Hire an estate lawyer when:</h3>
+    <div class="check-item"><div class="check-dot">!</div>The estate includes real property (especially in high-probate provinces like Ontario or BC)</div>
+    <div class="check-item"><div class="check-dot">!</div>There is no will or the will is being contested</div>
+    <div class="check-item"><div class="check-dot">!</div>There are minor children or a dependent who needs ongoing financial provisions</div>
+    <div class="check-item"><div class="check-dot">!</div>The estate includes a business or shares of a private corporation</div>
+    <div class="check-item"><div class="check-dot">!</div>There are creditors making claims against the estate</div>
+    <div class="check-item"><div class="check-dot">!</div>Beneficiaries are in conflict</div>
+    <div class="check-item"><div class="check-dot">!</div>You're unsure about your personal liability exposure</div>
+  </div>
+
+  <p>Estate lawyers typically charge either a flat fee for probate applications or a percentage of the estate (usually 1–3%). The cost of a lawyer is an estate expense — it comes out of the estate, not your pocket.</p>
+
+  <!-- CLAREVO CTA -->
   <div class="cta-box">
-    <h3>Does your executor know they're your executor?</h3>
-    <p>Check your readiness score and find out what gaps your family still has — including whether your executor is prepared.</p>
-    <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+    <div class="cta-eyebrow">How Clarevo helps</div>
+    <h3>The hardest part of being an executor is not knowing where to look.</h3>
+    <p>Clarevo gives the person you name a documented inventory of every account, bill, insurance policy, and legal document — organized and accessible when they need it most. No scavenger hunt. No months of guesswork.</p>
+    <a href="form.html" class="btn-primary">See What Your Executor Would Find →</a>
   </div>
 
   <div class="learn-nav">
     <a href="learn-poa.html">
-      <div class="nav-label">Next →</div>
-      <div class="nav-title">What is a Power of Attorney?</div>
+      <div class="nav-label">Related guide</div>
+      <div class="nav-title">What is a Power of Attorney — and why do you need two?</div>
     </a>
-    <a href="learn-will.html">
-      <div class="nav-label">Also read</div>
-      <div class="nav-title">What is a will — and what happens without one?</div>
+    <a href="learn-when-someone-dies.html">
+      <div class="nav-label">Related guide</div>
+      <div class="nav-title">What to do when someone dies in Canada</div>
     </a>
   </div>
 
@@ -295,13 +817,34 @@
 
 <footer>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
-  <p>© 2026 Clarevo. This page is for general information only and is not legal advice.</p>
+  <p>© 2026 Clarevo. Built for Canadian families. This page is for general information only and is not legal advice.</p>
+  <div style="margin-top: 10px;">
+    <a href="privacy.html" style="color: #666; font-size: 12px; text-decoration: none; margin-right: 16px;">Privacy Policy</a>
+    <a href="terms.html" style="color: #666; font-size: 12px; text-decoration: none;">Terms of Use</a>
+  </div>
 </footer>
 
 <script>
   function toggleMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
   }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (function(){
+    const SB_URL="https://ulabvzjtullhsshtstnt.supabase.co";
+    const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w";
+    if(!window.supabase) return;
+    const c=window.supabase.createClient(SB_URL,SB_KEY);
+    c.auth.getSession().then(function(res){
+      if(res.data.session){
+        ["authLink","authLinkMobile"].forEach(function(id){
+          var el=document.getElementById(id);
+          if(el){ el.textContent="Dashboard"; el.href="dashboard.html"; }
+        });
+      }
+    });
+  })();
 </script>
 </body>
 </html>
