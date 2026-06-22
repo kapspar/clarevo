@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <title>How to Avoid or Minimize Probate in Canada — Clarevo</title>
+  <meta name="description" content="Not every estate needs to go through probate. Learn how Canadians can legally avoid or minimize probate fees through beneficiary designations, joint ownership, and proper planning.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .learn-hero {
+      background: var(--dark);
+      padding: 64px 48px;
+      text-align: center;
+      color: var(--white);
+    }
+    .learn-hero .category {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #60a5fa;
+      margin-bottom: 14px;
+    }
+    .learn-hero h1 {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      max-width: 660px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.2;
+    }
+    .learn-hero p {
+      font-size: 17px;
+      color: #aaa;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    .learn-body {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 64px 48px;
+    }
+    .learn-body h2 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin: 52px 0 16px;
+      color: var(--dark);
+    }
+    .learn-body h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin: 28px 0 10px;
+      color: var(--dark);
+    }
+    .learn-body p {
+      font-size: 16px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 18px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      margin-bottom: 32px;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* TOC */
+    .toc {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 40px;
+    }
+    .toc-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gray);
+      margin-bottom: 14px;
+    }
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toc-list li a {
+      font-size: 14px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .toc-list li a:hover { text-decoration: underline; }
+
+    /* Callouts */
+    .callout {
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout.blue { background: var(--blue-light); border-left: 4px solid var(--blue); }
+    .callout.green { background: #f0fdf4; border-left: 4px solid var(--green); }
+    .callout.yellow { background: #fffbeb; border-left: 4px solid var(--yellow); }
+    .callout.red { background: #fef2f2; border-left: 4px solid var(--red); }
+    .callout p { font-size: 15px; margin: 0; line-height: 1.7; font-weight: 500; color: var(--dark); }
+    .callout.yellow p { color: #78350f; }
+    .callout.red p { color: #991b1b; }
+    .callout.green p { color: #14532d; }
+
+    /* Strategy cards */
+    .strategy-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .strategy-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 26px;
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .strategy-num {
+      width: 44px;
+      height: 44px;
+      background: var(--dark);
+      color: var(--white);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .strategy-content h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark);
+      margin: 0 0 6px;
+    }
+    .strategy-content p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.65;
+      margin: 0 0 10px;
+    }
+    .strategy-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .strategy-tag.high { background: #f0fdf4; color: #16a34a; }
+    .strategy-tag.medium { background: var(--blue-light); color: var(--blue); }
+    .strategy-tag.specific { background: #fef3c7; color: #d97706; }
+
+    /* Risk table */
+    .risk-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+    .risk-table th {
+      background: var(--dark);
+      color: var(--white);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .risk-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: #444;
+      line-height: 1.5;
+      vertical-align: top;
+    }
+    .risk-table tr:last-child td { border-bottom: none; }
+    .risk-table tr:nth-child(even) td { background: #fafafa; }
+    .tag-yes { color: #16a34a; font-weight: 700; }
+    .tag-no { color: #dc2626; font-weight: 700; }
+    .tag-maybe { color: #d97706; font-weight: 700; }
+
+    /* Probate widget — embedded */
+    .widget-embed {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin: 32px 0;
+    }
+    .widget-embed-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #60a5fa;
+      margin-bottom: 8px;
+    }
+    .widget-embed h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+    .widget-embed-desc {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .widget-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .widget-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+    .widget-controls input[type="range"] {
+      width: 100%;
+      accent-color: #3b82f6;
+      cursor: pointer;
+    }
+    .widget-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #555;
+    }
+    .province-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+      gap: 8px;
+    }
+    .province-card {
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid #333;
+      background: #1a1a2a;
+    }
+    .province-card.expensive { border-color: #7f1d1d; background: #1f0a0a; }
+    .province-card.cheap { border-color: #14532d; background: #0a1f0f; }
+    .province-name { font-size: 11px; font-weight: 600; color: #aaa; margin-bottom: 3px; }
+    .province-fee { font-size: 14px; font-weight: 800; color: var(--white); }
+    .province-fee.expensive { color: #f87171; }
+    .province-fee.cheap { color: #4ade80; }
+    .province-note { font-size: 10px; color: #555; margin-top: 2px; }
+    .widget-insight {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #93c5fd;
+      line-height: 1.6;
+    }
+    .widget-source { font-size: 11px; color: #444; margin-top: 10px; }
+
+    /* Checklist */
+    .checklist {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin: 24px 0;
+    }
+    .checklist h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--dark); }
+    .check-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.5;
+      align-items: flex-start;
+    }
+    .check-item:last-child { margin-bottom: 0; }
+    .check-dot {
+      width: 22px; height: 22px;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* CTA */
+    .cta-box {
+      background: var(--dark);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      text-align: center;
+      color: var(--white);
+      margin-top: 52px;
+    }
+    .cta-box .cta-eyebrow {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2px;
+      color: #60a5fa; margin-bottom: 12px;
+    }
+    .cta-box h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.3px; }
+    .cta-box p { font-size: 15px; color: #aaa; margin-bottom: 28px; line-height: 1.7; max-width: 460px; margin-left: auto; margin-right: auto; }
+
+    /* Article nav */
+    .learn-nav {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .learn-nav a {
+      flex: 1; min-width: 200px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .learn-nav a:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .learn-nav .nav-label { font-size: 11px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .learn-nav .nav-title { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+    @media (max-width: 700px) {
+      .learn-hero { padding: 48px 20px; }
+      .learn-hero h1 { font-size: 26px; }
+      .learn-body { padding: 40px 20px; }
+      .learn-body h2 { font-size: 20px; }
+      .strategy-card { grid-template-columns: 1fr; }
+      .strategy-num { width: 36px; height: 36px; font-size: 14px; }
+      .province-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <ul class="nav-links">
+    <li><a href="home.html#how">How it works</a></li>
+    <li><a href="learn.html">Learn</a></li>
+    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="login.html" id="authLink">Log In</a></li>
+    <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="home.html" onclick="toggleMenu()">Home</a>
+  <a href="learn.html" onclick="toggleMenu()">Learn</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="login.html" id="authLinkMobile">Log In</a>
+  <a href="form.html" class="mob-cta">Check Your Score →</a>
+</div>
+
+<div class="learn-hero">
+  <div class="category">Estate Planning</div>
+  <h1>Do you actually need probate — and how do you avoid it?</h1>
+  <p>Not every Canadian estate needs to go through probate. Here's what determines whether you need it, and how proper planning can reduce or eliminate the cost entirely.</p>
+</div>
+
+<div class="learn-body">
+
+  <a href="learn.html" class="back-link">← Back to all guides</a>
+
+  <div class="toc">
+    <div class="toc-label">In this guide</div>
+    <ul class="toc-list">
+      <li><a href="#what-is">What probate actually is</a></li>
+      <li><a href="#when-needed">When you do — and don't — need it</a></li>
+      <li><a href="#avoid">How to avoid or minimize probate</a></li>
+      <li><a href="#risks">The risks of DIY strategies</a></li>
+      <li><a href="#calculator">Probate fees by province</a></li>
+    </ul>
+  </div>
+
+  <!-- WHAT IS -->
+  <h2 id="what-is">What probate actually is</h2>
+  <p>Probate is a court process that does two things: it confirms your will is valid, and it gives your executor the legal authority to act on behalf of your estate. The result is a document called a <strong>Certificate of Appointment of Estate Trustee</strong> — in Ontario and most provinces — which banks and land registries accept as proof that your executor has the right to transfer assets.</p>
+
+  <p>The court charges a fee for this. In Ontario it's approximately 1.5% of the estate's value. In Alberta it's capped at $525. In Nova Scotia it can reach $168,000 on a $10 million estate. The same estate, a different province, a wildly different bill.</p>
+
+  <div class="callout blue">
+    <p>Probate fees are based on your province of <strong>domicile</strong> — where you permanently lived — not where you happened to die. An Ontario resident who dies on a trip to Alberta still pays Ontario probate rates.</p>
+  </div>
+
+  <!-- WHEN NEEDED -->
+  <h2 id="when-needed">When you do — and don't — need probate</h2>
+
+  <p>This is where most guides are unclear. Probate is not legally mandatory in Canada — but in practice, most financial institutions and land registries won't transfer certain assets without it. The real question is which assets require it and which don't.</p>
+
+  <p>The rule of thumb: any asset held <strong>solely in your name</strong>, with no named beneficiary and no joint owner, will generally require probate before it can be transferred. Everything else can often bypass it.</p>
+
+  <table class="risk-table">
+    <thead>
+      <tr>
+        <th>Asset type</th>
+        <th>Probate required?</th>
+        <th>Why</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>RRSP / RRIF with named beneficiary</td>
+        <td><span class="tag-no">No</span></td>
+        <td>Pays directly to beneficiary, bypasses estate</td>
+      </tr>
+      <tr>
+        <td>TFSA with named beneficiary or successor</td>
+        <td><span class="tag-no">No</span></td>
+        <td>Transfers directly outside the estate</td>
+      </tr>
+      <tr>
+        <td>Life insurance with named beneficiary</td>
+        <td><span class="tag-no">No</span></td>
+        <td>Death benefit paid directly to beneficiary</td>
+      </tr>
+      <tr>
+        <td>Jointly owned home (right of survivorship)</td>
+        <td><span class="tag-no">No</span></td>
+        <td>Passes directly to surviving joint owner</td>
+      </tr>
+      <tr>
+        <td>Joint bank accounts</td>
+        <td><span class="tag-no">No</span></td>
+        <td>Surviving account holder retains access</td>
+      </tr>
+      <tr>
+        <td>RRSP / RRIF with no named beneficiary</td>
+        <td><span class="tag-yes">Yes</span></td>
+        <td>Falls into estate, goes through probate</td>
+      </tr>
+      <tr>
+        <td>Non-registered investment accounts (sole)</td>
+        <td><span class="tag-yes">Yes</span></td>
+        <td>Can't name beneficiaries on regular accounts in Canada</td>
+      </tr>
+      <tr>
+        <td>Real estate in sole name</td>
+        <td><span class="tag-yes">Yes</span></td>
+        <td>Land registry requires probate to transfer title</td>
+      </tr>
+      <tr>
+        <td>Bank accounts in sole name (large balance)</td>
+        <td><span class="tag-maybe">Often</span></td>
+        <td>Institution's discretion — many require probate over certain thresholds</td>
+      </tr>
+      <tr>
+        <td>Notarial will in Quebec</td>
+        <td><span class="tag-no">No</span></td>
+        <td>Registered with provincial notary — court validation not required</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout yellow">
+    <p>Even for assets that technically don't require probate, some institutions will ask for it anyway — particularly for large account balances. "Not required" means you have a strong argument, not a guarantee. The smaller and simpler the estate, the more likely you can avoid it.</p>
+  </div>
+
+  <!-- HOW TO AVOID -->
+  <h2 id="avoid">How to avoid or minimize probate with planning</h2>
+
+  <p>The goal of probate planning isn't to hide assets from the government — it's to structure your estate so that as few assets as possible need to pass through the court process. Every dollar that bypasses probate reaches your family faster and costs them nothing in fees.</p>
+
+  <p>Here are the main strategies, roughly in order of impact for most Canadian families.</p>
+
+  <div class="strategy-list">
+
+    <div class="strategy-card">
+      <div class="strategy-num">1</div>
+      <div class="strategy-content">
+        <h3>Name beneficiaries on all registered accounts</h3>
+        <p>This is the single highest-impact action most Canadians can take. Your RRSP, TFSA, RRIF, LIRA, pension, and life insurance all allow you to name a beneficiary directly. When you die, those assets pay out straight to the named person — completely outside the estate, no probate, no waiting.</p>
+        <p>Many people have registered accounts with no beneficiary named, or with an outdated one from a previous relationship. This is one of the most common gaps the Clarevo assessment surfaces — and one of the cheapest to fix. A 10-minute call to your financial institution is all it takes.</p>
+        <span class="strategy-tag high">Highest impact</span>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-num">2</div>
+      <div class="strategy-content">
+        <h3>Use successor designations on TFSAs and RRIFs</h3>
+        <p>For spouses specifically, a successor holder (TFSA) or successor annuitant (RRIF) designation is even cleaner than a regular beneficiary. Instead of the plan collapsing and the money being paid out, your spouse simply takes over the account intact — maintaining its tax status, no tax triggered, seamless transfer.</p>
+        <p>If you're married or in a common-law relationship and haven't set this up, it's worth a conversation with your financial institution this week.</p>
+        <span class="strategy-tag high">High impact for spouses</span>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-num">3</div>
+      <div class="strategy-content">
+        <h3>Hold property jointly with right of survivorship</h3>
+        <p>Property held jointly with right of survivorship passes directly to the surviving owner without touching the estate. For most married couples, the family home is already held this way — but it's worth confirming. Check your property deed or land title to verify how ownership is recorded.</p>
+        <p>Note that joint ownership is not always the right move. Adding an adult child to the title of your home — a popular but risky strategy — can trigger capital gains, create creditor exposure, and jeopardize the principal residence exemption. See the risks section below before pursuing this.</p>
+        <span class="strategy-tag medium">Medium impact — verify existing assets</span>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-num">4</div>
+      <div class="strategy-content">
+        <h3>Use a secondary will for private business shares</h3>
+        <p>If you own shares of a private corporation and live in Ontario or BC — two high-probate provinces — a secondary will strategy can be valuable. The idea is to have two separate wills: one for assets that need to go through probate, and a second for assets that don't (like private company shares). The second will doesn't get probated, so no fee applies to those assets.</p>
+        <p>This is a lawyer conversation — it needs to be structured carefully to be effective — but for business owners in Ontario or BC with significant private company holdings, the savings can be substantial.</p>
+        <span class="strategy-tag specific">Specific to business owners in ON/BC</span>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-num">5</div>
+      <div class="strategy-content">
+        <h3>Use a notarial will if you live in Quebec</h3>
+        <p>Quebec operates under civil law rather than common law, which means the rules are different. A notarial will — drafted and signed before a notary — is registered in the provincial notary registry and doesn't require probate at all. If you live in Quebec and don't have a notarial will, this is the most direct path to avoiding the process entirely.</p>
+        <span class="strategy-tag specific">Quebec residents only</span>
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-num">6</div>
+      <div class="strategy-content">
+        <h3>Gift assets while you're alive</h3>
+        <p>Assets you give away during your lifetime aren't part of your estate when you die — so they don't attract probate fees. For families where it makes financial sense, transferring assets to adult children while you're alive (called inter vivos gifting) can reduce the taxable estate.</p>
+        <p>The catch: gifting non-cash assets can trigger capital gains tax at the time of the gift, not just at death. And you need to make sure your own retirement is secure before giving anything away. This is a strategy to model carefully with a financial advisor, not something to do casually.</p>
+        <span class="strategy-tag medium">Requires financial planning first</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RISKS -->
+  <h2 id="risks">The risks of DIY probate avoidance</h2>
+
+  <p>Some strategies that circulate — often passed around as tips between friends or family — can do real damage if done without proper advice. These are the ones worth being cautious about.</p>
+
+  <div class="checklist">
+    <h3>Common mistakes that backfire</h3>
+    <div class="check-item">
+      <div class="check-dot">!</div>
+      <div><strong>Adding an adult child to the title of your home.</strong> If your child owns their own home, adding them to yours means one of you loses the principal residence exemption. You've potentially saved $15,000 in probate but created a $50,000+ capital gains problem. Their divorce, debt, or financial trouble also now puts your home at risk.</div>
+    </div>
+    <div class="check-item">
+      <div class="check-dot">!</div>
+      <div><strong>Adding a child to a bank account.</strong> Same issue — it exposes the account to their creditors and creates a legal grey area around whether it's a gift or a convenience arrangement. Courts have gone both ways on this.</div>
+    </div>
+    <div class="check-item">
+      <div class="check-dot">!</div>
+      <div><strong>Naming a minor as beneficiary.</strong> Children under 18 can't legally receive large sums directly. If a minor is named as beneficiary on an RRSP or life insurance policy, the funds will be paid to the Office of the Public Guardian and Trustee — essentially into government custody — until the child turns 18. Use the will to set up a trust instead.</div>
+    </div>
+    <div class="check-item">
+      <div class="check-dot">!</div>
+      <div><strong>Forgetting to update beneficiary designations after major life changes.</strong> A divorce, remarriage, or death in the family can leave an ex-spouse or deceased person as beneficiary on a registered account. That money will still go to them — or their estate — regardless of what your will says.</div>
+    </div>
+  </div>
+
+  <div class="callout red">
+    <p>The cost of getting probate planning wrong is often higher than the cost of doing nothing. Before making any changes to property ownership or beneficiary designations, talk to a financial advisor or estate lawyer who can model the full tax and legal impact.</p>
+  </div>
+
+  <!-- CALCULATOR -->
+  <h2 id="calculator">What's at stake: probate fees by province</h2>
+  <p>The financial motivation to plan ahead varies dramatically depending on where you live. Use the calculator below to see what probate fees look like across Canada at different estate values.</p>
+
+  <div class="widget-embed">
+    <div class="widget-embed-label">Interactive calculator</div>
+    <h3>Probate fees by province</h3>
+    <div class="widget-embed-desc">Drag to change estate value. Fees highlighted in red are the highest; green are the lowest.</div>
+    <div class="widget-controls">
+      <div class="widget-value" id="estateDisplay">$1,000,000</div>
+      <input type="range" id="estateSlider" min="0" max="4" value="1" step="1" oninput="updateWidget(this.value)">
+      <div class="widget-scale">
+        <span>$500K</span><span>$1M</span><span>$2M</span><span>$5M</span><span>$10M</span>
+      </div>
+    </div>
+    <div class="province-grid" id="provinceGrid"></div>
+    <div class="widget-insight" id="widgetInsight"></div>
+    <div class="widget-source">Source: Wealthsimple Wealth Management. Figures are approximate and may not reflect recent legislative changes. Fees are based on province of domicile, not location of death. Consult a tax professional for your situation.</div>
+  </div>
+
+  <!-- CLAREVO CTA -->
+  <div class="cta-box">
+    <div class="cta-eyebrow">How Clarevo helps</div>
+    <h3>Missing a beneficiary designation is the easiest gap to fix — and the most expensive to miss.</h3>
+    <p>The free Clarevo assessment checks whether your registered accounts have named beneficiaries, flags outdated designations, and shows you exactly where your estate planning has gaps before they become your family's problem.</p>
+    <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
+  </div>
+
+  <div class="learn-nav">
+    <a href="learn-executor.html">
+      <div class="nav-label">Related guide</div>
+      <div class="nav-title">What is an executor — and what do you actually have to do?</div>
+    </a>
+    <a href="learn-when-someone-dies.html">
+      <div class="nav-label">Related guide</div>
+      <div class="nav-title">What to do when someone dies in Canada</div>
+    </a>
+    <a href="learn-will.html">
+      <div class="nav-label">Related guide</div>
+      <div class="nav-title">What is a will — and what happens without one?</div>
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  <a href="home.html" class="logo">Clar<span>evo</span></a>
+  <p>© 2026 Clarevo. Built for Canadian families. This page is for general information only and is not legal or financial advice.</p>
+  <div style="margin-top: 10px;">
+    <a href="privacy.html" style="color: #666; font-size: 12px; text-decoration: none; margin-right: 16px;">Privacy Policy</a>
+    <a href="terms.html" style="color: #666; font-size: 12px; text-decoration: none;">Terms of Use</a>
+  </div>
+</footer>
+
+<script>
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  const probateData = {
+    AB:  { name: "Alberta",           fees: [525, 525, 525, 525, 525],           note: "Flat cap of $525" },
+    BC:  { name: "British Columbia",  fees: [6450, 13450, 27450, 69450, 139450], note: "" },
+    MB:  { name: "Manitoba",          fees: [3500, 7000, 14000, 35000, 70063],   note: "" },
+    NB:  { name: "New Brunswick",     fees: [2500, 5000, 10000, 25000, 50000],   note: "" },
+    NL:  { name: "Newfoundland",      fees: [3054, 6054, 12054, 30054, 60054],   note: "" },
+    NWT: { name: "NW Territories",    fees: [435, 435, 435, 435, 435],           note: "Flat rate" },
+    NS:  { name: "Nova Scotia",       fees: [7783, 16258, 32205, 84058, 168808], note: "" },
+    NU:  { name: "Nunavut",           fees: [425, 425, 425, 425, 425],           note: "Flat rate" },
+    ON:  { name: "Ontario",           fees: [7500, 15000, 30000, 75000, 150000], note: "~1.5% of estate" },
+    PEI: { name: "PEI",               fees: [2000, 4000, 8000, 20000, 40000],    note: "" },
+    QC:  { name: "Quebec",            fees: [230, 230, 230, 230, 230],           note: "Notarial wills bypass probate" },
+    SK:  { name: "Saskatchewan",      fees: [3500, 7000, 14000, 35000, 70000],   note: "" },
+    YK:  { name: "Yukon",             fees: [140, 140, 140, 140, 140],           note: "Flat rate" }
+  };
+
+  const estateLabels = ["$500,000", "$1,000,000", "$2,000,000", "$5,000,000", "$10,000,000"];
+
+  function formatCurrency(n) {
+    return "$" + n.toLocaleString("en-CA");
+  }
+
+  function updateWidget(idx) {
+    idx = parseInt(idx);
+    document.getElementById("estateDisplay").textContent = estateLabels[idx];
+    const fees = Object.entries(probateData).map(([code, d]) => ({
+      code, name: d.name, fee: d.fees[idx], note: d.note
+    }));
+    const maxFee = Math.max(...fees.map(f => f.fee));
+    const minFee = Math.min(...fees.map(f => f.fee));
+    document.getElementById("provinceGrid").innerHTML = fees.map(f => {
+      const isMax = f.fee === maxFee;
+      const isMin = f.fee === minFee;
+      const cls = isMax ? "province-card expensive" : isMin ? "province-card cheap" : "province-card";
+      const feeCls = isMax ? "province-fee expensive" : isMin ? "province-fee cheap" : "province-fee";
+      return `<div class="${cls}"><div class="province-name">${f.name}</div><div class="${feeCls}">${formatCurrency(f.fee)}</div>${f.note ? `<div class="province-note">${f.note}</div>` : ""}</div>`;
+    }).join("");
+    const ratio = Math.round(maxFee / minFee);
+    document.getElementById("widgetInsight").innerHTML =
+      `At ${estateLabels[idx]}, fees range from <strong>${formatCurrency(minFee)}</strong> (${fees.find(f=>f.fee===minFee).name}) to <strong>${formatCurrency(maxFee)}</strong> (${fees.find(f=>f.fee===maxFee).name}) — a <strong>${formatCurrency(maxFee - minFee)}</strong> difference for the same estate in a different province.`;
+  }
+  updateWidget(1);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (function(){
+    const SB_URL="https://ulabvzjtullhsshtstnt.supabase.co";
+    const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w";
+    if(!window.supabase) return;
+    const c=window.supabase.createClient(SB_URL,SB_KEY);
+    c.auth.getSession().then(function(res){
+      if(res.data.session){
+        ["authLink","authLinkMobile"].forEach(function(id){
+          var el=document.getElementById(id);
+          if(el){ el.textContent="Dashboard"; el.href="dashboard.html"; }
+        });
+      }
+    });
+  })();
+</script>
+</body>
+</html>
