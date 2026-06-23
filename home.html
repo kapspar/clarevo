@@ -9,6 +9,10 @@
   <style>
     /* ── HERO ── */
     .hero {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner {
       max-width: 1100px;
       margin: 0 auto;
       padding: 80px 48px;
@@ -251,9 +255,12 @@
     }
 
     /* ── CTA ── */
-    .cta-section {
+    .cta-section-wrap {
       padding: 80px 48px;
       text-align: center;
+      background: var(--white);
+    }
+    .cta-section {
       max-width: 680px;
       margin: 0 auto;
     }
@@ -262,7 +269,7 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; padding: 48px 24px; gap: 40px; }
+      .hero-inner { grid-template-columns: 1fr; padding: 48px 24px; gap: 40px; }
       .hero h1 { font-size: 38px; }
       .gap-cards { grid-template-columns: repeat(2, 1fr); }
       .stats-inner { grid-template-columns: repeat(2, 1fr); }
@@ -270,7 +277,7 @@
     }
 
     @media (max-width: 600px) {
-      .hero { padding: 36px 20px; }
+      .hero-inner { padding: 36px 20px; }
       .hero h1 { font-size: 32px; letter-spacing: -0.5px; }
       .hero p { font-size: 15px; }
       .stats { padding: 36px 20px; }
@@ -282,7 +289,7 @@
       .gaps-inner h2 { font-size: 26px; }
       .gap-cards { grid-template-columns: 1fr 1fr; gap: 12px; }
       .gap-card { padding: 18px; }
-      .cta-section { padding: 48px 20px; }
+      .cta-section-wrap { padding: 48px 20px; }
       .cta-section h2 { font-size: 28px; }
       .compare-table { grid-template-columns: 1fr 1fr !important; }
       .compare-table .row-label { display: none; }
@@ -316,7 +323,8 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-text">
+  <div class="hero-inner">
+    <div class="hero-text">
     <div class="hero-badge">🍁 Built for Canadian Families</div>
     <h1>Clarity before <span>crisis.</span></h1>
     <p>Clarevo helps Canadian households document everything their family would need to know, find the gaps, and protect their loved ones — before it's too late.</p>
@@ -381,6 +389,7 @@
       </div>
       <div class="gap-pill done">Complete</div>
     </div>
+  </div>
   </div>
 </section>
 
@@ -625,11 +634,11 @@
 </section>
 
 <!-- CTA -->
-<section>
+<section class="cta-section-wrap">
   <div class="cta-section">
     <h2>Find out where your family stands.</h2>
     <p>Takes about 5 minutes. Free to start. Built for Canadian households who want to be ready before life asks them to be.</p>
-    <a href="login.html?from=assessment" class="btn-primary">Save My Results &amp; Get Started →</a>
+    <a href="login.html?from=assessment" class="btn-primary">Save My Results & Get Started →</a>
   </div>
 </section>
 
