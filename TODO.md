@@ -8,12 +8,16 @@
 
 ## 🧭 Context (read this first, especially in a new chat)
 
-- **What Clarevo is:** A diagnostic, not a vault. We identify gaps in a family's financial/legal readiness and route to partners (Willful, Wealthsimple, insurers, estate lawyers) — we don't compete with them by storing documents long-term as the core value prop.
-- **The business bet:** Product quality is table stakes. The thing that makes or breaks this is closing one real distribution partnership (Willful or Wealthsimple). Paid social (Meta) economics don't work at $79/year in this vertical — B2B/employer and partner channels are where the math works.
-- **Don't compete with partners:** Never build toward the wills market. Position as "before and after the will" (Turbo Tax / H&R Block analogy).
-- **Current focus:** Willful outreach is the highest-leverage next action (see G2 below — reconcile with old "parked" status, see note).
-- **Stack at a glance:** Static HTML/CSS/JS on GitHub Pages, Supabase backend (profiles/assessments/legal_documents tables + private documents bucket), PostHog analytics (free tier, live on all 12 pages), jsPDF for binder generation.
-- **Cost discipline:** Default to free/low-cost tools until there's real traction. Test with real users before infra upgrades (e.g. PWA is parked, see F6).
+- What Clarevo is: A family readiness diagnostic and emergency binder system. Clarevo helps families identify gaps in financial/legal readiness, organize key information, and generate a practical plan their loved ones can use during an emergency.
+- What Clarevo is not: Clarevo is not a will platform, estate lawyer, financial advisor, broad cloud vault, or password manager.
+- Storage position: Clarevo may store or organize narrowly defined emergency-readiness documents and information, such as wills/POA location, insurance details, account lists, property information, benefits, contacts, funeral wishes, and uploaded PDFs where the user chooses to keep a copy. Storage supports the emergency plan; it is not the main product promise.
+- Password position: Clarevo should not ask for or digitally store user passwords. The binder may include printable password inventory and digital access worksheets that users complete by hand after printing and keep in a secure physical location.
+- Core positioning: Market the outcome, not the storage: "Create a clear emergency plan your family can actually use — documents, accounts, contacts, gaps, and next steps in one organized place."
+- Partner strategy: Clarevo should not compete with Willful, Wealthsimple, insurers, or estate lawyers. Position as "before and after the will" — identifying gaps, organizing readiness, and routing users to trusted partners.
+- The business bet: Product quality is table stakes. Distribution is the real bottleneck. One strong distribution partnership, employer channel, or community channel matters more than paid social at this stage.
+- Current focus: Tighten the product narrative, complete trust/privacy basics, and prepare for real-world user testing before pushing wider distribution.
+- Stack at a glance: Static HTML/CSS/JS on GitHub Pages, Supabase backend, private documents bucket, PostHog analytics, jsPDF for binder generation.
+- Cost discipline: Default to free/low-cost tools until there is real traction. Test with real users before infrastructure upgrades.
 
 ---
 
@@ -26,9 +30,10 @@
 | P1 | Wire assessment_completed event           | Call `window.clarevo_trackAssessmentComplete(score, province)` in `form.html` when assessment saves to Supabase              |
 | P2 | Custom SMTP — send from hello@clarevo.ca | Use Resend (free up to 3,000 emails/mo). Set up in Supabase → Authentication → SMTP Settings. Do before opening to strangers |
 | P3 | Lead data capture for partner referrals — `partner_clicks` table | New Supabase table: user_id, partner, gap_category, province, timestamp. (Same task as T1 below — tracked once here, removed from Technical section) |
-| P4 | PIPEDA consent                             | Add third-party data sharing consent to assessment flow and privacy page before any lead selling                             |
+| P4 | PIPEDA consent + privacy boundaries | Add third-party data sharing consent to assessment flow and privacy page before any lead selling. Also clarify what Clarevo stores, what it does not store, and that passwords should only be completed by hand in the printed binder. |                         |
 | P5 | `learn-when-someone-dies.html` tone pass   | Soften CTA at bottom — "Get Your Free Readiness Score" is wrong tone for a grief article                                     |
 | P6 | G1 — Boots on ground leave-behind PDF      | One-page printable: probate fee table, death checklist, QR code to clarevo.ca. Needed before retirement home visits          |
+| P7 | Privacy/trust copy update | Clearly explain that Clarevo is not a password manager, does not request or store passwords, and only organizes emergency-readiness information chosen by the user. |
 
 ---
 
@@ -110,6 +115,8 @@
 - "Cost of dying" full calculator (deemed disposition + probate by province)
 - Cadence-style post-death executor assistant
 - Legacy letter / ethical will as Pro feature
+- Full digital password manager functionality
+- Zero-knowledge encrypted vault architecture
 
 ---
 
