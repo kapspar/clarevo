@@ -460,10 +460,15 @@
 
   <!-- ── OVERVIEW ── -->
   <div id="tab-overview">
+    <div id="assessmentSummary" class="card" style="margin-bottom:16px;display:none;border:1px solid #bfdbfe;background:#eff6ff;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#2563eb;">Your Family Clarity Check</div>
+      <div style="font-size:24px;font-weight:800;margin:8px 0 4px;" id="assessmentScore">—</div>
+      <p style="font-size:13px;line-height:1.6;color:#334155;" id="assessmentNote">Your starting score is saved. Use My Plan to document important details and improve your family's readiness.</p>
+    </div>
     <!-- Score row -->
     <div class="score-row" id="scoreRow">
       <div class="card">
-        <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Family Readiness Score</div>
+        <div class="score-card-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--gray); margin-bottom:8px;">Plan Completion Score</div>
         <div class="score-big-num" id="scoreNum">—<span>/100</span></div>
         <div class="score-sub" id="scoreSub">Loading your plan…</div>
         <div class="score-bar-bg"><div class="score-bar-fill" id="scoreBar" style="width:0%"></div></div>
@@ -783,8 +788,54 @@
       }
     } catch(e) { console.error('Shared access check failed:', e); }
 
+    await syncPendingAssessment(session.user);
+    await showSavedAssessment(session.user.id);
     loadUserData(session.user);
   });
+
+  const PENDING_ASSESSMENT_KEY = 'clarevo_pending_assessment_v1';
+  async function syncPendingAssessment(user) {
+    let pending;
+    try { pending = JSON.parse(localStorage.getItem(PENDING_ASSESSMENT_KEY) || 'null'); }
+    catch (e) { localStorage.removeItem(PENDING_ASSESSMENT_KEY); return; }
+    if (!pending) return;
+    const expired = !Number.isFinite(pending.createdAt) ||
+      Date.now() - pending.createdAt > 24 * 60 * 60 * 1000 ||
+      pending.createdAt > Date.now() + 60000;
+    if (expired) { localStorage.removeItem(PENDING_ASSESSMENT_KEY); return; }
+    // Never attach an assessment collected for another email address.
+    if ((pending.email || '').toLowerCase() !== (user.email || '').toLowerCase()) return;
+    const r = pending.record;
+    if (!r || !Number.isFinite(r.score) || !r.raw_answers || typeof r.raw_answers !== 'object') return;
+    // Only accept known assessment fields from browser storage.
+    const allowed = ['score','has_will','has_poa','has_insurance','beneficiary_confirmed',
+      'bills_documented','finances_documented','password_plan','has_executor',
+      'has_children','guardian_plan','raw_answers'];
+    const ownedRecord = { user_id: user.id, email: user.email };
+    for (const key of allowed) if (Object.prototype.hasOwnProperty.call(r,key)) ownedRecord[key] = r[key];
+    ownedRecord.score = Math.max(0, Math.min(100, Math.round(r.score)));
+    const { error } = await db.from('assessments').insert([ownedRecord]);
+    if (error) {
+      console.error('Unable to attach assessment to account',error);
+      const el = document.getElementById('assessmentSummary');
+      el.style.display = 'block';
+      document.getElementById('assessmentNote').textContent =
+        'We could not save your check yet. Your answers are still in this browser; refresh to retry.';
+      return;
+    }
+    localStorage.removeItem(PENDING_ASSESSMENT_KEY);
+    if (window.posthog) posthog.capture('assessment_saved_to_account');
+  }
+
+  async function showSavedAssessment(userId) {
+    const { data, error } = await db.from('assessments')
+      .select('score, created_at').eq('user_id', userId)
+      .order('created_at', { ascending: false }).limit(1);
+    if (error || !data?.length) return;
+    const score = Math.max(0, Math.min(100, Number(data[0].score) || 0));
+    document.getElementById('assessmentScore').textContent = score + '/100';
+    document.getElementById('assessmentSummary').style.display = 'block';
+  }
 
   async function loadUserData(user) {
     const name = user.user_metadata?.full_name || user.email.split('@')[0];
