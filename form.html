@@ -893,6 +893,9 @@
       raw_answers:           answers
     };
     const { error } = await db.from('assessments').insert([record]);
+    if (!error && typeof window.clarevo_trackAssessmentComplete === 'function') {
+      window.clarevo_trackAssessmentComplete(score, answers['province']?.value || null);
+    }
     document.getElementById('emailSuccess').style.display = 'block';
     if (error) {
       console.error('Assessment save failed:', error);
@@ -932,6 +935,9 @@
 
     // Only claim success if the save actually succeeded.
     const { error } = await db.from('assessments').insert([record]);
+    if (!error && typeof window.clarevo_trackAssessmentComplete === 'function') {
+      window.clarevo_trackAssessmentComplete(score, answers['province']?.value || null);
+    }
     if (error) {
       console.error('Assessment save failed:', error);
       btn.textContent = 'Save My Results'; btn.disabled = false;
