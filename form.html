@@ -566,7 +566,7 @@
     </div>
 
     <div class="cta-card" id="ctaCard">
-      <h3 id="ctaTitle">Save your results & start fixing gaps</h3>
+      <h3 id="ctaTitle">Create your account to save your results & start fixing gaps</h3>
       <p id="ctaDesc">Create your free Clarevo account to save your score, get a personalized action plan, and share it with your spouse or executor.</p>
       <div class="email-input-wrap" id="emailWrap">
         <input type="email" class="email-input" id="emailInput" placeholder="your@email.com">
@@ -874,88 +874,79 @@
       </div>`).join('');
   }
 
-  async function autoSaveAndRedirect() {
-    const score = parseInt(document.getElementById('scoreBig').textContent) || 0;
-    const getVal = (q) => answers[q]?.value || null;
-    const record = {
-      email: loggedInUser.email,
-      score,
-      has_will:              getVal('q15'),
-      has_poa:               getVal('q16'),
-      has_insurance:         getVal('q12'),
+  // Assessment answers stay in this browser until the visitor signs in.
+  // Never send an unauthenticated household assessment to the database.
+  const PENDING_ASSESSMENT_KEY = 'clarevo_pending_assessment_v1';
+  function assessmentRecord(email, userId) {
+    const getVal = q => answers[q]?.value || null;
+    return {
+      email,
+      ...(userId ? { user_id: userId } : {}),
+      score: Math.max(0, Math.min(100, parseInt(document.getElementById('scoreBig').textContent, 10) || 0)),
+      has_will: getVal('q15'),
+      has_poa: getVal('q16'),
+      has_insurance: getVal('q12'),
       beneficiary_confirmed: getVal('q13'),
-      bills_documented:      getVal('q6'),
-      finances_documented:   getVal('q9'),
-      password_plan:         getVal('q20'),
-      has_executor:          getVal('q18'),
-      has_children:          answers['q2']?.value === 'yes',
-      guardian_plan:         getVal('q23'),
-      raw_answers:           answers
+      bills_documented: getVal('q6'),
+      finances_documented: getVal('q9'),
+      password_plan: getVal('q20'),
+      has_executor: getVal('q18'),
+      has_children: answers['q2']?.value === 'yes',
+      guardian_plan: getVal('q23'),
+      raw_answers: answers
     };
-    const { error } = await db.from('assessments').insert([record]);
-    if (!error && typeof window.clarevo_trackAssessmentComplete === 'function') {
-      window.clarevo_trackAssessmentComplete(score, answers['province']?.value || null);
-    }
-    document.getElementById('emailSuccess').style.display = 'block';
-    if (error) {
-      console.error('Assessment save failed:', error);
-      document.getElementById('emailSuccess').style.color = 'var(--yellow)';
-      document.getElementById('emailSuccess').textContent = 'We couldn\u2019t save your results, but you can still continue. Taking you to your dashboard...';
-    } else {
-      document.getElementById('emailSuccess').style.color = 'var(--green)';
-      document.getElementById('emailSuccess').textContent = 'Saved. Taking you to your dashboard...';
-    }
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
   }
 
-  async function saveEmail() {
-    const email = document.getElementById('emailInput').value;
-    if (!email || !email.includes('@')) {
-      document.getElementById('emailInput').style.borderColor = 'var(--red)';
-      return;
-    }
-    const btn = document.querySelector('.email-btn');
-    btn.textContent = 'Saving...'; btn.disabled = true;
-    const score = parseInt(document.getElementById('scoreBig').textContent) || 0;
-    const getVal = (q) => answers[q]?.value || null;
-    const record = {
-      email, score,
-      has_will:              getVal('q15'),
-      has_poa:               getVal('q16'),
-      has_insurance:         getVal('q12'),
-      beneficiary_confirmed: getVal('q13'),
-      bills_documented:      getVal('q6'),
-      finances_documented:   getVal('q9'),
-      password_plan:         getVal('q20'),
-      has_executor:          getVal('q18'),
-      has_children:          answers['q2']?.value === 'yes',
-      guardian_plan:         getVal('q23'),
-      raw_answers:           answers
-    };
-
-    // Only claim success if the save actually succeeded.
+  async function autoSaveAndRedirect() {
+    const record = assessmentRecord(loggedInUser.email, loggedInUser.id);
     const { error } = await db.from('assessments').insert([record]);
-    if (!error && typeof window.clarevo_trackAssessmentComplete === 'function') {
-      window.clarevo_trackAssessmentComplete(score, answers['province']?.value || null);
-    }
+    const msg = document.getElementById('emailSuccess');
+    msg.style.display = 'block';
     if (error) {
       console.error('Assessment save failed:', error);
-      btn.textContent = 'Save My Results'; btn.disabled = false;
-      const errEl = document.getElementById('emailSuccess');
-      errEl.style.display = 'block';
-      errEl.style.color = 'var(--red)';
-      errEl.textContent = 'Something went wrong saving your results. Please try again.';
+      // Keep a recoverable copy when a signed-in write unexpectedly fails.
+      try { localStorage.setItem(PENDING_ASSESSMENT_KEY, JSON.stringify({
+        email: loggedInUser.email, record, createdAt: Date.now()
+      })); } catch (e) { console.warn('Unable to keep local assessment backup', e); }
+      msg.style.color = 'var(--yellow)';
+      msg.textContent = 'Your score could not be saved yet. We will retry from your dashboard.';
+    } else {
+      if (typeof window.clarevo_trackAssessmentComplete === 'function') {
+        window.clarevo_trackAssessmentComplete(record.score, null);
+      }
+      msg.style.color = 'var(--green)';
+      msg.textContent = 'Assessment saved. Opening your dashboard...';
+    }
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1600);
+  }
+
+  function saveEmail() {
+    const email = document.getElementById('emailInput').value.trim().toLowerCase();
+    const field = document.getElementById('emailInput');
+    if (!email.includes('@') || !email.split('@')[1]?.includes('.')) {
+      field.style.borderColor = 'var(--red)';
       return;
     }
-
+    const record = assessmentRecord(email, null);
+    try {
+      localStorage.setItem(PENDING_ASSESSMENT_KEY, JSON.stringify({
+        email, record, createdAt: Date.now()
+      }));
+    } catch (e) {
+      const status = document.getElementById('emailSuccess');
+      status.style.display = 'block';
+      status.style.color = 'var(--red)';
+      status.textContent = 'Your browser blocked temporary saving. Please allow local storage or try another browser.';
+      return;
+    }
     document.getElementById('emailWrap').style.display = 'none';
-    const okEl = document.getElementById('emailSuccess');
-    okEl.style.display = 'block';
-    okEl.style.color = 'var(--green)';
-    okEl.textContent = 'Saved. Create your free account to start fixing your gaps...';
+    const msg = document.getElementById('emailSuccess');
+    msg.style.display = 'block';
+    msg.style.color = 'var(--green)';
+    msg.textContent = 'Results kept in this browser. Create or sign in to your account to save them securely.';
     setTimeout(() => {
       window.location.href = 'login.html?from=assessment&email=' + encodeURIComponent(email);
-    }, 2000);
+    }, 1100);
   }
 
   function toggleMenu() {
