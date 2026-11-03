@@ -176,16 +176,30 @@
       for (const [k, v] of entries) {
         const rowEl = document.createElement('div');
         rowEl.className = 'entry-row';
+        const labelEl = document.createElement('span');
+        labelEl.className = 'entry-label';
+        labelEl.textContent = formatKey(k);
+        const valueEl = document.createElement('span');
+        valueEl.className = 'entry-value';
 
-        if (FILE_FIELDS.includes(k) && v && !v.includes('__na__')) {
+        if (FILE_FIELDS.includes(k) && typeof v === 'string' && !v.includes('__na__')) {
           const url = await getFileUrl(v);
-          const linkHtml = url
-            ? `<a href="${url}" target="_blank" style="color:var(--blue);font-weight:600;">View document →</a>`
-            : `<span style="color:var(--gray);">Document on file</span>`;
-          rowEl.innerHTML = `<span class="entry-label">${formatKey(k)}</span><span class="entry-value">${linkHtml}</span>`;
+          if (url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.cssText = 'color:var(--blue);font-weight:600;';
+            link.textContent = 'View document →';
+            valueEl.appendChild(link);
+          } else {
+            valueEl.textContent = 'Document on file';
+            valueEl.style.color = 'var(--gray)';
+          }
         } else {
-          rowEl.innerHTML = `<span class="entry-label">${formatKey(k)}</span><span class="entry-value">${formatValue(k, v)}</span>`;
+          valueEl.textContent = String(formatValue(k, v));
         }
+        rowEl.append(labelEl, valueEl);
         block.appendChild(rowEl);
       }
       if (block.children.length) card.appendChild(block);
