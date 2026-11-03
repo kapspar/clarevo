@@ -253,6 +253,10 @@
 
     <!-- SIGN IN FORM -->
     <div class="auth-form active" id="form-signin">
+      <button type="button" onclick="signInWithGoogle(this)" class="google-auth-btn" style="width:100%;display:flex;justify-content:center;align-items:center;gap:12px;background:white;border:1.5px solid var(--border);color:var(--dark);padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);margin-bottom:14px;">
+        <svg aria-hidden="true" viewBox="0 0 48 48" width="19" height="19"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.25 5.48-4.76 7.18l7.73 6C44.42 38.03 46.98 31.85 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.2C.92 16.46 0 20.13 0 24s.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.92-2.13 15.89-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
       <div class="form-group">
         <label for="signin-email">Email address</label>
         <input type="email" id="signin-email" placeholder="you@email.com" autocomplete="email">
@@ -278,11 +282,15 @@
 
     <!-- SIGN UP FORM -->
     <div class="auth-form" id="form-signup">
+      <button type="button" onclick="signInWithGoogle(this)" class="google-auth-btn" style="width:100%;display:flex;justify-content:center;align-items:center;gap:12px;background:white;border:1.5px solid var(--border);color:var(--dark);padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);margin-bottom:14px;">
+        <svg aria-hidden="true" viewBox="0 0 48 48" width="19" height="19"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.25 5.48-4.76 7.18l7.73 6C44.42 38.03 46.98 31.85 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.2C.92 16.46 0 20.13 0 24s.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.92-2.13 15.89-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
       <div class="benefits">
         <div class="benefit-item"><span class="benefit-check">✓</span> Save your readiness score and gaps</div>
         <div class="benefit-item"><span class="benefit-check">✓</span> Come back anytime to update your plan</div>
         <div class="benefit-item"><span class="benefit-check">✓</span> Share with your spouse or executor</div>
-        <div class="benefit-item"><span class="benefit-check">✓</span> Free forever — no credit card needed</div>
+        <div class="benefit-item"><span class="benefit-check">✓</span> Free during early access — no credit card needed</div>
       </div>
 
       <div class="form-group">
@@ -335,6 +343,22 @@
   const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Google OAuth redirects back to the current origin. This allows approved
+  // Vercel previews to return to their own dashboard without losing browser-
+  // local pending assessment answers. The origin must be on Supabase's redirect allowlist.
+  async function signInWithGoogle(button) {
+    clearMessages();
+    if (button) { button.disabled = true; button.textContent = 'Connecting to Google…'; }
+    const { error } = await db.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/dashboard.html' }
+    });
+    if (error) {
+      if (button) { button.disabled = false; button.textContent = 'Continue with Google'; }
+      showError('Google sign-in failed: ' + error.message);
+    }
+  }
 
   // Check if already logged in
   db.auth.getSession().then(({ data: { session } }) => {
