@@ -1602,7 +1602,7 @@
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + session.access_token,
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w'
+            'apikey': SUPABASE_ANON_KEY
           },
           body: JSON.stringify({
             invite_id: inviteId,
@@ -1701,7 +1701,7 @@
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + session.access_token,
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w'
+          'apikey': SUPABASE_ANON_KEY
         },
         body: JSON.stringify({
           invite_id: id,
@@ -1722,29 +1722,15 @@
   }
 
   // ── DELETE ACCOUNT ────────────────────────────────────────
+  // Full deletion requires a privileged, authenticated server-side workflow:
+  // remove user-owned storage objects, database records, and the auth user;
+  // verify the result before reporting completion.
+  // Do not offer a misleading client-only deletion operation.
   async function confirmDeleteAccount() {
-    const confirmed = confirm('Are you sure you want to permanently delete your account and all your data? This cannot be undone.');
-    if (!confirmed) return;
-    const doubleConfirm = confirm('Last chance — this will delete your entire family plan, all documents, and your account. Continue?');
-    if (!doubleConfirm) return;
     const status = document.getElementById('deleteStatus');
-    status.style.display = 'block'; status.style.color = 'var(--gray)';
-    status.textContent = 'Deleting your account…';
-    try {
-      // Delete all plan data (cascade should handle most, but belt-and-suspenders)
-      const tables = ['legal_documents','account_items','insurance_items','property_items','business_items','bill_items','contact_items','emergency_settings','digital_items','kids_items','shared_access','assessments'];
-      for (const t of tables) {
-        await db.from(t).delete().eq('user_id', currentUser.id);
-      }
-      // Sign out — actual user deletion requires a Supabase Edge Function (admin API)
-      // Flag for tech build: call supabase.auth.admin.deleteUser(currentUser.id)
-      await db.auth.signOut();
-      alert('Your plan data has been deleted. Your login account will be fully removed within 24 hours. Contact hello@clarevo.ca if you have any concerns.');
-      window.location.href = 'home.html';
-    } catch(err) {
-      status.style.color = 'var(--red)';
-      status.textContent = 'Error deleting account. Please contact hello@clarevo.ca.';
-    }
+    status.style.display = 'block';
+    status.style.color = 'var(--gray)';
+    status.textContent = 'Secure self-service account deletion is not yet available. Please email hello@clarevo.ca to request removal of your account and stored documents. We will confirm when deletion is complete.';
   }
 
   function showTab(tab, navEl) {
