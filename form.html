@@ -923,7 +923,7 @@
   function saveEmail() {
     const email = document.getElementById('emailInput').value.trim().toLowerCase();
     const field = document.getElementById('emailInput');
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+    if (!email.includes('@') || !email.split('@')[1]?.includes('.')) {
       field.style.borderColor = 'var(--red)';
       return;
     }
