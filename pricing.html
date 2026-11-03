@@ -1,290 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <title>Clarevo — Pricing</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .header {
-      text-align: center;
-      padding: 72px 48px 48px;
-    }
-    .header h1 {
-      font-size: 44px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 14px;
-    }
-    .header p { font-size: 17px; color: var(--gray); max-width: 440px; margin: 0 auto; line-height: 1.6; }
-
-    /* PLANS */
-    .plans {
-      max-width: 1060px;
-      margin: 0 auto;
-      padding: 0 48px 80px;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .plan {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 36px;
-      box-shadow: var(--shadow);
-      border: 2px solid transparent;
-      position: relative;
-    }
-    .plan.popular {
-      border-color: var(--blue);
-      transform: translateY(-8px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .popular-badge {
-      position: absolute;
-      top: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--blue);
-      color: var(--white);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 16px;
-      border-radius: 20px;
-      white-space: nowrap;
-      letter-spacing: 0.3px;
-    }
-
-    .plan-name {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--gray);
-      margin-bottom: 10px;
-    }
-    .plan-price {
-      font-size: 44px;
-      font-weight: 800;
-      letter-spacing: -1.5px;
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .plan-price span { font-size: 16px; font-weight: 500; color: var(--gray); }
-    .plan-desc { font-size: 13px; color: var(--gray); margin-bottom: 28px; line-height: 1.5; margin-top: 8px; }
-
-    .plan-btn {
-      display: block;
-      text-align: center;
-      padding: 13px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-      margin-bottom: 28px;
-      transition: all 0.2s;
-    }
-    .plan-btn.outline { border: 2px solid var(--border); color: var(--dark); }
-    .plan-btn.outline:hover { border-color: var(--blue); color: var(--blue); }
-    .plan-btn.filled { background: var(--blue); color: var(--white); }
-    .plan-btn.filled:hover { background: #2563eb; }
-    .plan-btn.dark { background: var(--dark); color: var(--white); }
-    .plan-btn.dark:hover { background: #2d2d4e; }
-
-    .features-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #bbb;
-      margin-bottom: 14px;
-    }
-
-    .feature {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 11px;
-      font-size: 13px;
-      color: #444;
-      line-height: 1.4;
-    }
-    .feature .ck { color: var(--green); font-weight: 700; flex-shrink: 0; }
-    .feature .xk { color: #d1d5db; font-weight: 700; flex-shrink: 0; }
-
-    /* FAQ */
-    .faq-wrap {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 0 48px 80px;
-    }
-    .faq-wrap h2 { font-size: 30px; font-weight: 800; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
-
-    .faq-item { border-bottom: 1px solid var(--border); padding: 22px 0; }
-    .faq-item h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-    .faq-item p { font-size: 13px; color: var(--gray); line-height: 1.7; }
-
-    /* CTA */
-    .cta {
-      background: var(--dark);
-      padding: 72px 48px;
-      text-align: center;
-      color: var(--white);
-    }
-    .cta h2 { font-size: 34px; font-weight: 800; margin-bottom: 14px; letter-spacing: -0.5px; }
-    .cta p { font-size: 16px; color: #aaa; margin-bottom: 32px; }
-
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .plans {
-        grid-template-columns: 1fr;
-        max-width: 480px;
-      }
-      .plan.popular { transform: none; }
-    }
-
-    @media (max-width: 600px) {
-      .header { padding: 48px 20px 32px; }
-      .header h1 { font-size: 32px; }
-      .plans { padding: 0 20px 48px; }
-      .faq-wrap { padding: 0 20px 48px; }
-      .cta { padding: 48px 20px; }
-      .cta h2 { font-size: 26px; }
-    }
-  </style>
-  <!-- PostHog Analytics -->
-  <script>
-    !function(t,e){var o,n,p,r;e.__SV||(window.posthog&&window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="xi Si init Ni Bi pr qi Ui  capture calculateEventProperties Zi register register_once register_for_session unregister unregister_for_session Yi getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync Ki identify setPersonProperties unsetPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset setIdentity clearIdentity get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException addExceptionStep captureLog startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty Qi Wi createPersonProfile setInternalOrTestUser Ji Fi tn opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing zi debug mr it getPageViewId captureTraceFeedback captureTraceMetric Ri".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-    posthog.init("phc_uCLoLoqn3TcdS4XjmRiPNqL5xewiLBDgqho6tE5ybWUk", {
-      api_host: "https://us.i.posthog.com",
-      defaults: "2026-05-30",
-      person_profiles: "identified_only"
-    });
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>Clarevo Pricing — Free and Family</title>
+<meta name="description" content="Build your family emergency plan for free. Clarevo Family, planned at $30 CAD per year, adds document uploads and advanced sharing. All current features are free during beta.">
+<link rel="stylesheet" href="style.css">
+<style>
+.pricing-head{max-width:820px;margin:0 auto;text-align:center;padding:80px 24px 35px}
+.pricing-head h1{font-size:clamp(31px,4vw,48px);letter-spacing:-1px;margin:14px 0}
+.pricing-head p{max-width:650px;margin:auto;color:var(--gray);line-height:1.7}
+.beta-banner{max-width:960px;margin:0 auto 38px;padding:20px 26px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:16px;color:#1e40af;line-height:1.65;font-size:14px}
+.beta-banner strong{display:block}
+.plan-grid{max-width:1060px;margin:0 auto;padding:0 24px 64px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
+.plan-box{background:#fff;border:2px solid var(--border);border-radius:20px;padding:36px;box-shadow:var(--shadow);position:relative}
+.plan-box.paid{border-color:var(--blue)}
+.plan-label{font-weight:800;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray)}
+.plan-price{font-weight:800;font-size:46px;line-height:1.3}
+.plan-price small{font-weight:500;color:var(--gray);font-size:15px}
+.plan-desc{font-size:14px;color:var(--gray);line-height:1.65;min-height:65px;margin:8px 0 20px}
+.plan-action{display:block;border-radius:10px;padding:14px;text-align:center;text-decoration:none;font-size:14px;font-weight:700;margin-bottom:12px;background:var(--blue);color:white}
+.plan-box:not(.paid) .plan-action{background:#fff;color:var(--dark);border:2px solid var(--border);padding:12px}
+.plan-sub{color:var(--gray);font-size:12px;line-height:1.55;min-height:36px}
+.plan-list{padding:0;list-style:none;margin-top:24px}
+.plan-list li{padding:9px 0 9px 26px;font-size:14px;line-height:1.5;position:relative}
+.plan-list li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:800}
+.plan-heading{margin-top:25px;font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:800;color:var(--gray)}
+.fineprint{max-width:900px;margin:-22px auto 70px;padding:0 24px;text-align:center;font-size:13px;color:var(--gray);line-height:1.7}
+.faq{max-width:750px;margin:auto;padding:0 24px 85px}
+.faq h2{text-align:center;font-size:30px;margin-bottom:28px}
+.faq-item{border-bottom:1px solid var(--border);padding:22px 0}
+.faq-item h3{font-size:16px;margin:0 0 8px}
+.faq-item p{font-size:14px;color:var(--gray);line-height:1.7;margin:0}
+.pricing-cta{padding:65px 24px;text-align:center;background:var(--dark);color:#fff}
+.pricing-cta h2{font-size:30px;margin-bottom:12px}
+.pricing-cta p{color:#ccc;margin-bottom:25px}
+.pricing-cta a{display:inline-block;text-decoration:none}
+@media(max-width:760px){.plan-grid{grid-template-columns:1fr}.plan-desc,.plan-sub{min-height:0}.plan-box{padding:27px}.pricing-head{padding-top:48px}.beta-banner{margin:0 20px 30px}}
+</style>
 </head>
 <body>
-
 <nav>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
   <ul class="nav-links">
     <li><a href="home.html#how">How it works</a></li>
     <li><a href="learn.html">Learn</a></li>
-    <li><a href="pricing.html">Pricing</a></li>
+    <li><a href="pricing.html" aria-current="page">Pricing</a></li>
     <li><a href="login.html" id="authLink">Log In</a></li>
     <li><a href="form.html" class="nav-cta">Check Your Score</a></li>
   </ul>
-  <div class="hamburger" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="hamburger" onclick="toggleMenu()" aria-label="Toggle menu"><span></span><span></span><span></span></div>
 </nav>
-
 <div class="mobile-menu" id="mobileMenu">
   <a href="home.html#how" onclick="toggleMenu()">How it works</a>
   <a href="learn.html" onclick="toggleMenu()">Learn</a>
-  <a href="pricing.html">Pricing</a>
+  <a href="pricing.html" onclick="toggleMenu()">Pricing</a>
   <a href="login.html" id="authLinkMobile">Log In</a>
   <a href="form.html" class="mob-cta">Check Your Score →</a>
 </div>
-
-<div class="header">
-  <div class="section-label">Pricing</div>
-  <h1>Simple, honest pricing.</h1>
-  <p>All currently available features are free while we test Clarevo with early users.</p>
+<header class="pricing-head">
+  <div class="section-label">Simple pricing</div>
+  <h1>Get organized for free. Stay prepared together.</h1>
+  <p>Start with a practical family emergency plan at no cost. Clarevo Family will add secure document uploads and advanced household sharing.</p>
+</header>
+<div class="beta-banner" role="status">
+  <strong>Early access: all currently available features are free.</strong>
+  We're testing Clarevo with early users. The plans below describe intended future limits; they are not yet enforced. No credit card is required, and no one will be billed automatically.
 </div>
-
-<div class="plans" style="grid-template-columns:minmax(0,600px);justify-content:center;">
-  <div class="plan popular" style="transform:none;">
-    <div class="popular-badge">Early Access</div>
-    <div class="plan-name">Clarevo Family Clarity</div>
-    <div class="plan-price">$0<span> during early access</span></div>
-    <div class="plan-desc">All currently available Clarevo features are free during early access. We will clearly communicate any future pricing before introducing paid plans.</div>
-    <a href="form.html" class="plan-btn filled">Find My Family Clarity Score →</a>
-    <div class="features-label">What's included</div>
-    <div class="feature"><span class="ck">✓</span> Family Clarity assessment and score</div>
-    <div class="feature"><span class="ck">✓</span> Personalized gap checklist</div>
-    <div class="feature"><span class="ck">✓</span> Personal family dashboard</div>
-    <div class="feature"><span class="ck">✓</span> Emergency binder PDF generation</div>
-    <div class="feature"><span class="ck">✓</span> Family plan sharing and access controls</div>
-    <div class="feature"><span class="ck">✓</span> Document and account information organization</div>
-  </div>
-</div>
-
-<!-- FAQ -->
-<div class="faq-wrap">
+<main>
+<section class="plan-grid" aria-label="Compare plans">
+  <article class="plan-box">
+    <div class="plan-label">Clarevo Free</div>
+    <div class="plan-price">$0 <small>forever</small></div>
+    <p class="plan-desc">A usable emergency plan with manual entry, saving and exporting. Free doesn't mean incomplete.</p>
+    <a href="form.html" class="plan-action">Start Free →</a>
+    <p class="plan-sub">No credit card. No document uploads needed.</p>
+    <div class="plan-heading">Included</div>
+    <ul class="plan-list">
+      <li>Family Clarity Check, score and gap checklist</li>
+      <li>Save and update your family plan manually</li>
+      <li>Organize insurance, bills, accounts and document locations</li>
+      <li>Record emergency contacts and family instructions</li>
+      <li>Download a useful emergency binder PDF</li>
+      <li>Optional educational resources and relevant partner recommendations</li>
+    </ul>
+  </article>
+  <article class="plan-box paid">
+    <div class="plan-label">Clarevo Family · planned</div>
+    <div class="plan-price">$30 <small>CAD / year per household</small></div>
+    <p class="plan-desc">Everything in Free, plus a place for documents and easier ongoing collaboration with trusted people.</p>
+    <a href="login.html" class="plan-action">Try Family Features Free →</a>
+    <p class="plan-sub">Billing is not available yet. Join early access without paying.</p>
+    <div class="plan-heading">Everything in Free, plus</div>
+    <ul class="plan-list">
+      <li>Secure uploads for important documents</li>
+      <li>Advanced live sharing and section-level permissions</li>
+      <li>Household collaboration and designated contacts</li>
+      <li>Unlimited regenerated binder PDFs</li>
+      <li>Planned periodic preparedness reminders</li>
+      <li>One subscription for the household</li>
+    </ul>
+  </article>
+</section>
+<p class="fineprint">We will announce paid launch dates, storage limits and the final feature split before charging. Selected founding testers may receive complimentary lifetime Family access. No existing free user will be charged without explicitly subscribing.</p>
+<section class="faq">
   <h2>Common questions</h2>
-
-  <div class="faq-item">
-    <h4>What's the difference between the free PDF and Pro?</h4>
-    <p>Free accounts can generate one emergency binder PDF — useful for getting started, but most people want to update it as they add documents and accounts. Pro gives you unlimited regenerations so your binder always reflects your latest information. We're also working on a printed, spiral-bound physical version — more details coming soon.</p>
-  </div>
-
-  <div class="faq-item">
-    <h4>Is my information secure?</h4>
-    <p>Yes. Clarevo stores only what's necessary — institution names, account types, document locations, and contacts. We never store full account numbers, SINs, or passwords. Your data is encrypted and never sold.</p>
-  </div>
-
-  <div class="faq-item">
-    <h4>What happens when my family needs access after I'm gone?</h4>
-    <p>Your designated contacts can request emergency access at any time. Clarevo notifies you immediately and gives you 24 hours to block the request. If you don't respond, access is granted automatically — no death certificate, no lawyers, no waiting. You also control which sections are shared, so household bills and emergency contacts can be immediately visible while financial details have additional protection.</p>
-  </div>
-
-  <div class="faq-item">
-    <h4>What if I want maximum control over who accesses my account?</h4>
-    <p>You can create a master access code and store it with your lawyer or write it into your will. When your executor receives your will, they'll have everything they need to access your Clarevo plan immediately — no waiting, no verification process.</p>
-  </div>
-
-  <div class="faq-item">
-    <h4>Can I cancel anytime?</h4>
-    <p>Yes. Cancel anytime and your data is yours to export. No questions asked.</p>
-  </div>
-
-  <div class="faq-item">
-    <h4>What is the employer plan for?</h4>
-    <p>Companies can offer Clarevo as a financial wellness benefit — similar to an EAP or legal benefit. Employees get Pro accounts, and employers get reporting on completion rates without seeing individual data.</p>
-  </div>
-
-  <div class="faq-item">
-    <h4>Is Clarevo only for Canadians?</h4>
-    <p>For now yes — Clarevo is built specifically for Canadian households with Canadian financial products, registered accounts, and estate planning in mind.</p>
-  </div>
-</div>
-
-<div class="cta">
-  <h2>Start with a free readiness check.</h2>
-  <p>Takes about 5 minutes. No credit card required.</p>
-  <a href="form.html" class="btn-primary">Check Your Readiness Score →</a>
-</div>
-
+  <div class="faq-item"><h3>Can I really enter all my information manually for free?</h3><p>Yes. You can record essential household information, save your progress and download a usable binder. You won't need to pay to keep basic information organized.</p></div>
+  <div class="faq-item"><h3>Why pay for Family?</h3><p>Family is intended for secure file uploads, advanced live sharing, convenient updates and household collaboration. During early access, currently implemented features remain free while we test the product.</p></div>
+  <div class="faq-item"><h3>Does Clarevo sell my email or assessment answers?</h3><p>No. Clarevo may suggest optional educational resources or relevant services, such as estate-planning tools. We do not sell your email or assessment answers to partners. Paid referral relationships will be disclosed clearly.</p></div>
+  <div class="faq-item"><h3>Can I share my information with family?</h3><p>You can download and share your binder yourself. Additional designated-contact sharing is available for testing during early access, with advanced live sharing planned for Family. Arrange access with trusted people in advance; online access cannot be guaranteed in every emergency.</p></div>
+  <div class="faq-item"><h3>What about sensitive information?</h3><p>Don't enter passwords, SINs or full account numbers into free-text fields. Uploaded documents can contain sensitive information; we are continuing access-control and security testing before a wider launch. Read our <a href="privacy.html">Privacy Policy</a> for details.</p></div>
+  <div class="faq-item"><h3>When will I be charged?</h3><p>Not during early access. Checkout is disabled. We will publish renewal terms before enabling subscriptions; existing users won't be charged without choosing a paid plan.</p></div>
+  <div class="faq-item"><h3>Is Clarevo only for Canadians?</h3><p>For now, Clarevo is designed for Canadian households. It helps organize information but does not provide legal, insurance or financial advice.</p></div>
+</section>
+</main>
+<section class="pricing-cta"><h2>Start with your Family Clarity Score.</h2><p>Find what's missing. Build your plan for free.</p><a href="form.html" class="btn-primary">Check Your Score →</a></section>
 <footer>
   <a href="home.html" class="logo">Clar<span>evo</span></a>
-  <p>© 2026 Clarevo. Built for Canadian families. clarevo.ca · <a href="privacy.html" style="color:#aaa;">Privacy</a> · <a href="terms.html" style="color:#aaa;">Terms</a></p>
+  <p>© 2026 Clarevo. Built for Canadian families. <a href="privacy.html" style="color:#aaa">Privacy</a> · <a href="terms.html" style="color:#aaa">Terms</a></p>
 </footer>
-
-<script>
-  function toggleMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
-  }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  (function(){
-    const SB_URL="https://ulabvzjtullhsshtstnt.supabase.co";
-    const SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w";
-    if(!window.supabase) return;
-    const c=window.supabase.createClient(SB_URL,SB_KEY);
-    c.auth.getSession().then(function(res){
-      if(res.data.session){
-        ["authLink","authLinkMobile"].forEach(function(id){
-          var el=document.getElementById(id);
-          if(el){ el.textContent="Dashboard"; el.href="dashboard.html"; }
-        });
-      }
-    });
-  })();
-</script>
+<script>function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open')}</script>
 </body>
 </html>
