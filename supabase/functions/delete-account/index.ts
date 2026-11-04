@@ -37,6 +37,17 @@ Deno.serve(async (request: Request) => {
     return files;
   }
   try {
+    // Verify DELETE permission for every target table before deleting user files.
+    // These no-op deletes match an impossible UUID and cannot remove account data.
+    const emptyId = "00000000-0000-0000-0000-000000000000";
+    const checkedTables = ["assessments", "legal_documents", "account_items", "insurance_items", "property_items", "business_items", "bill_items", "contact_items", "emergency_settings", "digital_items", "kids_items", "profiles"];
+    for (const table of checkedTables) {
+      const idColumn = table === "profiles" ? "id" : "user_id";
+      const { error } = await admin.from(table).delete().eq(idColumn, emptyId);
+      if (error) throw new Error("Cleanup permission check failed for " + table + ": " + error.message);
+    }
+    const { error: sharedAccessCheck } = await admin.from("shared_access").delete().eq("id", emptyId);
+    if (sharedAccessCheck) throw new Error("Cleanup permission check failed for shared_access: " + sharedAccessCheck.message);
     const files = await collect(user.id);
     for (let index = 0; index < files.length; index += 100) {
       const { error } = await admin.storage.from("documents").remove(files.slice(index, index + 100));
@@ -68,7 +79,7 @@ Deno.serve(async (request: Request) => {
   } catch (error) {
     // Never claim success on partial deletion. Operations can be retried, or support can
     // complete a request if an interrupted account deletion requires admin intervention.
-    console.error("Account deletion failed", error instanceof Error ? error.message : "unknown");
+    console.error("Account deletion failed", error instanceof Error ? error.message : JSON.stringify(error));
     return json(500, { error: "We couldn't complete account deletion. Please contact hello@clarevo.ca for help. Do not assume your information was removed." });
   }
 });
