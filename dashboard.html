@@ -703,7 +703,16 @@
       <div class="plan-item"><span class="pi-label">Name</span><span class="pi-value" id="settingsName">—</span></div>
       <div class="plan-item"><span class="pi-label">Email</span><span class="pi-value" id="settingsEmail">—</span></div>
       <div class="plan-item"><span class="pi-label">Account created</span><span class="pi-value" id="settingsCreated">—</span></div>
-      <div class="plan-item"><span class="pi-label">Plan</span><span class="pi-value">Clarevo Free Preview</span></div>
+      <div class="plan-item"><span class="pi-label">Plan</span><span class="pi-value" id="accountPlanLabel">Clarevo Family — Free Early Access</span></div>
+    </div>
+    <div class="card" style="margin-top:16px;" id="foundingCodeCard">
+      <h3>Founding member invitation</h3>
+      <p style="font-size:13px;color:var(--gray);margin:8px 0 14px;line-height:1.6;">Have a founding-member code? Redeem it for complimentary Clarevo Family access for as long as the Family service is offered. Everyone can use the current beta for free.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input type="text" id="foundingCodeInput" maxlength="36" spellcheck="false" autocomplete="off" placeholder="CLV-..." aria-label="Founding member code" style="min-width:200px;flex:1;padding:12px;border:1px solid var(--border);border-radius:8px;font:inherit;">
+        <button type="button" id="foundingRedeemButton" onclick="redeemFoundingCode()" style="padding:12px 18px;background:var(--blue);color:white;border:0;border-radius:8px;font-weight:600;cursor:pointer;">Redeem code</button>
+      </div>
+      <p id="foundingCodeStatus" aria-live="polite" style="display:none;margin-top:12px;font-size:13px;"></p>
     </div>
     <div class="card" style="margin-top:16px;">
       <h3 style="margin-bottom:4px;">Sign out</h3>
@@ -1807,11 +1816,60 @@
     }
   }
 
+  // Founding entitlements are stored server-side, not in localStorage.
+  async function refreshFoundingStatus() {
+    const label = document.getElementById('accountPlanLabel');
+    const card = document.getElementById('foundingCodeCard');
+    const { data: { user } } = await db.auth.getUser();
+    if (!user) return;
+    const { data, error } = await db.from('account_entitlements').select('tier').eq('user_id', user.id).maybeSingle();
+    if (error) { console.warn('Unable to load entitlement status'); return; }
+    if (data?.tier === 'founding_lifetime') {
+      label.textContent = 'Clarevo Family — Founding Member (Lifetime)';
+      if (card) card.style.display = 'none';
+    } else {
+      label.textContent = 'Clarevo Family — Free Early Access';
+    }
+  }
+  async function redeemFoundingCode() {
+    const input = document.getElementById('foundingCodeInput');
+    const status = document.getElementById('foundingCodeStatus');
+    const button = document.getElementById('foundingRedeemButton');
+    if (!input || !status) return;
+    status.style.display = 'block';
+    status.style.color = 'var(--gray)';
+    status.textContent = 'Checking your invitation code…';
+    button.disabled = true;
+    try {
+      const { data, error } = await db.rpc('redeem_founding_code', { raw_code: input.value.trim().toUpperCase() });
+      if (error) throw error;
+      const messages = {
+        redeemed: 'Success! Your Clarevo Family founding-member access is active for the lifetime of the service.',
+        already_active: 'Your account already has founding-member lifetime access.',
+        invalid: 'That code is invalid or has already been redeemed.',
+        rate_limited: 'Too many attempts. Please try again in an hour.'
+      };
+      const result = data?.status || 'invalid';
+      status.textContent = messages[result] || 'We could not redeem this code. Please contact support.';
+      status.style.color = ['redeemed','already_active'].includes(result) ? 'var(--green)' : 'var(--red)';
+      if (result === 'redeemed' || result === 'already_active') {
+        input.value = '';
+        await refreshFoundingStatus();
+      }
+    } catch (_) {
+      status.textContent = 'Could not redeem the code. Please try again later.';
+      status.style.color = 'var(--red)';
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   function showTab(tab, navEl) {
     ['overview','gaps','myplan','shared','settings'].forEach(t => {
       document.getElementById('tab-' + t).classList.add('hidden');
     });
     document.getElementById('tab-' + tab).classList.remove('hidden');
+    if (tab === 'settings') refreshFoundingStatus();
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     if (navEl) navEl.classList.add('active');
     const titles = { overview:'Overview', gaps:'Gaps', myplan:'My Plan', shared:'Shared Access', settings:'Settings' };
