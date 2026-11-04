@@ -386,6 +386,7 @@
 
   async function saveData() {
     const s = saving('saveBtn', 'saveStatus', 'Save Legal Documents');
+    let changes = null;
     const record = {
       user_id: currentUser.id,
       has_will: toggleVal('hasWill'),
@@ -420,6 +421,10 @@
       updated_at: new Date().toISOString()
     };
     try {
+      changes = await prepareSlotUploads(BUCKET);
+      record.will_file_path = slotPathForSave('will', changes);
+      record.poa_property_file_path = slotPathForSave('poaprop', changes);
+      record.poa_care_file_path = slotPathForSave('poacare', changes);
       let error;
       if (existingRecordId) {
         ({ error } = await db.from('legal_documents').update(record).eq('id', existingRecordId));
@@ -428,9 +433,13 @@
         error = insErr; if (data && data[0]) existingRecordId = data[0].id;
       }
       if (error) throw error;
+      await finalizeSlotUploads(BUCKET, changes);
       updateBadges();
       s.done();
-    } catch (err) { s.fail(err); }
+    } catch (err) {
+      if (changes) await rollbackSlotUploads(BUCKET, changes);
+      s.fail(err);
+    }
   }
 </script>
 </body>

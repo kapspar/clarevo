@@ -704,6 +704,8 @@
       <div class="plan-item"><span class="pi-label">Email</span><span class="pi-value" id="settingsEmail">—</span></div>
       <div class="plan-item"><span class="pi-label">Account created</span><span class="pi-value" id="settingsCreated">—</span></div>
       <div class="plan-item"><span class="pi-label">Plan</span><span class="pi-value" id="accountPlanLabel">Clarevo Family — Free Early Access</span></div>
+      <div class="plan-item"><span class="pi-label">Document storage</span><span class="pi-value" id="storageUsageLabel">Checking…</span></div>
+      <p style="font-size:12px;color:var(--gray);margin-top:8px;">Emergency-binder documents only · 10 MB per file · 1 GB total per account.</p>
     </div>
     <div class="card" style="margin-top:16px;" id="foundingCodeCard">
       <h3>Founding member invitation</h3>
@@ -1817,6 +1819,22 @@
   }
 
   // Founding entitlements are stored server-side, not in localStorage.
+  async function refreshStorageUsage() {
+    const el = document.getElementById('storageUsageLabel');
+    if (!el) return;
+    try {
+      const { data, error } = await db.rpc('clarevo_storage_usage');
+      if (error) throw error;
+      const stats = Array.isArray(data) ? data[0] : data;
+      const used = Math.max(0, Number(stats?.used_bytes || 0));
+      const limit = Math.max(1, Number(stats?.limit_bytes || 1073741824));
+      const display = used > 0 && used < 1048576 ? (used/1024).toFixed(1)+' KB' : (used/1048576).toFixed(1)+' MB';
+      el.textContent = display + ' of ' + (limit/1073741824).toFixed(0) + ' GB';
+    } catch (_) {
+      el.textContent = 'Unable to load storage usage';
+    }
+  }
+
   async function refreshFoundingStatus() {
     const label = document.getElementById('accountPlanLabel');
     const card = document.getElementById('foundingCodeCard');
@@ -1870,6 +1888,7 @@
     });
     document.getElementById('tab-' + tab).classList.remove('hidden');
     if (tab === 'settings') refreshFoundingStatus();
+    if (tab === 'settings') refreshStorageUsage();
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     if (navEl) navEl.classList.add('active');
     const titles = { overview:'Overview', gaps:'Gaps', myplan:'My Plan', shared:'Shared Access', settings:'Settings' };

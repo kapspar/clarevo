@@ -20,6 +20,7 @@ class ListManager {
   constructor(config){
     this.cfg = Object.assign({ uploadLabel:'Relevant documents', hasUpload:true }, config);
     this.rows = [];
+    this.pendingDeletes = [];
     this.container = $(this.cfg.container);
   }
 
@@ -28,6 +29,7 @@ class ListManager {
       .select('*').eq('user_id', currentUser.id).order('created_at', { ascending:true });
     if(error){ console.error('Load error', this.cfg.table, error); }
     this.rows = (data && data.length) ? data : [];
+    this.pendingDeletes = [];
     this.render();
   }
 
@@ -36,6 +38,7 @@ class ListManager {
     this.cfg.fields.forEach(f => blank[f.key] = '');
     blank.file_path = null;
     this.rows.push(blank);
+    markBinderUnsaved();
     this.render();
     const card = this.container.lastElementChild;
     if(card){ const inp = card.querySelector('input,select,textarea'); if(inp) inp.focus(); }
@@ -95,6 +98,7 @@ class ListManager {
       }
       input.value = r[f.key] || '';
       input.oninput = input.onchange = (e) => {
+        markBinderUnsaved();
         r[f.key] = e.target.value;
         if(f.key === this.cfg.fields[0].key) title.textContent = this.entryTitle(r);
         if(this.cfg.onChange) this.cfg.onChange();
@@ -118,76 +122,64 @@ class ListManager {
     const label = document.createElement('div'); label.className='upload-label'; label.textContent=this.cfg.uploadLabel;
     wrap.appendChild(label);
     const desc = document.createElement('div'); desc.className='upload-desc';
-    desc.textContent='PDF, JPG, or PNG. Stored privately — only you and people you share access with can view it.';
+    desc.textContent='PDF, JPG, or PNG up to 10 MB. File changes take effect when you save.';
     wrap.appendChild(desc);
-
-    const uploaded = document.createElement('div');
-    uploaded.className='uploaded-section'+(r.file_path?'':' hidden');
-    const ut=document.createElement('div'); ut.className='us-title'; ut.textContent='Uploaded file';
+    const uploaded = document.createElement('div'); uploaded.className='uploaded-section';
+    const ut=document.createElement('div'); ut.className='us-title'; ut.textContent='Attached file';
     const ulist=document.createElement('div');
-    uploaded.appendChild(ut); uploaded.appendChild(ulist);
-    wrap.appendChild(uploaded);
-
+    uploaded.appendChild(ut); uploaded.appendChild(ulist); wrap.appendChild(uploaded);
     const dz=document.createElement('div'); dz.className='dropzone';
-    dz.innerHTML='<div class="dz-icon">📎</div><div class="dz-main">'+
-      (r.file_path?'Click to replace this file':'Click to upload or drag and drop')+
-      '</div><div class="dz-sub">One file per entry · PDF, JPG, PNG up to 10MB</div>';
+    dz.innerHTML='<div class="dz-icon">📎</div><div class="dz-main">Choose a document</div><div class="dz-sub">One file per entry · PDF, JPG, PNG up to 10MB</div>';
     wrap.appendChild(dz);
-
     const input=document.createElement('input'); input.type='file'; input.accept='.pdf,.jpg,.jpeg,.png'; input.className='hidden';
     wrap.appendChild(input);
-
-    const renderPill=(name)=>{
+    const renderFile=()=>{
       ulist.innerHTML='';
-      const pill=document.createElement('div'); pill.className='file-pill';
-      pill.innerHTML='<span class="fp-icon">📄</span><span class="fp-name"></span>';
-      pill.querySelector('.fp-name').textContent=name;
-      const view=document.createElement('a'); view.className='fp-view'; view.href='#'; view.textContent='View';
-      view.onclick=async(e)=>{ e.preventDefault();
-        const {data}=await db.storage.from(BUCKET).createSignedUrl(r.file_path,60);
-        if(data) window.open(data.signedUrl,'_blank'); };
-      const rem=document.createElement('button'); rem.className='fp-remove'; rem.type='button'; rem.textContent='Remove';
-      rem.onclick=async()=>{ if(r.file_path) await db.storage.from(BUCKET).remove([r.file_path]);
-        r.file_path=null; ulist.innerHTML=''; uploaded.classList.add('hidden');
-        dz.querySelector('.dz-main').textContent='Click to upload or drag and drop';
-        if(this.cfg.onChange) this.cfg.onChange(); };
-      pill.appendChild(view); pill.appendChild(rem);
-      ulist.appendChild(pill); uploaded.classList.remove('hidden');
+      const pending=r._pendingFile, existing=r._removeFileOnSave ? null : r.file_path;
+      const name=pending?.name || (existing ? existing.split('/').pop() : '');
+      if(!name){ uploaded.classList.add('hidden'); dz.querySelector('.dz-main').textContent='Click to upload or drag and drop'; return; }
+      uploaded.classList.remove('hidden');
       dz.querySelector('.dz-main').textContent='Click to replace this file';
+      const pill=document.createElement('div'); pill.className='file-pill';
+      const nameEl=document.createElement('span'); nameEl.className='fp-name'; nameEl.textContent=name + (pending?' (pending Save)':'');
+      pill.appendChild(nameEl);
+      if(existing && !pending){
+        const view=document.createElement('a'); view.className='fp-view'; view.href='#'; view.textContent='View';
+        view.onclick=async(e)=>{ e.preventDefault(); const {data}=await db.storage.from(BUCKET).createSignedUrl(existing,60); if(data) window.open(data.signedUrl,'_blank'); };
+        pill.appendChild(view);
+      }
+      const remove=document.createElement('button'); remove.className='fp-remove'; remove.type='button'; remove.textContent='Remove';
+      remove.onclick=()=>{
+        r._pendingFile=null; r._removeFileOnSave=true;
+        renderFile(); if(this.cfg.onChange) this.cfg.onChange();
+        markBinderUnsaved();
+      };
+      pill.appendChild(remove); ulist.appendChild(pill);
     };
-    if(r.file_path) renderPill(r.file_path.split('/').pop());
-
-    const handle=async(file)=>{
-      const ok=['application/pdf','image/jpeg','image/png'];
-      if(!ok.includes(file.type)){ alert('Please upload a PDF, JPG, or PNG.'); return; }
-      if(file.size>10*1024*1024){ alert('File must be under 10MB.'); return; }
-      dz.querySelector('.dz-main').textContent='Uploading…';
-      const oldPath=r.file_path; // remember existing file so we can clean it up
-      const ext=file.name.split('.').pop();
-      const path=currentUser.id+'/'+this.cfg.table+'-'+Date.now()+'.'+ext;
-      const {error}=await db.storage.from(BUCKET).upload(path,file,{upsert:true});
-      if(error){ console.error('Upload error',error); alert('Upload failed.'); dz.querySelector('.dz-main').textContent=(oldPath?'Click to replace this file':'Click to upload or drag and drop'); return; }
-      // New upload succeeded — remove the previous file so it doesn't orphan in storage
-      if(oldPath && oldPath!==path){ try{ await db.storage.from(BUCKET).remove([oldPath]); }catch(e){ console.warn('Old file cleanup failed',e); } }
-      r.file_path=path; renderPill(file.name);
-      if(this.cfg.onChange) this.cfg.onChange();
+    const handle=(file)=>{
+      if(!['application/pdf','image/jpeg','image/png'].includes(file.type)){ alert('Please select a PDF, JPG, or PNG.'); return; }
+      if(file.size>10*1024*1024){ alert('File must not exceed 10 MB.'); return; }
+      r._pendingFile=file; r._removeFileOnSave=false;
+      renderFile(); markBinderUnsaved(); if(this.cfg.onChange) this.cfg.onChange();
     };
     dz.onclick=()=>input.click();
-    dz.ondragover=e=>{ e.preventDefault(); dz.classList.add('drag'); };
+    dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag');};
     dz.ondragleave=()=>dz.classList.remove('drag');
-    dz.ondrop=e=>{ e.preventDefault(); dz.classList.remove('drag'); if(e.dataTransfer.files.length) handle(e.dataTransfer.files[0]); };
-    input.onchange=()=>{ if(input.files.length) handle(input.files[0]); };
+    dz.ondrop=e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files.length)handle(e.dataTransfer.files[0]);};
+    input.onchange=()=>{if(input.files.length)handle(input.files[0]);};
+    renderFile();
     return wrap;
   }
 
-  async remove(key){
+  remove(key){
     const idx=this.rows.findIndex(r=>this.rowKey(r)===key);
     if(idx<0) return;
     const r=this.rows[idx];
-    if(!confirm('Remove this entry?')) return;
-    if(r.file_path){ try{ await db.storage.from(BUCKET).remove([r.file_path]); }catch(e){} }
-    if(r.id){ await db.from(this.cfg.table).delete().eq('id', r.id); }
+    if(!confirm('Remove this entry when you Save?')) return;
+    // Do not touch Supabase until Save is pressed. Leaving the page cancels removal.
+    if(r.id) this.pendingDeletes.push({id:r.id, file_path:r.file_path});
     this.rows.splice(idx,1);
+    markBinderUnsaved();
     this.render();
   }
 
@@ -214,22 +206,58 @@ class ListManager {
   count(){ return this.rows.length; }
 
   async saveAll(){
+    // Persist current entries first, then commit staged removals. File uploads
+    // and deletions only occur after Save; failed updates do not erase old files.
     for(const r of this.rows){
+      let newFilePath=null;
+      if(this.cfg.hasUpload !== false && r._pendingFile){
+        const ext=r._pendingFile.name.split('.').pop().toLowerCase();
+        newFilePath=currentUser.id+'/'+this.cfg.table+'-'+crypto.randomUUID()+'.'+ext;
+        const {error:uploadError}=await db.storage.from(BUCKET).upload(newFilePath,r._pendingFile,{upsert:false});
+        if(uploadError) throw uploadError;
+      }
+      const formerPath=r.file_path;
       const rec={ user_id:currentUser.id, updated_at:new Date().toISOString() };
-      if(this.cfg.hasUpload !== false) rec.file_path = r.file_path||null;
-      // Include 'kind' if stamped on the row (used by kids_items)
-      if(r.kind !== undefined) rec.kind = r.kind;
+      if(this.cfg.hasUpload !== false) rec.file_path = newFilePath || (r._removeFileOnSave ? null : formerPath || null);
+      if(r.kind !== undefined) rec.kind=r.kind;
       this.cfg.fields.forEach(f=>rec[f.key]=r[f.key]?r[f.key]:null);
-      if(r.id){
-        const {error}=await db.from(this.cfg.table).update(rec).eq('id',r.id);
-        if(error) throw error;
-      } else {
-        const {data,error}=await db.from(this.cfg.table).insert([rec]).select();
-        if(error) throw error;
-        if(data && data[0]){ r.id=data[0].id; delete r._new; }
+      try{
+        if(r.id){
+          const {error}=await db.from(this.cfg.table).update(rec).eq('id',r.id).eq('user_id',currentUser.id);
+          if(error) throw error;
+        } else {
+          const {data,error}=await db.from(this.cfg.table).insert([rec]).select();
+          if(error) throw error;
+          if(data&&data[0]){r.id=data[0].id;delete r._new;}
+        }
+      }catch(error){
+        if(newFilePath) await db.storage.from(BUCKET).remove([newFilePath]);
+        throw error;
+      }
+      r.file_path=rec.file_path;
+      r._pendingFile=null; r._removeFileOnSave=false;
+      if(formerPath && formerPath!==rec.file_path){
+        const {error}=await db.storage.from(BUCKET).remove([formerPath]);
+        if(error) console.warn('Saved entry but could not remove superseded file',error);
       }
     }
+    while(this.pendingDeletes.length){
+      const removed=this.pendingDeletes[0];
+      const {error}=await db.from(this.cfg.table).delete().eq('id',removed.id).eq('user_id',currentUser.id);
+      if(error) throw error;
+      if(removed.file_path){
+        const {error:fileError}=await db.storage.from(BUCKET).remove([removed.file_path]);
+        if(fileError) console.warn('Entry removed but file cleanup failed',fileError);
+      }
+      // Avoid retrying already committed deletes if a later one fails.
+      this.pendingDeletes.shift();
+    }
+    this.render();
   }
+}
+
+function markBinderUnsaved(){
+  const el=$('saveStatus'); if(el){el.textContent='Unsaved changes — press Save to keep them.';el.className='save-status';}
 }
 
 function saving(btnId, statusId, label){
@@ -262,53 +290,96 @@ function bindToggle(id){
   });
 }
 const uploadedFiles = {};
-function initUploadSlot(slot, bucket, labelText){
+const stagedSlotFiles = {};
+function initUploadSlot(slot,bucket,labelText){
   uploadedFiles[slot] = uploadedFiles[slot] || null;
   const input=$('file-'+slot), zone=$('dz-'+slot);
   if(!input || !zone) return;
   zone.addEventListener('click', ()=>input.click());
-  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('drag'); });
-  zone.addEventListener('dragleave', ()=>zone.classList.remove('drag'));
-  zone.addEventListener('drop', e=>{ e.preventDefault(); zone.classList.remove('drag'); if(e.dataTransfer.files.length) _slotFile(slot,bucket,labelText,e.dataTransfer.files[0]); });
-  input.addEventListener('change', ()=>{ if(input.files.length) _slotFile(slot,bucket,labelText,input.files[0]); });
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');if(e.dataTransfer.files.length)_slotFile(slot,bucket,labelText,e.dataTransfer.files[0]);});
+  input.addEventListener('change',()=>{if(input.files.length)_slotFile(slot,bucket,labelText,input.files[0]);});
 }
-async function _slotFile(slot,bucket,labelText,file){
-  const ok=['application/pdf','image/jpeg','image/png'];
-  if(!ok.includes(file.type)){ alert('Please upload a PDF, JPG, or PNG.'); return; }
-  if(file.size>10*1024*1024){ alert('File must be under 10MB.'); return; }
-  const zone=$('dz-'+slot), orig=zone.querySelector('.dz-main').textContent;
-  zone.querySelector('.dz-main').textContent='Uploading…';
-  const oldPath=uploadedFiles[slot]; // remember existing file for cleanup
-  const ext=file.name.split('.').pop();
-  const path=currentUser.id+'/'+slot+'-'+Date.now()+'.'+ext;
-  const {error}=await db.storage.from(bucket).upload(path,file,{upsert:true});
-  zone.querySelector('.dz-main').textContent=orig;
-  if(error){ console.error('Upload error',error); alert('Upload failed.'); return; }
-  if(oldPath && oldPath!==path){ try{ await db.storage.from(bucket).remove([oldPath]); }catch(e){ console.warn('Old file cleanup failed',e); } }
-  uploadedFiles[slot]=path; _slotRender(slot,bucket,labelText,file.name);
+function _slotFile(slot,bucket,labelText,file){
+  if(!['application/pdf','image/jpeg','image/png'].includes(file.type)){alert('Please select a PDF, JPG, or PNG.');return;}
+  if(file.size>10*1024*1024){alert('File must not exceed 10 MB.');return;}
+  stagedSlotFiles[slot]={file};
+  _slotRender(slot,bucket,labelText,file.name+' (pending Save)');
+  markBinderUnsaved();
 }
 function _slotRender(slot,bucket,labelText,fileName){
-  const section=$('uploaded-'+slot), list=$('uploaded-list-'+slot), zone=$('dz-'+slot);
-  if(!section||!list) return;
+  const section=$('uploaded-'+slot),list=$('uploaded-list-'+slot),zone=$('dz-'+slot);
+  if(!section||!list)return;
   const display=fileName||(uploadedFiles[slot]?uploadedFiles[slot].split('/').pop():'document');
-  list.innerHTML='<div class="file-pill"><span class="fp-icon">📄</span><span class="fp-name">'+display+'</span>'+
-    '<a class="fp-view" href="#" onclick="viewSlotFile(\''+bucket+'\',\''+slot+'\');return false;">View</a>'+
-    '<button class="fp-remove" onclick="removeSlotFile(\''+bucket+'\',\''+slot+'\')">Remove</button></div>';
-  section.classList.remove('hidden');
-  if(zone) zone.querySelector('.dz-main').textContent='Click to replace this file';
+  list.innerHTML='';
+  const pill=document.createElement('div');pill.className='file-pill';
+  const icon=document.createElement('span');icon.className='fp-icon';icon.textContent='📄';
+  const title=document.createElement('span');title.className='fp-name';title.textContent=display;
+  pill.append(icon,title);
+  if(uploadedFiles[slot] && !stagedSlotFiles[slot]){
+    const view=document.createElement('a');view.className='fp-view';view.href='#';view.textContent='View';
+    view.onclick=e=>{e.preventDefault();viewSlotFile(bucket,slot);};
+    pill.appendChild(view);
+  }
+  const remove=document.createElement('button');remove.className='fp-remove';remove.type='button';remove.textContent='Remove';
+  remove.onclick=()=>removeSlotFile(bucket,slot);pill.appendChild(remove);
+  list.appendChild(pill);section.classList.remove('hidden');
+  if(zone)zone.querySelector('.dz-main').textContent='Click to replace this file';
 }
 async function viewSlotFile(bucket,slot){
-  const path=uploadedFiles[slot]; if(!path) return;
+  const path=uploadedFiles[slot];if(!path)return;
   const {data}=await db.storage.from(bucket).createSignedUrl(path,60);
-  if(data) window.open(data.signedUrl,'_blank');
+  if(data)window.open(data.signedUrl,'_blank');
 }
-async function removeSlotFile(bucket,slot){
-  const path=uploadedFiles[slot]; if(!path) return;
-  await db.storage.from(bucket).remove([path]); uploadedFiles[slot]=null;
-  const section=$('uploaded-'+slot), list=$('uploaded-list-'+slot), zone=$('dz-'+slot);
-  if(list) list.innerHTML=''; if(section) section.classList.add('hidden');
-  if(zone) zone.querySelector('.dz-main').textContent='Click to upload or drag and drop';
+function removeSlotFile(bucket,slot){
+  if(!uploadedFiles[slot] && !stagedSlotFiles[slot])return;
+  stagedSlotFiles[slot]={remove:true};
+  const section=$('uploaded-'+slot),list=$('uploaded-list-'+slot),zone=$('dz-'+slot);
+  if(list)list.innerHTML='';if(section)section.classList.add('hidden');
+  if(zone)zone.querySelector('.dz-main').textContent='Click to upload or drag and drop';
+  markBinderUnsaved();
 }
 function restoreUploaded(slot,bucket,labelText,path){
-  if(!path) return; uploadedFiles[slot]=path; _slotRender(slot,bucket,labelText,path.split('/').pop());
+  if(!path)return;
+  uploadedFiles[slot]=path;delete stagedSlotFiles[slot];
+  _slotRender(slot,bucket,labelText,path.split('/').pop());
+}
+// Prepare uploaded files only after Save is pressed. Database changes are committed
+// before old files are deleted. On database failure, newly uploaded files are removed.
+async function prepareSlotUploads(bucket){
+  const changes={};
+  try{
+    for(const [slot,state] of Object.entries(stagedSlotFiles)){
+      const oldPath=uploadedFiles[slot]||null;
+      let newPath=null;
+      if(state.file){
+        const ext=state.file.name.split('.').pop().toLowerCase();
+        newPath=currentUser.id+'/'+slot+'-'+crypto.randomUUID()+'.'+ext;
+        const {error}=await db.storage.from(bucket).upload(newPath,state.file,{upsert:false});
+        if(error)throw error;
+      }
+      changes[slot]={oldPath,newPath,remove:!!state.remove};
+    }
+    return changes;
+  }catch(error){await rollbackSlotUploads(bucket,changes);throw error;}
+}
+function slotPathForSave(slot,changes){
+  const item=changes[slot];
+  return !item?uploadedFiles[slot]||null : item.newPath||null;
+}
+async function rollbackSlotUploads(bucket,changes){
+  for(const c of Object.values(changes)){if(c.newPath)await db.storage.from(bucket).remove([c.newPath]);}
+}
+async function finalizeSlotUploads(bucket,changes){
+  for(const [slot,c] of Object.entries(changes)){
+    uploadedFiles[slot]=c.newPath||null;delete stagedSlotFiles[slot];
+    if(c.oldPath && c.oldPath!==c.newPath){
+      const {error}=await db.storage.from(bucket).remove([c.oldPath]);
+      if(error)console.warn('Saved record but failed to clean up old legal attachment',error);
+    }
+    const section=$('uploaded-'+slot),list=$('uploaded-list-'+slot),zone=$('dz-'+slot);
+    if(c.newPath)_slotRender(slot,bucket,slot,c.newPath.split('/').pop());
+    else {if(list)list.innerHTML='';if(section)section.classList.add('hidden');if(zone)zone.querySelector('.dz-main').textContent='Click to upload or drag and drop';}
+  }
 }
