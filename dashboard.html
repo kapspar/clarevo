@@ -712,7 +712,7 @@
     </div>
     <div class="card" style="margin-top:16px; border:1.5px solid #fecaca;">
       <h3 style="color:var(--red); margin-bottom:4px;">Delete account</h3>
-      <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">Permanently delete your account and all associated data. This cannot be undone. Your uploaded documents will also be removed.</p>
+      <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">Delete your Clarevo account, saved plan, document uploads and sharing invitations. This cannot be undone. Download your binder first if you need a copy.</p>
       <button onclick="confirmDeleteAccount()" style="background:var(--red); border:none; color:white; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--font);">Delete My Account</button>
       <p id="deleteStatus" style="font-size:13px; margin-top:10px; display:none;"></p>
     </div>
@@ -1772,16 +1772,39 @@
     }
   }
 
-  // ── DELETE ACCOUNT ────────────────────────────────────────
-  // Full deletion requires a privileged, authenticated server-side workflow:
-  // remove user-owned storage objects, database records, and the auth user;
-  // verify the result before reporting completion.
-  // Do not offer a misleading client-only deletion operation.
+  // ── DELETE ACCOUNT (authenticated server-side deletion) ──
   async function confirmDeleteAccount() {
     const status = document.getElementById('deleteStatus');
+    const confirmation = prompt('This permanently removes your account, saved plan, documents and shared access. Download a binder first if you need it. Type DELETE to confirm:');
+    if (confirmation === null) return;
     status.style.display = 'block';
+    status.style.color = 'var(--red)';
+    if (confirmation !== 'DELETE') {
+      status.textContent = 'Deletion cancelled. Type DELETE exactly to confirm.';
+      return;
+    }
+    const { data: { session }, error: sessionError } = await db.auth.getSession();
+    if (sessionError || !session) {
+      status.textContent = 'Sign in again to delete your account.';
+      return;
+    }
+    const button = document.querySelector('#tab-settings button[onclick="confirmDeleteAccount()"]');
+    if (button) button.disabled = true;
     status.style.color = 'var(--gray)';
-    status.textContent = 'Secure self-service account deletion is not yet available. Please email hello@clarevo.ca to request removal of your account and stored documents. We will confirm when deletion is complete.';
+    status.textContent = 'Deleting your saved information and files. Do not close this page.';
+    try {
+      const { data, error } = await db.functions.invoke('delete-account', { body: { confirm: 'DELETE' } });
+      if (error || !data?.deleted) throw new Error(data?.error || error?.message || 'Deletion could not be verified.');
+      await db.auth.signOut();
+      try { localStorage.removeItem('clarevo_pending_assessment_v1'); } catch (_) {}
+      status.style.color = 'var(--green)';
+      status.textContent = 'Your account was deleted. Redirecting…';
+      window.location.replace('home.html?account=deleted');
+    } catch (error) {
+      status.style.color = 'var(--red)';
+      status.textContent = 'Deletion could not be confirmed. Please contact hello@clarevo.ca. Details: ' + (error?.message || 'Unexpected error');
+      if (button) button.disabled = false;
+    }
   }
 
   function showTab(tab, navEl) {
