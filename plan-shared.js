@@ -290,53 +290,96 @@ function bindToggle(id){
   });
 }
 const uploadedFiles = {};
-function initUploadSlot(slot, bucket, labelText){
+const stagedSlotFiles = {};
+function initUploadSlot(slot,bucket,labelText){
   uploadedFiles[slot] = uploadedFiles[slot] || null;
   const input=$('file-'+slot), zone=$('dz-'+slot);
   if(!input || !zone) return;
   zone.addEventListener('click', ()=>input.click());
-  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('drag'); });
-  zone.addEventListener('dragleave', ()=>zone.classList.remove('drag'));
-  zone.addEventListener('drop', e=>{ e.preventDefault(); zone.classList.remove('drag'); if(e.dataTransfer.files.length) _slotFile(slot,bucket,labelText,e.dataTransfer.files[0]); });
-  input.addEventListener('change', ()=>{ if(input.files.length) _slotFile(slot,bucket,labelText,input.files[0]); });
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');if(e.dataTransfer.files.length)_slotFile(slot,bucket,labelText,e.dataTransfer.files[0]);});
+  input.addEventListener('change',()=>{if(input.files.length)_slotFile(slot,bucket,labelText,input.files[0]);});
 }
-async function _slotFile(slot,bucket,labelText,file){
-  const ok=['application/pdf','image/jpeg','image/png'];
-  if(!ok.includes(file.type)){ alert('Please upload a PDF, JPG, or PNG.'); return; }
-  if(file.size>10*1024*1024){ alert('File must be under 10MB.'); return; }
-  const zone=$('dz-'+slot), orig=zone.querySelector('.dz-main').textContent;
-  zone.querySelector('.dz-main').textContent='Uploading…';
-  const oldPath=uploadedFiles[slot]; // remember existing file for cleanup
-  const ext=file.name.split('.').pop();
-  const path=currentUser.id+'/'+slot+'-'+Date.now()+'.'+ext;
-  const {error}=await db.storage.from(bucket).upload(path,file,{upsert:true});
-  zone.querySelector('.dz-main').textContent=orig;
-  if(error){ console.error('Upload error',error); alert('Upload failed.'); return; }
-  if(oldPath && oldPath!==path){ try{ await db.storage.from(bucket).remove([oldPath]); }catch(e){ console.warn('Old file cleanup failed',e); } }
-  uploadedFiles[slot]=path; _slotRender(slot,bucket,labelText,file.name);
+function _slotFile(slot,bucket,labelText,file){
+  if(!['application/pdf','image/jpeg','image/png'].includes(file.type)){alert('Please select a PDF, JPG, or PNG.');return;}
+  if(file.size>10*1024*1024){alert('File must not exceed 10 MB.');return;}
+  stagedSlotFiles[slot]={file};
+  _slotRender(slot,bucket,labelText,file.name+' (pending Save)');
+  markBinderUnsaved();
 }
 function _slotRender(slot,bucket,labelText,fileName){
-  const section=$('uploaded-'+slot), list=$('uploaded-list-'+slot), zone=$('dz-'+slot);
-  if(!section||!list) return;
+  const section=$('uploaded-'+slot),list=$('uploaded-list-'+slot),zone=$('dz-'+slot);
+  if(!section||!list)return;
   const display=fileName||(uploadedFiles[slot]?uploadedFiles[slot].split('/').pop():'document');
-  list.innerHTML='<div class="file-pill"><span class="fp-icon">📄</span><span class="fp-name">'+display+'</span>'+
-    '<a class="fp-view" href="#" onclick="viewSlotFile(\''+bucket+'\',\''+slot+'\');return false;">View</a>'+
-    '<button class="fp-remove" onclick="removeSlotFile(\''+bucket+'\',\''+slot+'\')">Remove</button></div>';
-  section.classList.remove('hidden');
-  if(zone) zone.querySelector('.dz-main').textContent='Click to replace this file';
+  list.innerHTML='';
+  const pill=document.createElement('div');pill.className='file-pill';
+  const icon=document.createElement('span');icon.className='fp-icon';icon.textContent='📄';
+  const title=document.createElement('span');title.className='fp-name';title.textContent=display;
+  pill.append(icon,title);
+  if(uploadedFiles[slot] && !stagedSlotFiles[slot]){
+    const view=document.createElement('a');view.className='fp-view';view.href='#';view.textContent='View';
+    view.onclick=e=>{e.preventDefault();viewSlotFile(bucket,slot);};
+    pill.appendChild(view);
+  }
+  const remove=document.createElement('button');remove.className='fp-remove';remove.type='button';remove.textContent='Remove';
+  remove.onclick=()=>removeSlotFile(bucket,slot);pill.appendChild(remove);
+  list.appendChild(pill);section.classList.remove('hidden');
+  if(zone)zone.querySelector('.dz-main').textContent='Click to replace this file';
 }
 async function viewSlotFile(bucket,slot){
-  const path=uploadedFiles[slot]; if(!path) return;
+  const path=uploadedFiles[slot];if(!path)return;
   const {data}=await db.storage.from(bucket).createSignedUrl(path,60);
-  if(data) window.open(data.signedUrl,'_blank');
+  if(data)window.open(data.signedUrl,'_blank');
 }
-async function removeSlotFile(bucket,slot){
-  const path=uploadedFiles[slot]; if(!path) return;
-  await db.storage.from(bucket).remove([path]); uploadedFiles[slot]=null;
-  const section=$('uploaded-'+slot), list=$('uploaded-list-'+slot), zone=$('dz-'+slot);
-  if(list) list.innerHTML=''; if(section) section.classList.add('hidden');
-  if(zone) zone.querySelector('.dz-main').textContent='Click to upload or drag and drop';
+function removeSlotFile(bucket,slot){
+  if(!uploadedFiles[slot] && !stagedSlotFiles[slot])return;
+  stagedSlotFiles[slot]={remove:true};
+  const section=$('uploaded-'+slot),list=$('uploaded-list-'+slot),zone=$('dz-'+slot);
+  if(list)list.innerHTML='';if(section)section.classList.add('hidden');
+  if(zone)zone.querySelector('.dz-main').textContent='Click to upload or drag and drop';
+  markBinderUnsaved();
 }
 function restoreUploaded(slot,bucket,labelText,path){
-  if(!path) return; uploadedFiles[slot]=path; _slotRender(slot,bucket,labelText,path.split('/').pop());
+  if(!path)return;
+  uploadedFiles[slot]=path;delete stagedSlotFiles[slot];
+  _slotRender(slot,bucket,labelText,path.split('/').pop());
+}
+// Prepare uploaded files only after Save is pressed. Database changes are committed
+// before old files are deleted. On database failure, newly uploaded files are removed.
+async function prepareSlotUploads(bucket){
+  const changes={};
+  try{
+    for(const [slot,state] of Object.entries(stagedSlotFiles)){
+      const oldPath=uploadedFiles[slot]||null;
+      let newPath=null;
+      if(state.file){
+        const ext=state.file.name.split('.').pop().toLowerCase();
+        newPath=currentUser.id+'/'+slot+'-'+crypto.randomUUID()+'.'+ext;
+        const {error}=await db.storage.from(bucket).upload(newPath,state.file,{upsert:false});
+        if(error)throw error;
+      }
+      changes[slot]={oldPath,newPath,remove:!!state.remove};
+    }
+    return changes;
+  }catch(error){await rollbackSlotUploads(bucket,changes);throw error;}
+}
+function slotPathForSave(slot,changes){
+  const item=changes[slot];
+  return !item?uploadedFiles[slot]||null : item.newPath||null;
+}
+async function rollbackSlotUploads(bucket,changes){
+  for(const c of Object.values(changes)){if(c.newPath)await db.storage.from(bucket).remove([c.newPath]);}
+}
+async function finalizeSlotUploads(bucket,changes){
+  for(const [slot,c] of Object.entries(changes)){
+    uploadedFiles[slot]=c.newPath||null;delete stagedSlotFiles[slot];
+    if(c.oldPath && c.oldPath!==c.newPath){
+      const {error}=await db.storage.from(bucket).remove([c.oldPath]);
+      if(error)console.warn('Saved record but failed to clean up old legal attachment',error);
+    }
+    const section=$('uploaded-'+slot),list=$('uploaded-list-'+slot),zone=$('dz-'+slot);
+    if(c.newPath)_slotRender(slot,bucket,slot,c.newPath.split('/').pop());
+    else {if(list)list.innerHTML='';if(section)section.classList.add('hidden');if(zone)zone.querySelector('.dz-main').textContent='Click to upload or drag and drop';}
+  }
 }
