@@ -45,3 +45,11 @@
 - Next task:
 
 Never write secrets, customer data, raw auth URLs or credentials here.
+
+## 2026-11-05 audit and first remediation
+
+- Reconciled baseline at main `391e68e`. GitHub confirmed #7, #8 and documentation PR #9 merged. No open PRs were returned at session start. Public login and dashboard responses matched main byte for byte before editing. Vercel project settings, deployment SHA and Auth allowlist remain unverified.
+- Reviewed live schema policies and function metadata using read-only Supabase access. See Security Review for evidence and the remaining production verification gate.
+- Branch `fix/shared-invite-html-injection` changes `dashboard.html` and `shared-welcome.html`. Invite fields render as text and action buttons receive data through JavaScript callbacks. Removed the browser log containing the invitation record.
+- Local validation passed: `node tests/sharing-render.cjs` (synthetic hostile markup and quoted values in three render paths, action callbacks, inline JavaScript syntax) and `git diff --check`. This is a DOM/API stub test, with browser and production behavior pending.
+- Next: fix invitation accept/decline error handling and test with two dedicated synthetic identities. Check no-share denial, section-specific read, write denial and revocation at the API and Storage layers. Confirm test environment and mailbox access first. Keep reset completion and signed file URLs in separate changes.

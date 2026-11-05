@@ -1545,16 +1545,20 @@
         card.className = 'invite-card';
         card.innerHTML = `
           <div class="invite-card-header">
-            <div class="avatar blue">${name.substring(0,2).toUpperCase()}</div>
+            <div class="avatar blue"></div>
             <div class="ic-info">
-              <div class="ic-name">${name}'s Family Plan</div>
-              <div class="ic-meta">${sections}</div>
+              <div class="ic-name"></div>
+              <div class="ic-meta"></div>
             </div>
             <span class="ic-status active">Active ✓</span>
           </div>
           <div class="ic-actions">
-            <button class="ic-btn resend" onclick="(function(){ sessionStorage.setItem('viewSharedPlan', JSON.stringify({invite: ${JSON.stringify(share).replace(/"/g,"'")}, ownerName: '${name}'})); window.location.href='shared-view.html'; })()">View plan →</button>
+            <button class="ic-btn resend">View plan →</button>
           </div>`;
+        card.querySelector('.avatar').textContent = name.substring(0, 2).toUpperCase();
+        card.querySelector('.ic-name').textContent = name + "'s Family Plan";
+        card.querySelector('.ic-meta').textContent = sections;
+        card.querySelector('button').onclick = btn.onclick;
         sharedList.appendChild(card);
       }
     }
@@ -1598,22 +1602,33 @@
       card.className = 'invite-card';
       card.innerHTML = `
         <div class="invite-card-header">
-          <div class="avatar blue">${initials}</div>
+          <div class="avatar blue"></div>
           <div class="ic-info">
-            <div class="ic-name">${inv.invitee_email}</div>
-            <div class="ic-meta">${inv.relationship || 'No relationship set'} · ${sections}</div>
+            <div class="ic-name"></div>
+            <div class="ic-meta"></div>
           </div>
-          <span class="ic-status ${inv.status}">
-            ${inv.status === 'pending' ? 'Invite sent' :
-              inv.status === 'registered' ? 'Registered ✓' :
-              inv.status === 'active' ? 'Active ✓' : inv.status}
-          </span>
+          <span class="ic-status"></span>
         </div>
         <div class="ic-actions">
-          ${(inv.status === 'pending' || inv.status === 'registered') ? `<button class="ic-btn resend" onclick="resendInvite('${inv.id}','${inv.invitee_email}')">Resend invite</button>` : ''}
-          <button class="ic-btn resend" onclick="editInvite('${inv.id}')">Edit access</button>
-          <button class="ic-btn revoke" onclick="revokeAccess('${inv.id}')">Revoke access</button>
+          <button class="ic-btn resend" data-action="resend">Resend invite</button>
+          <button class="ic-btn resend" data-action="edit">Edit access</button>
+          <button class="ic-btn revoke" data-action="revoke">Revoke access</button>
         </div>`;
+      card.querySelector('.avatar').textContent = initials;
+      card.querySelector('.ic-name').textContent = inv.invitee_email;
+      card.querySelector('.ic-meta').textContent = (inv.relationship || 'No relationship set') + ' · ' + sections;
+      const badge = card.querySelector('.ic-status');
+      const statusLabels = new Map([['pending', 'Invite sent'], ['registered', 'Registered ✓'], ['active', 'Active ✓']]);
+      if (statusLabels.has(inv.status)) badge.classList.add(inv.status);
+      badge.textContent = statusLabels.get(inv.status) || inv.status;
+      const resend = card.querySelector('[data-action="resend"]');
+      if (inv.status === 'pending' || inv.status === 'registered') {
+        resend.onclick = () => resendInvite(inv.id, inv.invitee_email);
+      } else {
+        resend.remove();
+      }
+      card.querySelector('[data-action="edit"]').onclick = () => editInvite(inv.id);
+      card.querySelector('[data-action="revoke"]').onclick = () => revokeAccess(inv.id);
       list.appendChild(card);
     });
   }
@@ -1638,7 +1653,6 @@
     const ownerDisplayName = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
     const rec = { owner_id: uid, invitee_email: email, relationship: rel || null, status: 'pending', owner_name: ownerDisplayName };
     SECTIONS.forEach(s => rec['access_' + s] = inviteState[s]);
-    console.log('Inserting invite:', JSON.stringify(rec));
     const { error } = await db.from('shared_access').insert([rec]);
     if (error) {
       status.style.display = 'block'; status.style.color = 'var(--red)';

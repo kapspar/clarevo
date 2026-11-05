@@ -36,3 +36,17 @@ Use **deny-by-default** database and storage rules. UI-only hiding is insufficie
 ## Acceptance gate for sensitive documents
 
 Before inviting real sensitive uploads: review policies and roles; pass two-account negative authorization tests; verify sharing and revocation; validate deletion/retention; resolve high-severity exposures; review privacy/terms and incident response with appropriate experts. Maintain evidence links and exceptions here.
+
+## Read-only production audit, 2026-11-05
+
+| Severity | Evidence | Status and next check |
+|---|---|---|
+| High | Invite owners control `shared_access.owner_name`. Dashboard and multi-plan welcome cards previously interpolated that value into HTML. A recipient opening their plan list could execute attacker-controlled script in a signed-in Clarevo page. Outgoing cards also interpolated row fields into HTML and inline handlers. | Fixed on feature branch with static markup, text assignment and callback bindings. Stub regression passed. Verify in a browser with synthetic data before release. |
+| High | Dashboard accept and decline handlers ignore database errors. Decline sends only status, while the deployed enabled invitee guard requires the new recipient ID to match the signed-in user. A pending invitation with no bound ID can fail silently. | Separate change. Test both transitions and rejected updates, then only mutate UI state after confirmed persistence. |
+| High | Shared view mints one-hour bearer URLs as it renders. Existing signed links may survive removal of the share until expiry. | Validate after revocation. Review on-demand authenticated downloads separately. |
+| High | Login sends recovery links to the dashboard. Source review found no dedicated recovery password update flow. | Implement and verify password reset completion with a synthetic mailbox. |
+| Medium | Supabase advisor reports leaked-password protection disabled and two authenticated SECURITY DEFINER RPCs. | Inspect project options and review the expected RPC exposure before changing grants. |
+
+Read-only catalog evidence: all 14 public tables have RLS enabled. Binder owner rules use user IDs, and shared reads call a section-specific helper bound to the JWT user ID and registered/active invitation. The assessments SELECT policy also matches JWT email. The live invitee-update guard is enabled and blocks changes to owner and section flags. The `documents` bucket is private with a 10 MiB limit and PDF/JPEG/PNG allowlist. Storage has owner-folder rules, a quota rule and section-linked shared read rules. These observations establish configuration, with runtime authorization tests still pending.
+
+Deployed Edge Function metadata shows JWT verification enabled for `send-invite` and `delete-account`. Source inspection of deployed `send-invite` confirmed caller validation and invite lookup scoped to the caller's owner ID. Repository deletion code verifies caller identity before cleanup. Deletion runtime, cleanup under partial failure, and parity with the deployed function remain open. No customer records or documents were queried.
