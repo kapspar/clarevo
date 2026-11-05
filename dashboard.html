@@ -442,17 +442,8 @@
     </div>
   </div>
 
-  <!-- Pending invite banner -->
-  <div class="invite-banner" id="inviteBanner">
-    <div class="invite-banner-title" id="inviteBannerTitle">Someone has shared their Clarevo plan with you</div>
-    <div class="invite-banner-sub" id="inviteBannerSub">Accept to view their permitted sections.</div>
-    <div class="invite-banner-actions">
-      <button class="ib-accept" onclick="acceptInvite()">Accept Access →</button>
-      <button class="ib-decline" onclick="declineInvite()">Decline</button>
-    </div>
-  </div>
-
   <!-- Shared plans bar (shown when someone has shared their plan with you) -->
+  <p id="shareLoadError" role="status" hidden>Some shared plans could not be loaded. Refresh to try again.</p>
   <div class="shared-plans-bar" id="sharedPlansBar">
     <span class="sp-label">📋 Shared with you:</span>
     <div id="sharedPlansBtns"></div>
@@ -745,12 +736,12 @@
 </div><!-- /main -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="sharing-invites.js"></script>
 <script>
   const SUPABASE_URL = 'https://ulabvzjtullhsshtstnt.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let currentUser = null;
-  let pendingInvite = null;
   let activeShares = [];
   let viewingOwner = null;
 
@@ -760,44 +751,19 @@
 
     // Check for pending invites or active shared access for this email
     try {
-      const { data: invites, error: inviteErr } = await db.from('shared_access')
-        .select('*')
-        .eq('invitee_email', currentUser.email)
-        .in('status', ['pending', 'registered', 'active']);
+      const { shares, failed } = await loadRecipientShares(db, currentUser);
+      document.getElementById('shareLoadError').hidden = !failed;
 
-      console.log('Invite check:', currentUser.email, invites, inviteErr);
-
-      if (invites && invites.length > 0) {
-        for (const inv of invites) {
-          const updates = {};
-          if (!inv.invitee_id) updates.invitee_id = currentUser.id;
-          if (inv.status === 'pending') updates.status = 'registered';
-          if (Object.keys(updates).length) {
-            await db.from('shared_access').update(updates).eq('id', inv.id);
-          }
-        }
-
-        const hasOwnData = await checkHasOwnData(currentUser.id);
-        const unviewedInvites = invites.filter(i => i.status === 'pending' || i.status === 'registered');
-        const activeInvites = invites.filter(i => i.status === 'active');
-
-        // Only redirect to shared-welcome if they haven't viewed the plan yet
-        // AND they have no own plan data
-        if (!hasOwnData && unviewedInvites.length > 0 && activeInvites.length === 0) {
-          const allShares = invites.map(i => ({
-            ...i,
-            status: i.status === 'pending' ? 'registered' : i.status
-          }));
-          sessionStorage.setItem('sharedInvites', JSON.stringify(allShares));
-          window.location.href = 'shared-welcome.html';
-          return;
-        }
-
-        // Show plan switcher for all active/registered shares
-        activeShares = invites.filter(i => i.status === 'active' || i.status === 'registered');
-        if (activeShares.length > 0) buildPlanSwitcher(activeShares);
+      if (shares.length > 0 && shares.every(invite => invite.status === 'registered') &&
+          !await checkHasOwnData(currentUser.id)) {
+        window.location.href = 'shared-welcome.html';
+        return;
       }
-    } catch(e) { console.error('Shared access check failed:', e); }
+      activeShares = shares;
+      if (activeShares.length > 0) await buildPlanSwitcher(activeShares);
+    } catch {
+      document.getElementById('shareLoadError').hidden = false;
+    }
 
     await syncPendingAssessment(session.user);
     await showSavedAssessment(session.user.id);
@@ -1477,37 +1443,6 @@
     // Check if user has any of their own plan data
     const { data } = await db.from('legal_documents').select('id').eq('user_id', userId).limit(1);
     return data && data.length > 0;
-  }
-
-  // ── INVITE BANNER ────────────────────────────────────────
-  async function showInviteBanner(invite) {
-    const banner = document.getElementById('inviteBanner');
-    const title = document.getElementById('inviteBannerTitle');
-    const sub = document.getElementById('inviteBannerSub');
-    const sections = ['legal','finances','insurance','property','bills','emergency','digital','kids','business']
-      .filter(s => invite['access_' + s])
-      .map(s => ({legal:'Legal',finances:'Finances',insurance:'Insurance',property:'Property',
-        bills:'Bills',emergency:'Emergency',digital:'Digital',kids:'Kids',business:'Business'})[s])
-      .join(', ');
-    title.textContent = 'Someone has shared their Clarevo plan with you';
-    sub.textContent = 'They\'ve given you access to: ' + (sections || 'selected sections') + '. Accept to view their plan.';
-    banner.style.display = 'block';
-  }
-
-  async function acceptInvite() {
-    if (!pendingInvite) return;
-    await db.from('shared_access').update({ status: 'active', invitee_id: currentUser.id, accepted_at: new Date().toISOString() }).eq('id', pendingInvite.id);
-    activeShares.push({ ...pendingInvite, status: 'active' });
-    pendingInvite = null;
-    document.getElementById('inviteBanner').style.display = 'none';
-    buildPlanSwitcher(activeShares);
-  }
-
-  async function declineInvite() {
-    if (!pendingInvite) return;
-    await db.from('shared_access').update({ status: 'declined' }).eq('id', pendingInvite.id);
-    pendingInvite = null;
-    document.getElementById('inviteBanner').style.display = 'none';
   }
 
   // ── PLAN SWITCHER ────────────────────────────────────────
