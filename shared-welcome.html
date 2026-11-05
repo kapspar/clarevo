@@ -254,9 +254,11 @@
         btn.className = 'plan-btn';
         btn.innerHTML = `<span class="plan-btn-icon">👤</span>
           <span class="plan-btn-text">
-            <div class="pbt-name">${ownerName}'s Plan</div>
-            <div class="pbt-sections">${sections.map(s => SECTION_LABELS[s]).join(' · ')}</div>
+            <div class="pbt-name"></div>
+            <div class="pbt-sections"></div>
           </span>`;
+        btn.querySelector('.pbt-name').textContent = ownerName + "'s Plan";
+        btn.querySelector('.pbt-sections').textContent = sections.map(s => SECTION_LABELS[s]).join(' · ');
         btn.onclick = () => goToSharedView(inv, ownerName);
         btns.appendChild(btn);
       }

@@ -24,3 +24,8 @@ As of 2026-11-05. Decisions reflect owner direction from project conversations; 
 ## Decision-change protocol
 
 When revising an existing decision, document date, owner approval, rationale, implementation impact and any required customer notice. Never silently change pricing or lifetime access semantics.
+
+## Phase 1 implementation decisions
+
+- Render sharing record fields as text and bind actions through callbacks. Retain the existing static frontend and database authorization while eliminating HTML and JavaScript interpretation of record values.
+- Use read-only production catalog inspection for the baseline. Record synthetic two-account runtime tests separately and reserve destructive cleanup tests for an isolated environment.

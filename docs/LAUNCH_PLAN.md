@@ -18,7 +18,7 @@ Launch a **controlled founding-member beta** using unique lifetime Family codes;
 - [ ] Review Supabase security warnings and password protection options.
 - [ ] Owner: check Transport Canada outside-business/conflict-of-interest disclosure requirements.
 
-**Gate:** documented test evidence for identity, authorization and deletion plus appropriate legal/privacy review before inviting strangers to upload real sensitive content.
+**Gate:** resolve high-severity sharing and auth findings and provide documented test evidence for identity, authorization and deletion plus appropriate legal/privacy review before inviting strangers to upload real sensitive content.
 
 ## Phase 2 — Business setup (owner tasks)
 
@@ -58,7 +58,7 @@ Launch a **controlled founding-member beta** using unique lifetime Family codes;
 
 ## Work execution protocol
 
-1. Re-read `README.md`, `docs/WORK_PROGRESS.md`, `docs/SECURITY_REVIEW.md` and `docs/DECISIONS.md`; inspect GitHub and actual configuration.
+1. Re-read `README.md`, `docs/LAUNCH_PLAN.md`, `docs/WORK_PROGRESS.md`, `docs/SECURITY_REVIEW.md` and `docs/DECISIONS.md`; inspect GitHub and actual configuration.
 2. Choose one highest-priority independently executable task; make a small branch/PR, not a direct push to `main`.
 3. Record **implemented / tested locally / PR reviewed / merged / deployed / production-verified** distinctly.
 4. Update documentation in the task PR. If blocked, record who can unblock it and proceed with safe independent work.
