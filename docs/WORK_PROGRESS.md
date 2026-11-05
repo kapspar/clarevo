@@ -50,6 +50,13 @@ Never write secrets, customer data, raw auth URLs or credentials here.
 
 - Reconciled baseline at main `391e68e`. GitHub confirmed #7, #8 and documentation PR #9 merged. No open PRs were returned at session start. Public login and dashboard responses matched main byte for byte before editing. Vercel project settings, deployment SHA and Auth allowlist remain unverified.
 - Reviewed live schema policies and function metadata using read-only Supabase access. See Security Review for evidence and the remaining production verification gate.
-- [PR #10](https://github.com/kapspar/clarevo/pull/10), open for review, changes `dashboard.html` and `shared-welcome.html`. Invite fields render as text and action buttons receive data through JavaScript callbacks. Removed the browser log containing the invitation record.
+- [PR #10](https://github.com/kapspar/clarevo/pull/10), merged at `c6084ae`, changes `dashboard.html` and `shared-welcome.html`. Invite fields render as text and action buttons receive data through JavaScript callbacks. Removed the browser log containing the invitation record.
 - Local validation passed: `node tests/sharing-render.cjs` (synthetic hostile markup and quoted values in three render paths, action callbacks, inline JavaScript syntax) and `git diff --check`. This is a DOM/API stub test, with browser and production behavior pending.
 - Next: fix invitation accept/decline error handling and test with two dedicated synthetic identities. Check no-share denial, section-specific read, write denial and revocation at the API and Storage layers. Confirm test environment and mailbox access first. Keep reset completion and signed file URLs in separate changes.
+
+## Invitation registration follow-up
+
+- Confirmed PR #10 merged and the live dashboard matched main at `c6084ae` byte for byte. This verifies the deployed asset, with browser regression verification still pending.
+- The old accept/decline banner had no caller. The active dashboard and shared welcome flows automatically register pending invitations and previously treated failed writes as successful. The `fix/invite-response` branch keeps automatic registration, checks the returned database row and removes the dead banner and cached invite handoff.
+- Local tests passed for successful registration, legacy unbound rows, denied/zero-row updates, mismatched recipients and query failure. Existing sharing-render checks also passed. No policy changes or live writes.
+- Next: verify with two dedicated test identities and a synthetic file, then address signed file URLs and password recovery. Live account and Storage tests still require an isolated environment or confirmed disposable accounts and mailbox access.
