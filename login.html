@@ -344,15 +344,14 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsYWJ2emp0dWxsaHNzaHRzdG50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDU4MDIsImV4cCI6MjA5NTQ4MTgwMn0.e2CZe4Vo4Hc7t1grFJdzIg7BlFvSsfi3dbgjKFAte1w';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Google OAuth redirects back to the current origin. This allows approved
-  // Vercel previews to return to their own dashboard without losing browser-
-  // local pending assessment answers. The origin must be on Supabase's redirect allowlist.
+  // Always return users to the production Clarevo dashboard after Google sign-in.
+  // Preview deployments must not become the callback destination for real accounts.
   async function signInWithGoogle(button) {
     clearMessages();
     if (button) { button.disabled = true; button.textContent = 'Connecting to Google…'; }
     const { error } = await db.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/dashboard.html' }
+      options: { redirectTo: 'https://clarevo.ca/dashboard.html' }
     });
     if (error) {
       if (button) { button.disabled = false; button.textContent = 'Continue with Google'; }
@@ -511,7 +510,8 @@
       email,
       password,
       options: {
-        data: { full_name: name }
+        data: { full_name: name },
+        emailRedirectTo: 'https://clarevo.ca/dashboard.html'
       }
     });
 
